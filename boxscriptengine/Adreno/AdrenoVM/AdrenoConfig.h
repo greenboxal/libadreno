@@ -1,0 +1,12 @@
+#ifndef ADRENOCONFIG_H
+#define ADRENOCONFIG_H
+
+// Memory
+#define USE_MALLOC 1
+
+// Stack
+#define ADRENOSTACK_DEFAULT_STACK 32
+#define ADRENOSTACK_CAN_EXPAND 1
+#define ADRENOSTACK_EXPANSION_FACTOR 5
+
+#endif

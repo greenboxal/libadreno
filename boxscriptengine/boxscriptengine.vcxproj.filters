@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+    <ClCompile Include="Adreno\AdrenoVM\AdrenoHashtable.c" />
+    <ClCompile Include="Adreno\AdrenoVM\AdrenoStack.c" />
+    <ClCompile Include="Adreno\AdrenoVM\AdrenoEmit.c" />
+    <ClCompile Include="Adreno\AdrenoVM\AdrenoVM.c" />
+    <ClCompile Include="Adreno\AdrenoVM\AdrenoValue.c" />
+    <ClCompile Include="Adreno\AdrenoVM\AdrenoScript.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoVM.h" />
+    <ClInclude Include="Adreno\AdrenoScript\adrenoscript.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoHashtable.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoConfig.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoMemory.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoStack.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoEmit.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoScript.h" />
+    <ClInclude Include="Adreno\AdrenoVM\AdrenoValue.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="input.txt" />
+  </ItemGroup>
+</Project>
