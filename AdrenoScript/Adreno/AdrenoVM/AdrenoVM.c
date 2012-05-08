@@ -1015,12 +1015,41 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 
 			// Functions
+		case OP_LDFUNC:
+			{
+				AdrenoFunction *function;
+
+				opSize += 4;
+
+				value.Value.String.Value = (wchar_t *)ctx->LoadedScript->Strings.NodeHeap[opcode->Value.I4].Value.Value;
+				value.Type = AT_STRING;
+
+				function = AdrenoVM_GetFunction(vm, ctx, &value);
+				if (!function)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value.GCFlags = GC_NONE;
+				value.ReferenceCounter = 1;
+				value.Type = AT_FUNCTION;
+				value.Value.Function = function;
+
+				if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
+				{
+					vm->State = ST_END;
+					break;
+				}
+			}
+			break;
+
 		case OP_CALL:
 			{
 				AdrenoReturnInfo *ri = (AdrenoReturnInfo *)AdrenoAlloc(sizeof(AdrenoReturnInfo));
 				AdrenoFunction *function;
 
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value))
 				{
 					vm->State = ST_END;
 					break;
@@ -1034,7 +1063,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					break;
 				}
 
-				function = AdrenoVM_GetFunction(vm, ctx, &value);
+				function = AdrenoVM_GetFunction(vm, ctx, rvalue);
 				if (!function)
 				{
 					vm->State = ST_END;
@@ -1047,7 +1076,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				ri->InstructionPointer = ctx->InstructionPointer;
 				
 				value.Type = AT_RETURNINFO;
-				value.GCFlags = GC_FREE;
+				value.GCFlags = GC_COLLECT;
 				value.ReferenceCounter = 1;
 				value.Value.ReturnInfo = ri;
 
@@ -1108,7 +1137,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				AdrenoContext_AttachScript(ctx, value2.Value.ReturnInfo->Script);
 				AdrenoContext_SetFunction(ctx, value2.Value.ReturnInfo->Function);
 
-				ctx->InstructionPointer = value2.Value.ReturnInfo->InstructionPointer;
+				ctx->InstructionPointer = value2.Value.ReturnInfo->InstructionPointer + opSize;
 				ctx->Locals = value2.Value.ReturnInfo->Locals;
 				
 				AdrenoValue_Dereference(&value2);

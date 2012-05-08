@@ -52,7 +52,8 @@ unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string)
 	for (i = 0; i < script->Strings.NodeCount; i++)
 		if (wcscmp((wchar_t *)script->Strings.NodeHeap[i].Value.Value, string) == 0)
 			return i;
-
+	
+	i = script->Strings.NodeCount;
 	AdrenoHashtable_Set(&script->Strings, (void *)i, string);
 
 	return i;
