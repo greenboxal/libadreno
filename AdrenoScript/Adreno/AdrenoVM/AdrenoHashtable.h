@@ -14,7 +14,8 @@ extern "C"
 	typedef unsigned int (*AdrenoHashtable_HashFunction)(void *key, unsigned int size);
 	typedef unsigned int (*AdrenoHashtable_LenFunction)(void *key);
 
-	KeyValuePair
+	typedef struct keyvaluepair KeyValuePair;
+	struct keyvaluepair
 	{
 		unsigned int Key;
 		void *Value;

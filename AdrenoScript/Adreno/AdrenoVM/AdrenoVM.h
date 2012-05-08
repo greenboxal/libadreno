@@ -56,9 +56,9 @@ typedef enum
     // Constants
     OP_LDNULL,
     OP_LDC_I4,
+    OP_LDC_I4_M1,
     OP_LDC_I4_0,
     OP_LDC_I4_1,
-    OP_LDC_I4_M1,
     OP_LDSTR,
 
     // Arrays
