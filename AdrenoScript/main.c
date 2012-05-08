@@ -74,10 +74,10 @@ int main(int argc, char **argv)
 		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 3);
 		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 5);
 		AdrenoEmit_EmitOp(function, OP_ADD);
-		/*AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 2);
+		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 2);
 		AdrenoEmit_EmitOp(function, OP_DIV);
-		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 3);
-		AdrenoEmit_EmitOp(function, OP_REM);*/
+		//AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 3);
+		//AdrenoEmit_EmitOp(function, OP_REM);
 		AdrenoEmit_EmitOp(function, OP_STLOC_0);
 		AdrenoEmit_EmitOp(function, OP_LDNULL);
 		AdrenoEmit_EmitOp(function, OP_RET);

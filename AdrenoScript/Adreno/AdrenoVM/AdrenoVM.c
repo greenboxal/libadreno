@@ -5,6 +5,9 @@ void AdrenoVM_Initialize(AdrenoVM *vm)
 	AdrenoHashtable_Init(&vm->GlobalFunctions, AdrenoHashtable_Hash_Fnv, (AdrenoHashtable_LenFunction)wcslen);
 	AdrenoHashtable_Init(&vm->LoadedScripts, NULL, NULL);
 
+	vm->GlobalFunctions.ExpansionFactor = 2;
+	vm->LoadedScripts.ExpansionFactor = 2;
+
 	vm->State = ST_IDLE;
 }
 

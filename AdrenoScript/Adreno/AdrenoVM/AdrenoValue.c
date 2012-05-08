@@ -40,6 +40,10 @@ void AdrenoValue_Free(AdrenoValue *value)
 			AdrenoHashtable_Destroy(&value->Value.Array->Array);
 			AdrenoFree(value->Value.Array);
 		}
+		else if (value->Type == AT_RETURNINFO)
+		{
+			AdrenoFree(value->Value.ReturnInfo);
+		}
 	}
 
 	if (value->GCFlags & GC_FREE)
