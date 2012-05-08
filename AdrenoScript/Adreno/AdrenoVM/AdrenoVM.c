@@ -321,6 +321,34 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				AdrenoValue_Dereference(&value2);
 			}
 			break;
+		case OP_NEG:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+
+				if (!rvalue)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = -value.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+			}
+			break;
 
 			// Bitwise Operations
 		case OP_OR:
@@ -411,6 +439,415 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 				AdrenoValue_Dereference(&value);
 				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_NOT:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+
+				if (!rvalue)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = ~value.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+			}
+			break;
+		case OP_SHL:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 << value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_SHR:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 >> value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+
+			// Logical Operations
+		case OP_LOR:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 || value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_LAND:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 && value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_LNOT:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+
+				if (!rvalue)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = !value.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+			}
+			break;
+		case OP_EQ:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 == value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_NE:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 != value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_GT:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 > value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_GE:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 >= value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_LT:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 < value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+		case OP_LE:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+				rvalue2 = AdrenoValue_GetValue(&value2);
+
+				if (!rvalue || !rvalue2)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				value3.GCFlags = GC_NONE;
+				value3.ReferenceCounter = 1;
+
+				if (value.Type == AT_INTEGER && value2.Type == AT_INTEGER)
+				{
+					value3.Type = AT_INTEGER;
+					value3.Value.I4 = value.Value.I4 <= value2.Value.I4;
+				}
+
+				AdrenoValue_Dereference(&value);
+				AdrenoValue_Dereference(&value2);
+			}
+			break;
+
+			// Flow Control
+		case OP_JUMP:
+			{
+				opSize += 4 + opcode->Value.I4;
+			}
+			break;
+		case OP_BRTRUE:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+
+				if (!rvalue)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				opSize += 4;
+					
+				if (rvalue->Value.I4)
+					opSize += opcode->Value.I4;
+			}
+			break;
+		case OP_BRFALSE:
+			{
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				rvalue = AdrenoValue_GetValue(&value);
+
+				if (!rvalue)
+				{
+					vm->State = ST_END;
+					break;
+				}
+
+				opSize += 4;
+					
+				if (!rvalue->Value.I4)
+					opSize += opcode->Value.I4;
 			}
 			break;
 
