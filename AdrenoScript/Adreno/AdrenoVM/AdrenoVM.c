@@ -191,7 +191,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			// Mathematical Operations
 		case OP_ADD:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -227,7 +227,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_SUB:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -263,7 +263,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_MUL:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -299,7 +299,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_DIV:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -335,7 +335,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_REM:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -371,7 +371,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_NEG:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -407,7 +407,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			// Bitwise Operations
 		case OP_OR:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -443,7 +443,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_AND:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -479,7 +479,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_XOR:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -515,7 +515,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_NOT:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -549,7 +549,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_SHL:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -585,7 +585,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_SHR:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -623,7 +623,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			// Logical Operations
 		case OP_LOR:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -659,7 +659,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_LAND:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -701,7 +701,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_LNOT:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -735,7 +735,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_EQ:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -771,7 +771,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_NE:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -807,7 +807,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_GT:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -843,7 +843,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_GE:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -879,7 +879,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_LT:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -915,7 +915,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_LE:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -964,7 +964,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_BRTRUE:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -988,7 +988,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			break;
 		case OP_BRFALSE:
 			{
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
@@ -1017,7 +1017,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				AdrenoReturnInfo *ri = (AdrenoReturnInfo *)AdrenoAlloc(sizeof(AdrenoReturnInfo));
 				AdrenoFunction *function;
 
-				if (!AdrenoStack_Pop(&ctx->Stack, &value) && !AdrenoStack_Pop(&ctx->Stack, &value2))
+				if (!AdrenoStack_Pop(&ctx->Stack, &value) || !AdrenoStack_Pop(&ctx->Stack, &value2))
 				{
 					vm->State = ST_END;
 					break;
