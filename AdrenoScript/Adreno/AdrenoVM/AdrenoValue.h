@@ -42,6 +42,7 @@ struct adrenoretvalue
 	AdrenoScript *Script;
 	AdrenoFunction *Function;
 	unsigned int InstructionPointer;
+	AdrenoValue *Locals;
 };
 
 struct adrenovalue
