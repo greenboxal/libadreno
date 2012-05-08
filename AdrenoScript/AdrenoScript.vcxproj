@@ -78,6 +78,8 @@
     <ClCompile Include="Adreno\AdrenoVM\AdrenoStack.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoValue.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoVM.c" />
+    <ClCompile Include="Adreno\AIL\ailc.c" />
+    <ClCompile Include="Adreno\AIL\engine.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +92,9 @@
     <ClInclude Include="Adreno\AdrenoVM\AdrenoStack.h" />
     <ClInclude Include="Adreno\AdrenoVM\AdrenoValue.h" />
     <ClInclude Include="Adreno\AdrenoVM\AdrenoVM.h" />
+    <ClInclude Include="Adreno\AIL\ailc.h" />
+    <ClInclude Include="Adreno\AIL\ailgrammar.h" />
+    <ClInclude Include="Adreno\AIL\engine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="input.txt" />

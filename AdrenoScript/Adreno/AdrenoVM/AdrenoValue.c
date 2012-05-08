@@ -50,4 +50,6 @@ void AdrenoValue_Free(AdrenoValue *value)
 	{
 		AdrenoFree(value);
 	}
+
+	value->Value.I4 = 0;
 }

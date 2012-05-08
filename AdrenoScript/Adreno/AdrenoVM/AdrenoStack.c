@@ -1,10 +1,14 @@
 #include "AdrenoVM.h"
 
+#include <memory.h>
+
 void AdrenoStack_Initialize(AdrenoStack *stack, int initialSize)
 {
 	stack->Stack = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue) * initialSize);
 	stack->StackPointer = initialSize;
 	stack->StackSize = initialSize;
+
+	memset(stack->Stack, 0, sizeof(AdrenoValue) * initialSize);
 }
 
 void AdrenoStack_Free(AdrenoStack *stack)
@@ -28,8 +32,10 @@ int AdrenoStack_Push(AdrenoStack *stack, AdrenoValue *value, int canExpand)
 	}
 	else if (stack->StackPointer <= 0 && canExpand)
 	{
+		int oldSize = stack->StackSize;
 		stack->StackSize += ADRENOSTACK_EXPANSION_FACTOR;
 		stack->Stack = (AdrenoValue *)AdrenoRealloc(stack->Stack, sizeof(AdrenoValue) * stack->StackSize);
+		memset(&stack->Stack[oldSize], 0, sizeof(AdrenoValue) * stack->StackSize - oldSize);
 	}
 
 	stack->Stack[--stack->StackPointer] = *value;
@@ -45,8 +51,10 @@ int AdrenoStack_Take(AdrenoStack *stack, AdrenoValue **value, int count, int can
 	}
 	else if (stack->StackPointer - count < 0 && canExpand)
 	{
+		int oldSize = stack->StackSize;
 		stack->StackSize += ((count + ADRENOSTACK_EXPANSION_FACTOR - 1) / ADRENOSTACK_EXPANSION_FACTOR) * ADRENOSTACK_EXPANSION_FACTOR;
 		stack->Stack = (AdrenoValue *)AdrenoRealloc(stack->Stack, sizeof(AdrenoValue) * stack->StackSize);
+		memset(&stack->Stack[oldSize], 0, sizeof(AdrenoValue) * stack->StackSize - oldSize);
 	}
 
 	stack->StackPointer -= count;

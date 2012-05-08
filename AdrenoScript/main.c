@@ -2,29 +2,76 @@
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
-
-#include <Windows.h>
+#include <sys/stat.h>
 
 #include "Adreno/AdrenoVM/AdrenoVM.h"
 #include "Adreno/AdrenoVM/AdrenoEmit.h"
+#include "Adreno/AIL/ailc.h"
 
-char *readFile(char *file)
+#include <Windows.h>
+
+wchar_t *LoadInputFile(char *FileName) 
 {
-	FILE *fp = fopen(file, "r");
-	char *buff = NULL;
-	int total = 0, read = 0;
+	FILE *Fin;
+	char *Buf1;
+	wchar_t *Buf2;
+	struct stat statbuf;
+	size_t BytesRead;
+	unsigned long i;
 
-	do
+	/* Sanity check. */
+	if ((FileName == NULL) || (*FileName == '\0')) return(NULL);
+
+	/* Open the file. */
+	Fin = fopen(FileName,"rb");
+	if (Fin == NULL) 
 	{
-		total += read;
-		buff = (char *)realloc(buff, total + 4096);
+		fprintf(stdout,"Could not open input file: %s\n",FileName);
+		return(NULL);
 	}
-	while ((read = fread(&buff[total], 1, 4096, fp)) > 0);
 
-	buff = (char *)realloc(buff, total + 1);
-	buff[total] = 0;
+	/* Get the size of the file. */
+	if (fstat(fileno(Fin),&statbuf) != 0) 
+	{
+		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
+		fclose(Fin);
+		return(NULL);
+	}
 
-	return buff;
+	/* Allocate memory for the input. */
+	Buf1 = (char *)malloc(statbuf.st_size + 1);
+	Buf2 = (wchar_t *)malloc(sizeof(wchar_t) * (statbuf.st_size + 1));
+	if ((Buf1 == NULL) || (Buf2 == NULL)) 
+	{
+		fprintf(stdout,"Not enough memory to load the file: %s\n",FileName);
+		fclose(Fin);
+		if (Buf1 != NULL) free(Buf1);
+		if (Buf2 != NULL) free(Buf2);
+		return(NULL);
+	}
+
+	/* Load the file into memory. */
+	BytesRead = fread(Buf1,1,statbuf.st_size,Fin);
+	Buf1[BytesRead] = '\0';
+
+	/* Close the file. */
+	fclose(Fin);
+
+	/* Exit if there was an error while reading the file. */
+	if (BytesRead != statbuf.st_size) 
+	{
+		fprintf(stdout,"Error while reading input file: %s\n",FileName);
+		free(Buf1);
+		free(Buf2);
+		return(NULL);
+	}
+
+	/* Convert from ASCII to Unicode. */
+	for (i = 0; i <= BytesRead; i++) 
+		Buf2[i] = Buf1[i];
+
+	free(Buf1);
+	return Buf2;
 }
 
 long double GetTime()
@@ -58,16 +105,17 @@ int main(int argc, char **argv)
 
 	AdrenoVM vm;
 	AdrenoContext ctx;
-	AdrenoScript script;
+	AdrenoScript *script;
 	AdrenoFunction *function;
+	AilCompiler c;
 	long double start;
 	int j;
 
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
-	AdrenoScript_Initialize(&script);
+	//AdrenoScript_Initialize(&script);
 
-	function = AdrenoEmit_CreateFunction(&script, L"<default>");
+	/*function = AdrenoEmit_CreateFunction(&script, L"<default>");
 	function->LocalsCount = 1;
 	{
 		AdrenoEmit_EmitOp(function, OP_ENTER);
@@ -81,21 +129,24 @@ int main(int argc, char **argv)
 		AdrenoEmit_EmitOp(function, OP_STLOC_0);
 		AdrenoEmit_EmitOp(function, OP_LDNULL);
 		AdrenoEmit_EmitOp(function, OP_RET);
-	}
+	}*/
+	AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
+	script = AilCompiler_Compile(&c);
+	AilCompiler_Free(&c);
 
-	AdrenoVM_AttachScript(&vm, &script);
-	AdrenoContext_AttachScript(&ctx, &script);
+	AdrenoVM_AttachScript(&vm, script);
+	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 100000; j++)
+	for (j = 0; j < 10; j++)
 	{
-		AdrenoContext_SetFunction(&ctx, function);
+		AdrenoContext_SetFunction(&ctx, (AdrenoFunction *)script->Functions.NodeHeap[0].Value.Value);
  		AdrenoVM_Run(&vm, &ctx);
 	}
 	start = GetTime() - start;
 	printf("Time: %Lf", start);
 
-	AdrenoScript_Free(&script);
+	AdrenoScript_Free(script);
 	AdrenoContext_Free(&ctx);
 	AdrenoVM_Free(&vm);
 

@@ -113,9 +113,9 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			{
 				int index;
 
-				if (op >= OP_STLOC_0 && op <= OP_STLOC_3)
+				if (op >= OP_LDLOC_0 && op <= OP_LDLOC_3)
 				{
-					index = op - OP_STLOC_0;
+					index = op - OP_LDLOC_0;
 				}
 				else
 				{

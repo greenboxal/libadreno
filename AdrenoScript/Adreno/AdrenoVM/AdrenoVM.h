@@ -65,6 +65,7 @@ typedef enum
     OP_NEWARR,
     OP_STELEM,
     OP_LDELEM,
+	OP_RMELEM,
     OP_LDLEN,
 
     // Mathematical Operations
