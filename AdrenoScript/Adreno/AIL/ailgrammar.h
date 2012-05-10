@@ -3234,11 +3234,13 @@ int GrammarRuleSymbolArray67[2+1] = {
   21,
   20,
   -1};
-int GrammarRuleSymbolArray68[1+1] = {
+int GrammarRuleSymbolArray68[2+1] = {
   11,
+  20,
   -1};
-int GrammarRuleSymbolArray69[1+1] = {
+int GrammarRuleSymbolArray69[2+1] = {
   10,
+  20,
   -1};
 int GrammarRuleSymbolArray70[2+1] = {
   33,
@@ -3689,133 +3691,11 @@ struct ActionStruct GrammarLalrActionArray4[62+1] = {
   {66,2,53},
   {67,2,53},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray5[62+1] = {
-  {0,2,69},
-  {3,2,69},
-  {4,2,69},
-  {7,2,69},
-  {8,2,69},
-  {9,2,69},
-  {10,2,69},
-  {11,2,69},
-  {12,2,69},
-  {14,2,69},
-  {15,2,69},
-  {16,2,69},
-  {17,2,69},
-  {18,2,69},
-  {19,2,69},
-  {20,2,69},
-  {21,2,69},
-  {22,2,69},
-  {23,2,69},
-  {24,2,69},
-  {25,2,69},
-  {26,2,69},
-  {27,2,69},
-  {28,2,69},
-  {29,2,69},
-  {30,2,69},
-  {31,2,69},
-  {32,2,69},
-  {33,2,69},
-  {34,2,69},
-  {35,2,69},
-  {36,2,69},
-  {37,2,69},
-  {38,2,69},
-  {39,2,69},
-  {40,2,69},
-  {41,2,69},
-  {42,2,69},
-  {43,2,69},
-  {44,2,69},
-  {45,2,69},
-  {46,2,69},
-  {47,2,69},
-  {48,2,69},
-  {49,2,69},
-  {50,2,69},
-  {51,2,69},
-  {52,2,69},
-  {53,2,69},
-  {54,2,69},
-  {55,2,69},
-  {56,2,69},
-  {57,2,69},
-  {58,2,69},
-  {59,2,69},
-  {60,2,69},
-  {61,2,69},
-  {62,2,69},
-  {63,2,69},
-  {64,2,69},
-  {66,2,69},
-  {67,2,69},
+struct ActionStruct GrammarLalrActionArray5[1+1] = {
+  {20,1,130},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray6[62+1] = {
-  {0,2,68},
-  {3,2,68},
-  {4,2,68},
-  {7,2,68},
-  {8,2,68},
-  {9,2,68},
-  {10,2,68},
-  {11,2,68},
-  {12,2,68},
-  {14,2,68},
-  {15,2,68},
-  {16,2,68},
-  {17,2,68},
-  {18,2,68},
-  {19,2,68},
-  {20,2,68},
-  {21,2,68},
-  {22,2,68},
-  {23,2,68},
-  {24,2,68},
-  {25,2,68},
-  {26,2,68},
-  {27,2,68},
-  {28,2,68},
-  {29,2,68},
-  {30,2,68},
-  {31,2,68},
-  {32,2,68},
-  {33,2,68},
-  {34,2,68},
-  {35,2,68},
-  {36,2,68},
-  {37,2,68},
-  {38,2,68},
-  {39,2,68},
-  {40,2,68},
-  {41,2,68},
-  {42,2,68},
-  {43,2,68},
-  {44,2,68},
-  {45,2,68},
-  {46,2,68},
-  {47,2,68},
-  {48,2,68},
-  {49,2,68},
-  {50,2,68},
-  {51,2,68},
-  {52,2,68},
-  {53,2,68},
-  {54,2,68},
-  {55,2,68},
-  {56,2,68},
-  {57,2,68},
-  {58,2,68},
-  {59,2,68},
-  {60,2,68},
-  {61,2,68},
-  {62,2,68},
-  {63,2,68},
-  {64,2,68},
-  {66,2,68},
-  {67,2,68},
+struct ActionStruct GrammarLalrActionArray6[1+1] = {
+  {20,1,131},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray7[62+1] = {
   {0,2,71},
@@ -4074,7 +3954,7 @@ struct ActionStruct GrammarLalrActionArray10[62+1] = {
   {67,2,61},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray11[1+1] = {
-  {20,1,130},
+  {20,1,132},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray12[62+1] = {
   {0,2,64},
@@ -4205,10 +4085,10 @@ struct ActionStruct GrammarLalrActionArray13[62+1] = {
   {67,2,63},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray14[1+1] = {
-  {5,1,131},
+  {5,1,133},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray15[1+1] = {
-  {20,1,132},
+  {20,1,134},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray16[62+1] = {
   {0,2,59},
@@ -4531,10 +4411,10 @@ struct ActionStruct GrammarLalrActionArray20[62+1] = {
   {67,2,33},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray21[1+1] = {
-  {13,1,133},
+  {13,1,135},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray22[1+1] = {
-  {13,1,134},
+  {13,1,136},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray23[62+1] = {
   {0,2,38},
@@ -4793,7 +4673,7 @@ struct ActionStruct GrammarLalrActionArray26[62+1] = {
   {67,2,43},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray27[1+1] = {
-  {65,1,135},
+  {65,1,137},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray28[62+1] = {
   {0,2,45},
@@ -5116,7 +4996,7 @@ struct ActionStruct GrammarLalrActionArray32[62+1] = {
   {67,2,28},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray33[1+1] = {
-  {13,1,136},
+  {13,1,138},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray34[62+1] = {
   {0,2,35},
@@ -5183,7 +5063,7 @@ struct ActionStruct GrammarLalrActionArray34[62+1] = {
   {67,2,35},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray35[1+1] = {
-  {65,1,137},
+  {65,1,139},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray36[62+1] = {
   {0,2,66},
@@ -6589,7 +6469,7 @@ struct ActionStruct GrammarLalrActionArray57[62+1] = {
   {67,2,23},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray58[1+1] = {
-  {13,1,138},
+  {13,1,140},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray59[62+1] = {
   {0,2,47},
@@ -9890,7 +9770,7 @@ struct ActionStruct GrammarLalrActionArray109[115+1] = {
   {110,3,102},
   {111,3,103},
   {112,3,104},
-  {113,3,139},
+  {113,3,141},
   {115,3,107},
   {116,3,108},
   {120,3,112},
@@ -10406,7 +10286,7 @@ struct ActionStruct GrammarLalrActionArray117[127+1] = {
   {123,3,115},
   {124,3,116},
   {125,3,117},
-  {126,3,140},
+  {126,3,142},
   {127,3,119},
   {129,3,120},
   {130,3,121},
@@ -11124,11 +11004,139 @@ struct ActionStruct GrammarLalrActionArray129[62+1] = {
   {66,2,17},
   {67,2,17},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray130[2+1] = {
-  {6,1,141},
-  {71,3,142},
+struct ActionStruct GrammarLalrActionArray130[62+1] = {
+  {0,2,69},
+  {3,2,69},
+  {4,2,69},
+  {7,2,69},
+  {8,2,69},
+  {9,2,69},
+  {10,2,69},
+  {11,2,69},
+  {12,2,69},
+  {14,2,69},
+  {15,2,69},
+  {16,2,69},
+  {17,2,69},
+  {18,2,69},
+  {19,2,69},
+  {20,2,69},
+  {21,2,69},
+  {22,2,69},
+  {23,2,69},
+  {24,2,69},
+  {25,2,69},
+  {26,2,69},
+  {27,2,69},
+  {28,2,69},
+  {29,2,69},
+  {30,2,69},
+  {31,2,69},
+  {32,2,69},
+  {33,2,69},
+  {34,2,69},
+  {35,2,69},
+  {36,2,69},
+  {37,2,69},
+  {38,2,69},
+  {39,2,69},
+  {40,2,69},
+  {41,2,69},
+  {42,2,69},
+  {43,2,69},
+  {44,2,69},
+  {45,2,69},
+  {46,2,69},
+  {47,2,69},
+  {48,2,69},
+  {49,2,69},
+  {50,2,69},
+  {51,2,69},
+  {52,2,69},
+  {53,2,69},
+  {54,2,69},
+  {55,2,69},
+  {56,2,69},
+  {57,2,69},
+  {58,2,69},
+  {59,2,69},
+  {60,2,69},
+  {61,2,69},
+  {62,2,69},
+  {63,2,69},
+  {64,2,69},
+  {66,2,69},
+  {67,2,69},
   {-1,-1,-1}};
 struct ActionStruct GrammarLalrActionArray131[62+1] = {
+  {0,2,68},
+  {3,2,68},
+  {4,2,68},
+  {7,2,68},
+  {8,2,68},
+  {9,2,68},
+  {10,2,68},
+  {11,2,68},
+  {12,2,68},
+  {14,2,68},
+  {15,2,68},
+  {16,2,68},
+  {17,2,68},
+  {18,2,68},
+  {19,2,68},
+  {20,2,68},
+  {21,2,68},
+  {22,2,68},
+  {23,2,68},
+  {24,2,68},
+  {25,2,68},
+  {26,2,68},
+  {27,2,68},
+  {28,2,68},
+  {29,2,68},
+  {30,2,68},
+  {31,2,68},
+  {32,2,68},
+  {33,2,68},
+  {34,2,68},
+  {35,2,68},
+  {36,2,68},
+  {37,2,68},
+  {38,2,68},
+  {39,2,68},
+  {40,2,68},
+  {41,2,68},
+  {42,2,68},
+  {43,2,68},
+  {44,2,68},
+  {45,2,68},
+  {46,2,68},
+  {47,2,68},
+  {48,2,68},
+  {49,2,68},
+  {50,2,68},
+  {51,2,68},
+  {52,2,68},
+  {53,2,68},
+  {54,2,68},
+  {55,2,68},
+  {56,2,68},
+  {57,2,68},
+  {58,2,68},
+  {59,2,68},
+  {60,2,68},
+  {61,2,68},
+  {62,2,68},
+  {63,2,68},
+  {64,2,68},
+  {66,2,68},
+  {67,2,68},
+  {-1,-1,-1}};
+struct ActionStruct GrammarLalrActionArray132[2+1] = {
+  {6,1,143},
+  {71,3,144},
+  {-1,-1,-1}};
+struct ActionStruct GrammarLalrActionArray133[62+1] = {
   {0,2,12},
   {3,2,12},
   {4,2,12},
@@ -11192,7 +11200,7 @@ struct ActionStruct GrammarLalrActionArray131[62+1] = {
   {66,2,12},
   {67,2,12},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray132[62+1] = {
+struct ActionStruct GrammarLalrActionArray134[62+1] = {
   {0,2,67},
   {3,2,67},
   {4,2,67},
@@ -11256,7 +11264,7 @@ struct ActionStruct GrammarLalrActionArray132[62+1] = {
   {66,2,67},
   {67,2,67},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray133[62+1] = {
+struct ActionStruct GrammarLalrActionArray135[62+1] = {
   {0,2,34},
   {3,2,34},
   {4,2,34},
@@ -11320,7 +11328,7 @@ struct ActionStruct GrammarLalrActionArray133[62+1] = {
   {66,2,34},
   {67,2,34},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray134[62+1] = {
+struct ActionStruct GrammarLalrActionArray136[62+1] = {
   {0,2,36},
   {3,2,36},
   {4,2,36},
@@ -11384,7 +11392,7 @@ struct ActionStruct GrammarLalrActionArray134[62+1] = {
   {66,2,36},
   {67,2,36},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray135[62+1] = {
+struct ActionStruct GrammarLalrActionArray137[62+1] = {
   {0,2,70},
   {3,2,70},
   {4,2,70},
@@ -11448,7 +11456,7 @@ struct ActionStruct GrammarLalrActionArray135[62+1] = {
   {66,2,70},
   {67,2,70},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray136[62+1] = {
+struct ActionStruct GrammarLalrActionArray138[62+1] = {
   {0,2,29},
   {3,2,29},
   {4,2,29},
@@ -11512,7 +11520,7 @@ struct ActionStruct GrammarLalrActionArray136[62+1] = {
   {66,2,29},
   {67,2,29},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray137[62+1] = {
+struct ActionStruct GrammarLalrActionArray139[62+1] = {
   {0,2,40},
   {3,2,40},
   {4,2,40},
@@ -11576,7 +11584,7 @@ struct ActionStruct GrammarLalrActionArray137[62+1] = {
   {66,2,40},
   {67,2,40},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray138[62+1] = {
+struct ActionStruct GrammarLalrActionArray140[62+1] = {
   {0,2,24},
   {3,2,24},
   {4,2,24},
@@ -11640,7 +11648,7 @@ struct ActionStruct GrammarLalrActionArray138[62+1] = {
   {66,2,24},
   {67,2,24},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray139[62+1] = {
+struct ActionStruct GrammarLalrActionArray141[62+1] = {
   {0,2,10},
   {3,2,10},
   {4,2,10},
@@ -11704,13 +11712,13 @@ struct ActionStruct GrammarLalrActionArray139[62+1] = {
   {66,2,10},
   {67,2,10},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray140[1+1] = {
+struct ActionStruct GrammarLalrActionArray142[1+1] = {
   {0,2,2},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray141[124+1] = {
+struct ActionStruct GrammarLalrActionArray143[124+1] = {
   {3,1,1},
   {4,1,2},
-  {7,1,143},
+  {7,1,145},
   {8,1,3},
   {9,1,4},
   {10,1,5},
@@ -11822,8 +11830,8 @@ struct ActionStruct GrammarLalrActionArray141[124+1] = {
   {122,3,114},
   {123,3,115},
   {124,3,116},
-  {127,3,144},
-  {128,3,145},
+  {127,3,146},
+  {128,3,147},
   {129,3,120},
   {130,3,121},
   {131,3,122},
@@ -11833,7 +11841,7 @@ struct ActionStruct GrammarLalrActionArray141[124+1] = {
   {135,3,126},
   {136,3,127},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray142[61+1] = {
+struct ActionStruct GrammarLalrActionArray144[61+1] = {
   {0,2,5},
   {3,2,5},
   {4,2,5},
@@ -11896,7 +11904,7 @@ struct ActionStruct GrammarLalrActionArray142[61+1] = {
   {66,2,5},
   {67,2,5},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray143[61+1] = {
+struct ActionStruct GrammarLalrActionArray145[61+1] = {
   {0,2,13},
   {3,2,13},
   {4,2,13},
@@ -11959,7 +11967,7 @@ struct ActionStruct GrammarLalrActionArray143[61+1] = {
   {66,2,13},
   {67,2,13},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray144[124+1] = {
+struct ActionStruct GrammarLalrActionArray146[124+1] = {
   {3,1,1},
   {4,1,2},
   {8,1,3},
@@ -12073,8 +12081,8 @@ struct ActionStruct GrammarLalrActionArray144[124+1] = {
   {122,3,114},
   {123,3,115},
   {124,3,116},
-  {127,3,144},
-  {128,3,146},
+  {127,3,146},
+  {128,3,148},
   {129,3,120},
   {130,3,121},
   {131,3,122},
@@ -12085,13 +12093,13 @@ struct ActionStruct GrammarLalrActionArray144[124+1] = {
   {136,3,127},
   {7,2,6},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray145[1+1] = {
-  {7,1,147},
+struct ActionStruct GrammarLalrActionArray147[1+1] = {
+  {7,1,149},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray146[1+1] = {
+struct ActionStruct GrammarLalrActionArray148[1+1] = {
   {7,2,7},
   {-1,-1,-1}};
-struct ActionStruct GrammarLalrActionArray147[61+1] = {
+struct ActionStruct GrammarLalrActionArray149[61+1] = {
   {0,2,14},
   {3,2,14},
   {4,2,14},
@@ -12581,8 +12589,8 @@ struct RuleStruct GrammarRuleArray[131] = {
   /*  65 */   {107,1,GrammarRuleSymbolArray65,L"<LtOp> ::= lt"},
   /*  66 */   {103,1,GrammarRuleSymbolArray66,L"<LeOp> ::= le"},
   /*  67 */   {81,2,GrammarRuleSymbolArray67,L"<JumpOp> ::= 'jump ' IdentifierName"},
-  /*  68 */   {73,1,GrammarRuleSymbolArray68,L"<BrtrueOp> ::= brtrue"},
-  /*  69 */   {72,1,GrammarRuleSymbolArray69,L"<BrfalseOp> ::= brfalse"},
+  /*  68 */   {73,2,GrammarRuleSymbolArray68,L"<BrtrueOp> ::= brtrue IdentifierName"},
+  /*  69 */   {72,2,GrammarRuleSymbolArray69,L"<BrfalseOp> ::= brfalse IdentifierName"},
   /*  70 */   {94,2,GrammarRuleSymbolArray70,L"<LdfuncOp> ::= ldfunc StringLiteralTerminalWithQuote"},
   /*  71 */   {74,1,GrammarRuleSymbolArray71,L"<CallOp> ::= call"},
   /*  72 */   {76,1,GrammarRuleSymbolArray72,L"<EnterOp> ::= enter"},
@@ -12659,14 +12667,14 @@ struct LalrStateStruct {
   struct ActionStruct *Actions;
   };
 */
-struct LalrStateStruct GrammarLalrStateArray[148+1] = {
+struct LalrStateStruct GrammarLalrStateArray[150+1] = {
   /* 0 */   {127,GrammarLalrActionArray0},
   /* 1 */   {1,GrammarLalrActionArray1},
   /* 2 */   {1,GrammarLalrActionArray2},
   /* 3 */   {62,GrammarLalrActionArray3},
   /* 4 */   {62,GrammarLalrActionArray4},
-  /* 5 */   {62,GrammarLalrActionArray5},
-  /* 6 */   {62,GrammarLalrActionArray6},
+  /* 5 */   {1,GrammarLalrActionArray5},
+  /* 6 */   {1,GrammarLalrActionArray6},
   /* 7 */   {62,GrammarLalrActionArray7},
   /* 8 */   {62,GrammarLalrActionArray8},
   /* 9 */   {62,GrammarLalrActionArray9},
@@ -12790,9 +12798,9 @@ struct LalrStateStruct GrammarLalrStateArray[148+1] = {
   /* 127 */   {62,GrammarLalrActionArray127},
   /* 128 */   {62,GrammarLalrActionArray128},
   /* 129 */   {62,GrammarLalrActionArray129},
-  /* 130 */   {2,GrammarLalrActionArray130},
+  /* 130 */   {62,GrammarLalrActionArray130},
   /* 131 */   {62,GrammarLalrActionArray131},
-  /* 132 */   {62,GrammarLalrActionArray132},
+  /* 132 */   {2,GrammarLalrActionArray132},
   /* 133 */   {62,GrammarLalrActionArray133},
   /* 134 */   {62,GrammarLalrActionArray134},
   /* 135 */   {62,GrammarLalrActionArray135},
@@ -12800,14 +12808,16 @@ struct LalrStateStruct GrammarLalrStateArray[148+1] = {
   /* 137 */   {62,GrammarLalrActionArray137},
   /* 138 */   {62,GrammarLalrActionArray138},
   /* 139 */   {62,GrammarLalrActionArray139},
-  /* 140 */   {1,GrammarLalrActionArray140},
-  /* 141 */   {124,GrammarLalrActionArray141},
-  /* 142 */   {61,GrammarLalrActionArray142},
-  /* 143 */   {61,GrammarLalrActionArray143},
-  /* 144 */   {124,GrammarLalrActionArray144},
-  /* 145 */   {1,GrammarLalrActionArray145},
-  /* 146 */   {1,GrammarLalrActionArray146},
-  /* 147 */   {61,GrammarLalrActionArray147},
+  /* 140 */   {62,GrammarLalrActionArray140},
+  /* 141 */   {62,GrammarLalrActionArray141},
+  /* 142 */   {1,GrammarLalrActionArray142},
+  /* 143 */   {124,GrammarLalrActionArray143},
+  /* 144 */   {61,GrammarLalrActionArray144},
+  /* 145 */   {61,GrammarLalrActionArray145},
+  /* 146 */   {124,GrammarLalrActionArray146},
+  /* 147 */   {1,GrammarLalrActionArray147},
+  /* 148 */   {1,GrammarLalrActionArray148},
+  /* 149 */   {61,GrammarLalrActionArray149},
   {-1,NULL}};
 
 
@@ -12839,6 +12849,6 @@ struct GrammarStruct Grammar = {
   /* RuleArray */          GrammarRuleArray,
   /* DfaStateCount */      183,
   /* DfaArray */           GrammarDfaStateArray,
-  /* LalrStateCount */     148,
+  /* LalrStateCount */     150,
   /* LalrArray */          GrammarLalrStateArray
   };

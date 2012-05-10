@@ -354,3 +354,23 @@ unsigned int AdrenoHashtable_Hash_Fnv(void *key, unsigned int size)
 
 	return (int)hval;
 }
+
+unsigned int AdrenoHashtable_Len_String(void *key)
+{
+	char *str = (char *)key;
+	int size = 0;
+
+	while (str[size++]) ;
+
+	return size;
+}
+
+unsigned int AdrenoHashtable_Len_WString(void *key)
+{
+	wchar_t *str = (wchar_t *)key;
+	int size = 0;
+
+	while (str[size++]) ;
+
+	return size * sizeof(wchar_t);
+}

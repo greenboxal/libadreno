@@ -22,11 +22,14 @@ AdrenoScript *AilCompiler_Compile(AilCompiler *compiler)
 	int result;
 	struct TokenStruct *token;
 	
+	result = Parse(compiler->data, wcslen(compiler->data), 1, 0, &token);
+
+	if (result != PARSEACCEPT)
+		return NULL;
+
 	compiler->currentPrefix = P_NONE;
 	compiler->script = (AdrenoScript *)AdrenoAlloc(sizeof(AdrenoScript));
 	AdrenoScript_Initialize(compiler->script);
-
-	result = Parse(compiler->data, wcslen(compiler->data), 1, 0, &token);
 
 	RuleJumpTable[token->ReductionRule](token, compiler);
 
@@ -106,6 +109,9 @@ void Rule_FunctionDeclaration_function_IdentifierName(struct TokenStruct *Token,
 	compiler->currentFunction = AdrenoEmit_CreateFunction(compiler->script, Token->Tokens[1]->Data);
 	
 	RuleTemplate(Token,compiler);
+	
+	AdrenoEmit_ResolveJumps(compiler->currentFunction);
+	compiler->currentFunction = NULL;
 };
 
 
@@ -754,7 +760,7 @@ void Rule_LeOp_le(struct TokenStruct *Token, AilCompiler *compiler) {
 
 /* <JumpOp> ::= 'jump ' IdentifierName */
 void Rule_JumpOp_jump_IdentifierName(struct TokenStruct *Token, AilCompiler *compiler) {
-	AdrenoEmit_EmitJump(compiler->currentFunction, Token->Tokens[1]->Data);
+	AdrenoEmit_EmitJump(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_JUMP), Token->Tokens[1]->Data);
 	compiler->currentPrefix = P_NONE;
 
 	RuleTemplate(Token,compiler);
@@ -765,7 +771,7 @@ void Rule_JumpOp_jump_IdentifierName(struct TokenStruct *Token, AilCompiler *com
 
 /* <BrtrueOp> ::= brtrue */
 void Rule_BrtrueOp_brtrue(struct TokenStruct *Token, AilCompiler *compiler) {
-	AdrenoEmit_EmitOp(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_BRTRUE));
+	AdrenoEmit_EmitJump(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_BRTRUE), Token->Tokens[1]->Data);
 	compiler->currentPrefix = P_NONE;
 
 	RuleTemplate(Token,compiler);
@@ -776,7 +782,7 @@ void Rule_BrtrueOp_brtrue(struct TokenStruct *Token, AilCompiler *compiler) {
 
 /* <BrfalseOp> ::= brfalse */
 void Rule_BrfalseOp_brfalse(struct TokenStruct *Token, AilCompiler *compiler) {
-	AdrenoEmit_EmitOp(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_BRFALSE));
+	AdrenoEmit_EmitJump(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_BRFALSE), Token->Tokens[1]->Data);
 	compiler->currentPrefix = P_NONE;
 
 	RuleTemplate(Token,compiler);

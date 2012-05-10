@@ -16,18 +16,18 @@ unsigned int AdrenoEmit_SetLabel(AdrenoFunction *fnc, wchar_t *name)
 	return e->Labels.NodeCount;
 }
 
-void AdrenoEmit_EmitJump(AdrenoFunction *function, wchar_t *name)
+void AdrenoEmit_EmitJump(AdrenoFunction *function, AdrenoOpcodes op, wchar_t *name)
 {
 	EmitFunction *e = (EmitFunction *)function;
 	
 	AdrenoHashtable_Set(&e->RLabels, (void *)(e->Function.BytecodeSize + 1), name);
-	AdrenoEmit_EmitOp2_I4(function, OP_JUMP, 0);
+	AdrenoEmit_EmitOp2_I4(function, op, 0);
 }
 
 int AdrenoEmit_ResolveJumps(AdrenoFunction *function)
 {
 	EmitFunction *e = (EmitFunction *)function;
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < e->RLabels.NodeCount; i++)
 	{
@@ -80,7 +80,7 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, wchar_t *name)
 	f->Function.LocalsCount = 0;
 	f->Function.Owner = script;
 
-	AdrenoHashtable_Init(&f->Labels, AdrenoHashtable_Hash_Fnv, (AdrenoHashtable_LenFunction)wcslen);
+	AdrenoHashtable_Init(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
 	AdrenoHashtable_Init(&f->RLabels, NULL, NULL);
 
 	AdrenoHashtable_Set(&script->Functions, script->Strings.NodeHeap[f->Function.NameIndex].Value.Value, f);

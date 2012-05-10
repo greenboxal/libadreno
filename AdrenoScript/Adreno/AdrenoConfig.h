@@ -2,7 +2,7 @@
 #define ADRENOCONFIG_H
 
 // Memory
-#define USE_MALLOC 1
+#define USE_DEBUG_MALLOC 1
 
 // Stack
 #define ADRENOSTACK_DEFAULT_STACK 32

@@ -53,18 +53,22 @@ extern "C"
 	} AdrenoHashtable;
 
 	// Hashtable functions
-	void AdrenoHashtable_Init(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len);
-	void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable);
+	extern void AdrenoHashtable_Init(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len);
+	extern void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable);
 
-	void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value);
-	int AdrenoHashtable_Get(AdrenoHashtable *hashtable, void *key, void **value);
-	void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key);
+	extern void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value);
+	extern int AdrenoHashtable_Get(AdrenoHashtable *hashtable, void *key, void **value);
+	extern void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key);
 
-	int AdrenoHashtable_Count(AdrenoHashtable *hashtable);
-	void AdrenoHashtable_Clear(AdrenoHashtable *hashtable);
+	extern int AdrenoHashtable_Count(AdrenoHashtable *hashtable);
+	extern void AdrenoHashtable_Clear(AdrenoHashtable *hashtable);
 
 	// General hash functions
-	unsigned int AdrenoHashtable_Hash_Fnv(void *key, unsigned int size);
+	extern unsigned int AdrenoHashtable_Hash_Fnv(void *key, unsigned int size);
+
+	// General len functions
+	extern unsigned int AdrenoHashtable_Len_String(void *key);
+	extern unsigned int AdrenoHashtable_Len_WString(void *key);
 
 #ifdef __cplusplus
 }

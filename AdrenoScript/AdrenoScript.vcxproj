@@ -72,6 +72,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Adreno\AdrenoMemory.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoEmit.c" />
     <ClCompile Include="Adreno\AdrenoHelpers\AdrenoHashtable.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoScript.c" />

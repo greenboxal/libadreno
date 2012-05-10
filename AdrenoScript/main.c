@@ -110,6 +110,8 @@ int main(int argc, char **argv)
 	long double start;
 	int j;
 
+	malloc_init();
+
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
 
@@ -120,17 +122,19 @@ int main(int argc, char **argv)
 	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 100000; j++)
+	for (j = 0; j < 1; j++)
 	{
 		AdrenoContext_SetFunction(&ctx, (AdrenoFunction *)script->Functions.NodeHeap[0].Value.Value);
  		AdrenoVM_Run(&vm, &ctx);
 	}
 	start = GetTime() - start;
-	printf("Time: %Lf", start);
+	printf("Time: %Lf\n", start);
 
 	AdrenoScript_Free(script);
 	AdrenoContext_Free(&ctx);
 	AdrenoVM_Free(&vm);
+
+	malloc_final();
 
 	getchar();
 	return 0;

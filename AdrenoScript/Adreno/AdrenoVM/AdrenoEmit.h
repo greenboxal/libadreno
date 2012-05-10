@@ -15,7 +15,7 @@ extern "C"
 	extern void AdrenoEmit_EmitOp2_I1(AdrenoFunction *function, AdrenoOpcodes op, unsigned char val);
 	extern void AdrenoEmit_EmitOp2_I2(AdrenoFunction *function, AdrenoOpcodes op, unsigned short val);
 	extern void AdrenoEmit_EmitOp2_I4(AdrenoFunction *function, AdrenoOpcodes op, unsigned int val);
-	extern void AdrenoEmit_EmitJump(AdrenoFunction *function, wchar_t *name);
+	extern void AdrenoEmit_EmitJump(AdrenoFunction *function, AdrenoOpcodes op, wchar_t *name);
 	extern unsigned int AdrenoEmit_SetLabel(AdrenoFunction *fnc, wchar_t *name);
 	extern int AdrenoEmit_ResolveJumps(AdrenoFunction *function);
 

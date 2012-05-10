@@ -2,7 +2,7 @@
 
 void AdrenoScript_Initialize(AdrenoScript *script)
 {
-	AdrenoHashtable_Init(&script->Functions, AdrenoHashtable_Hash_Fnv, (AdrenoHashtable_LenFunction)wcslen);
+	AdrenoHashtable_Init(&script->Functions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
 	AdrenoHashtable_Init(&script->Strings, NULL, NULL);
 
 	script->Functions.ExpansionFactor = 2;
