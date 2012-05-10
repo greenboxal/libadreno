@@ -45,16 +45,25 @@ int AdrenoEmit_ResolveJumps(AdrenoFunction *function)
 	return 1;
 }
 
-unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string)
+unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string, unsigned int len)
 {
 	unsigned int i;
+	AdrenoString *value;
 
 	for (i = 0; i < script->Strings.NodeCount; i++)
-		if (wcscmp((wchar_t *)script->Strings.NodeHeap[i].Value.Value, string) == 0)
+		if (wcscmp(((AdrenoString *)script->Strings.NodeHeap[i].Value.Value)->Value, string) == 0)
 			return i;
 	
 	i = script->Strings.NodeCount;
-	AdrenoHashtable_Set(&script->Strings, (void *)i, string);
+
+	value = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
+	value->Value = (wchar_t *)AdrenoAlloc(len * sizeof(wchar_t) + 2);
+	memcpy(value->Value, string, len * sizeof(wchar_t));
+	value->Value[len] = 0;
+	value->Size = len;
+	value->Flags = SF_NONE;
+
+	AdrenoHashtable_Set(&script->Strings, (void *)i, value);
 
 	return i;
 }
@@ -64,7 +73,7 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, wchar_t *name)
 	EmitFunction *f = (EmitFunction *)AdrenoAlloc(sizeof(EmitFunction));
 
 	f->Function.Index = script->Functions.NodeCount;
-	f->Function.NameIndex = AdrenoEmit_AddString(script, name);
+	f->Function.NameIndex = AdrenoEmit_AddString(script, name, wcslen(name));
 	f->Function.Bytecode = NULL;
 	f->Function.BytecodeSize = 0;
 	f->Function.ArgumentCount = 0;

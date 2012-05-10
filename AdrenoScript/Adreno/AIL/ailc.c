@@ -457,7 +457,7 @@ void Rule_Ldci41Op_ldcDoti4Dot1(struct TokenStruct *Token, AilCompiler *compiler
 void Rule_LdstrOp_ldstr_StringLiteralTerminalWithQuote(struct TokenStruct *Token, AilCompiler *compiler) {
 	int len = wcslen(Token->Tokens[1]->Data);
 	Token->Tokens[1]->Data[len - 1] = 0;
-	AdrenoEmit_EmitOp2_I4(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_LDSTR), AdrenoEmit_AddString(compiler->script, &Token->Tokens[1]->Data[1]));
+	AdrenoEmit_EmitOp2_I4(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_LDSTR), AdrenoEmit_AddString(compiler->script, &Token->Tokens[1]->Data[1], len - 2));
 	compiler->currentPrefix = P_NONE;
 
 	RuleTemplate(Token,compiler);
@@ -789,7 +789,7 @@ void Rule_BrfalseOp_brfalse(struct TokenStruct *Token, AilCompiler *compiler) {
 void Rule_LdfuncOp_ldfunc_StringLiteralTerminalWithQuote(struct TokenStruct *Token, AilCompiler *compiler) {
 	int len = wcslen(Token->Tokens[1]->Data);
 	Token->Tokens[1]->Data[len - 1] = 0;
-	AdrenoEmit_EmitOp2_I4(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_LDFUNC), AdrenoEmit_AddString(compiler->script, &Token->Tokens[1]->Data[1]));
+	AdrenoEmit_EmitOp2_I4(compiler->currentFunction, (AdrenoOpcodes)(compiler->currentPrefix | OP_LDFUNC), AdrenoEmit_AddString(compiler->script, &Token->Tokens[1]->Data[1], len - 2));
 	compiler->currentPrefix = P_NONE;
 
 	RuleTemplate(Token,compiler);

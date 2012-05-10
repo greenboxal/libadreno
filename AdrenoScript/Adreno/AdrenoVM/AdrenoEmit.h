@@ -8,7 +8,7 @@ extern "C"
 {
 #endif
 
-	extern unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string);
+	extern unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string, unsigned int len);
 	extern AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, wchar_t *name);
 	extern void AdrenoEmit_Expand(AdrenoFunction *function, int size);
 	extern void AdrenoEmit_EmitOp(AdrenoFunction *function, AdrenoOpcodes op);

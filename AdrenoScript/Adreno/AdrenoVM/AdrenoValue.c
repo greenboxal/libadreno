@@ -10,9 +10,9 @@ AdrenoValue *AdrenoValue_GetValue(AdrenoValue *ref)
 
 void AdrenoValue_CreateReference(AdrenoValue *ref, AdrenoValue *value)
 {
-	ref->GCFlags = GC_NONE;
+	value->ReferenceCounter++;
+
 	ref->Type = AT_REFERENCE;
-	ref->ReferenceCounter = 1;
 	ref->Value.Reference = value;
 }
 
@@ -33,7 +33,10 @@ void AdrenoValue_Free(AdrenoValue *value)
 	{
 		if (value->Type == AT_STRING)
 		{
-			AdrenoFree(value->Value.String.Value);
+			if (value->Value.String->Flags & SF_FREE)
+				AdrenoFree(value->Value.String->Value);
+
+			AdrenoFree(value->Value.String);
 		}
 		else if (value->Type == AT_ARRAY)
 		{
@@ -46,10 +49,10 @@ void AdrenoValue_Free(AdrenoValue *value)
 		}
 	}
 
+	value->Value.I4 = 0;
+
 	if (value->GCFlags & GC_FREE)
 	{
 		AdrenoFree(value);
 	}
-
-	value->Value.I4 = 0;
 }

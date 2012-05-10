@@ -1,7 +1,7 @@
 #ifndef ADRENOVM_H
 #define ADRENOVM_H
 
-#include "AdrenoHashtable.h"
+#include "../AdrenoHelpers/AdrenoHashtable.h"
 
 typedef struct adrenovm AdrenoVM;
 typedef struct adrenocontext AdrenoContext;
@@ -14,8 +14,8 @@ typedef struct adrenoretvalue AdrenoReturnInfo;
 typedef struct adrenovalue AdrenoValue;
 typedef struct adrenostack AdrenoStack;
 
-#include "AdrenoConfig.h"
-#include "AdrenoMemory.h"
+#include "../AdrenoConfig.h"
+#include "../AdrenoMemory.h"
 #include "AdrenoScript.h"
 #include "AdrenoValue.h"
 #include "AdrenoStack.h"
@@ -117,6 +117,19 @@ typedef enum
     ST_END,
 } AdrenoVMState;
 
+typedef enum
+{
+	ERR_NONE,
+	ERR_DIVISON_BY_0,
+	ERR_BAD_OP,
+	ERR_STACK_OVERFLOW,
+	ERR_STACK_UNDERFLOW,
+	ERR_NULL_REFERENCE,
+	ERR_OUT_OF_BOUNDS,
+	ERR_FOREING_CAST,
+	ERR_INVALID_OPERAND,
+} AdrenoVMError;
+
 struct adrenoop
 {
 	union
@@ -141,8 +154,8 @@ struct adrenocontext
 struct adrenovm
 {
 	AdrenoVMState State;
+	AdrenoVMError Error;
 
-	AdrenoHashtable LoadedScripts;
 	AdrenoHashtable GlobalFunctions;
 };
 
@@ -165,5 +178,8 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
+
+#define ADRENOVALUE_IS_NULL_VALUE(value) (value.Type == AT_NULL)
+#define ADRENOVALUE_IS_NULL_VALUE_PTR(value) (value == NULL || value->Type == AT_NULL)
 
 #endif

@@ -1,5 +1,5 @@
 #include "AdrenoHashtable.h"
-#include "AdrenoMemory.h"
+#include "../AdrenoMemory.h"
 
 #include <stdlib.h>
 #include <memory.h>

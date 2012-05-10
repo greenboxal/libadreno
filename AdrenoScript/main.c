@@ -31,7 +31,7 @@ wchar_t *LoadInputFile(char *FileName)
 	}
 
 	/* Get the size of the file. */
-	if (fstat(fileno(Fin),&statbuf) != 0) 
+	if (fstat(_fileno(Fin),&statbuf) != 0) 
 	{
 		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
 		fclose(Fin);
@@ -106,39 +106,21 @@ int main(int argc, char **argv)
 	AdrenoVM vm;
 	AdrenoContext ctx;
 	AdrenoScript *script;
-	AdrenoFunction *function;
 	AilCompiler c;
 	long double start;
 	int j;
 
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
-	//AdrenoScript_Initialize(&script);
 
-	/*function = AdrenoEmit_CreateFunction(&script, L"<default>");
-	function->LocalsCount = 1;
-	{
-		AdrenoEmit_EmitOp(function, OP_ENTER);
-		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 3);
-		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 5);
-		AdrenoEmit_EmitOp(function, OP_ADD);
-		AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 2);
-		AdrenoEmit_EmitOp(function, OP_DIV);
-		//AdrenoEmit_EmitOp2_I4(function, OP_LDC_I4, 3);
-		//AdrenoEmit_EmitOp(function, OP_REM);
-		AdrenoEmit_EmitOp(function, OP_STLOC_0);
-		AdrenoEmit_EmitOp(function, OP_LDNULL);
-		AdrenoEmit_EmitOp(function, OP_RET);
-	}*/
 	AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
 	script = AilCompiler_Compile(&c);
 	AilCompiler_Free(&c);
 
-	AdrenoVM_AttachScript(&vm, script);
 	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 10; j++)
+	for (j = 0; j < 100000; j++)
 	{
 		AdrenoContext_SetFunction(&ctx, (AdrenoFunction *)script->Functions.NodeHeap[0].Value.Value);
  		AdrenoVM_Run(&vm, &ctx);

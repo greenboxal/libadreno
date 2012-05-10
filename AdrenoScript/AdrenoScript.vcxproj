@@ -58,7 +58,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -73,7 +73,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adreno\AdrenoVM\AdrenoEmit.c" />
-    <ClCompile Include="Adreno\AdrenoVM\AdrenoHashtable.c" />
+    <ClCompile Include="Adreno\AdrenoHelpers\AdrenoHashtable.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoScript.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoStack.c" />
     <ClCompile Include="Adreno\AdrenoVM\AdrenoValue.c" />
@@ -84,10 +84,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Adreno\AdrenoScript\adrenoscript.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoConfig.h" />
+    <ClInclude Include="Adreno\AdrenoConfig.h" />
     <ClInclude Include="Adreno\AdrenoVM\AdrenoEmit.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoHashtable.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoMemory.h" />
+    <ClInclude Include="Adreno\AdrenoHelpers\AdrenoHashtable.h" />
+    <ClInclude Include="Adreno\AdrenoMemory.h" />
     <ClInclude Include="Adreno\AdrenoVM\AdrenoScript.h" />
     <ClInclude Include="Adreno\AdrenoVM\AdrenoStack.h" />
     <ClInclude Include="Adreno\AdrenoVM\AdrenoValue.h" />
