@@ -14,12 +14,15 @@ struct adrenofunction
 
 	AdrenoScript *Owner;
 
+	AdrenoGCFlags GCFlags;
 	unsigned char *Bytecode;
 	unsigned int BytecodeSize;
 };
 
 struct adrenoscript
 {
+	AdrenoGCFlags GCFlags;
+
 	AdrenoHashtable Functions;
 	AdrenoHashtable Strings;
 };

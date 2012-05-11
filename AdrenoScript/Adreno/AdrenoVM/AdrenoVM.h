@@ -13,6 +13,7 @@ typedef struct adrenoarray AdrenoArray;
 typedef struct adrenoretvalue AdrenoReturnInfo;
 typedef struct adrenovalue AdrenoValue;
 typedef struct adrenostack AdrenoStack;
+typedef enum adrenogcflags AdrenoGCFlags;
 
 #include "../AdrenoConfig.h"
 #include "../AdrenoMemory.h"
@@ -181,5 +182,6 @@ extern "C"
 
 #define ADRENOVALUE_IS_NULL_VALUE(value) (value.Type == AT_NULL)
 #define ADRENOVALUE_IS_NULL_VALUE_PTR(value) (value == NULL || value->Type == AT_NULL)
+#define ADRENOVALUE_IS_REF_TYPE(value) (value->Type == AT_STRING || value->Type == AT_ARRAY)
 
 #endif

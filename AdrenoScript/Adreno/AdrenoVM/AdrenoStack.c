@@ -40,7 +40,6 @@ int AdrenoStack_Push(AdrenoStack *stack, AdrenoValue *value, int canExpand)
 		memset(&stack->Stack[oldSize], 0, sizeof(AdrenoValue) * stack->StackSize - oldSize);
 	}
 
-	value->ReferenceCounter++;
 	stack->Stack[--stack->StackPointer] = *value;
 
 	return 1;

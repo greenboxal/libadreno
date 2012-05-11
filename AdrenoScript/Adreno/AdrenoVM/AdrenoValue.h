@@ -7,7 +7,7 @@
 
 #include <wchar.h>
 
-typedef enum
+typedef enum adrenogcflags
 {
 	/* None action should be done */
     GC_NONE = 0x00000000,
@@ -17,6 +17,9 @@ typedef enum
 
 	/* The GC should free the pointer to the AdrenoValue struct */
     GC_FREE = 0x00000002,
+
+	/* Used by constants, must be freed when the scripts is being freed */
+	GC_FINAL_FREE = 0x00000004,
 } AdrenoGCFlags;
 
 typedef enum

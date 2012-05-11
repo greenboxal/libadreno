@@ -42,13 +42,16 @@ int AdrenoEmit_ResolveJumps(AdrenoFunction *function)
 		*addr = tAddr - (offset + 4);
 	}
 
+	AdrenoHashtable_Clear(&e->Labels);
+	AdrenoHashtable_Clear(&e->RLabels);
+
 	return 1;
 }
 
 unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string, unsigned int len)
 {
 	unsigned int i;
-	AdrenoString *value;
+	AdrenoValue *value;
 
 	for (i = 0; i < script->Strings.NodeCount; i++)
 		if (wcscmp(((AdrenoString *)script->Strings.NodeHeap[i].Value.Value)->Value, string) == 0)
@@ -56,12 +59,16 @@ unsigned int AdrenoEmit_AddString(AdrenoScript *script, wchar_t *string, unsigne
 	
 	i = script->Strings.NodeCount;
 
-	value = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
-	value->Value = (wchar_t *)AdrenoAlloc(len * sizeof(wchar_t) + 2);
-	memcpy(value->Value, string, len * sizeof(wchar_t));
-	value->Value[len] = 0;
-	value->Size = len;
-	value->Flags = SF_NONE;
+	value = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+	value->Type = AT_STRING;
+	value->GCFlags = GC_FINAL_FREE;
+	value->ReferenceCounter = 0;
+	value->Value.String = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
+	value->Value.String->Value = (wchar_t *)AdrenoAlloc(len * sizeof(wchar_t) + 2);
+	memcpy(value->Value.String->Value, string, len * sizeof(wchar_t));
+	value->Value.String->Value[len] = 0;
+	value->Value.String->Size = len;
+	value->Value.String->Flags = SF_FREE;
 
 	AdrenoHashtable_Set(&script->Strings, (void *)i, value);
 
@@ -79,6 +86,7 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, wchar_t *name)
 	f->Function.ArgumentCount = 0;
 	f->Function.LocalsCount = 0;
 	f->Function.Owner = script;
+	f->Function.GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
 
 	AdrenoHashtable_Init(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
 	AdrenoHashtable_Init(&f->RLabels, NULL, NULL);

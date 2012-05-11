@@ -30,8 +30,11 @@ AdrenoScript *AilCompiler_Compile(AilCompiler *compiler)
 	compiler->currentPrefix = P_NONE;
 	compiler->script = (AdrenoScript *)AdrenoAlloc(sizeof(AdrenoScript));
 	AdrenoScript_Initialize(compiler->script);
+	compiler->script->GCFlags = GC_FREE;
 
 	RuleJumpTable[token->ReductionRule](token, compiler);
+
+	DeleteTokens(token);
 
 	return compiler->script;
 }

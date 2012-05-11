@@ -18,6 +18,7 @@
 #	define CALLOC(m,n,file,line,func)	mwCalloc((m),(n),(file),(line))
 #	define REALLOC(p,n,file,line,func)	mwRealloc((p),(n),(file),(line))
 #	define STRDUP(p,file,line,func)	mwStrdup((p),(file),(line))
+#	define WCSDUP(p,file,line,func)	mwWcsdup(p)
 #	define FREE(p,file,line,func)		mwFree((p),(file),(line))
 #	define MEMORY_USAGE()	0
 #	define MEMORY_VERIFY(ptr)	mwIsSafeAddr(ptr, 1)
@@ -32,6 +33,7 @@
 #	define CALLOC(m,n,file,line,func)	dmalloc_malloc((file),(line),(m)*(n),DMALLOC_FUNC_CALLOC,0,0)
 #	define REALLOC(p,n,file,line,func)	dmalloc_realloc((file),(line),(p),(n),DMALLOC_FUNC_REALLOC,0)
 #	define STRDUP(p,file,line,func)	strdup(p)
+#	define WCSDUP(p,file,line,func)	wcsdup(p)
 #	define FREE(p,file,line,func)		free(p)
 #	define MEMORY_USAGE()	dmalloc_memory_allocated()
 #	define MEMORY_VERIFY(ptr)	(dmalloc_verify(ptr) == DMALLOC_VERIFY_NOERROR)
@@ -48,18 +50,20 @@
 #	define MALLOC(n,file,line,func)	GC_debug_malloc((n), RETURN_ADDR (file),(line))
 #	define CALLOC(m,n,file,line,func)	GC_debug_malloc((m)*(n), RETURN_ADDR (file),(line))
 #	define REALLOC(p,n,file,line,func)	GC_debug_realloc((p),(n), RETURN_ADDR (file),(line))
-#	define STRDUP(p,file,line,func)	GC_debug_strdup((p), RETURN_ADDR (file),(line))
+#	define STRDUP(p,file,line,func)	GC_debugstrdup((p), RETURN_ADDR (file),(line))
+#	define WCSDUP(p,file,line,func)	GC_debugwcsdup((p), RETURN_ADDR (file),(line))
 #	define FREE(p,file,line,func)		GC_debug_free(p)
 #	define MEMORY_USAGE()	GC_get_heap_size()
 #	define MEMORY_VERIFY(ptr)	(GC_base(ptr) != NULL)
 #	define MEMORY_CHECK()	GC_gcollect()
 
-#elif defined(USE_DEBUG_MALLOC)
+#elif defined(USE_MALLOC)
 
 #	define MALLOC(n,file,line,func)	malloc(n)
 #	define CALLOC(m,n,file,line,func)	calloc((m),(n))
 #	define REALLOC(p,n,file,line,func)	realloc((p),(n))
 #	define STRDUP(p,file,line,func)	strdup(p)
+#	define WCSDUP(p,file,line,func)	wcsdup(p)
 #	define FREE(p,file,line,func)		free(p)
 #	define MEMORY_USAGE()	0
 #	define MEMORY_VERIFY(ptr)	1
@@ -101,6 +105,16 @@ void* aRealloc_(void *p, unsigned int size, const char *file, int line, const ch
 char* aStrdup_(const char *p, const char *file, int line, const char *func)
 {
 	char *ret = STRDUP(p, file, line, func);
+	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
+	if (ret == NULL){
+		printf("%s:%d: in func %s: aStrdup error out of memory!\n", file, line, func);
+		exit(EXIT_FAILURE);
+	}
+	return ret;
+}
+wchar_t* aWStrdup_(const wchar_t *p, const char *file, int line, const char *func)
+{
+	wchar_t *ret = WCSDUP(p, file, line, func);
 	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aStrdup error out of memory!\n", file, line, func);
@@ -239,6 +253,7 @@ void* _mmalloc(unsigned int size, const char *file, int line, const char *func )
 		return NULL;
 	}
 	memmgr_usage_bytes += size;
+	printf("Musage: %d\n", memmgr_usage_bytes);
 
 	/* ブロック長を超える領域の確保には、malloc() を用いる */
 	/* その際、unit_head.block に NULL を代入して区別する */
@@ -373,6 +388,18 @@ char* _mstrdup(const char *p, const char *file, int line, const char *func )
 	}
 }
 
+wchar_t* _mwstrdup(const wchar_t *p, const char *file, int line, const char *func )
+{
+	if(p == NULL) {
+		return NULL;
+	} else {
+		unsigned int len = wcslen(p);
+		wchar_t *string  = (wchar_t *)_mmalloc((len+1) * sizeof(wchar_t),file,line,func);
+		memcpy(string,p,(len+1) * sizeof(wchar_t));
+		return string;
+	}
+}
+
 void _mfree(void *ptr, const char *file, int line, const char *func )
 {
 	struct unit_head *head;
@@ -442,6 +469,8 @@ void _mfree(void *ptr, const char *file, int line, const char *func )
 			}
 		}
 	}
+
+	printf("Musage: %d\n", memmgr_usage_bytes);
 }
 
 /* ブロックを確保する */

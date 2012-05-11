@@ -170,6 +170,19 @@ unsigned int AdrenoVM_GetStringLen(AdrenoValue *value)
 	return 0;
 }
 
+void AdrenoVM_LoadValue(AdrenoValue **loadTo, AdrenoValue *tmp, AdrenoValue *value, int forceRef)
+{
+	if (value->Type == AT_REFERENCE || forceRef)
+	{
+		*loadTo = tmp;
+		AdrenoValue_CreateReference(tmp, value);
+	}
+	else
+	{
+		*loadTo = value;
+	}
+}
+
 void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 {
 	AdrenoValue value, value2, value3;
@@ -231,7 +244,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					opSize += 4;
 					index = opcode->Value.I4;
 				}
-
+				
 				if (!AdrenoStack_Pop(&ctx->Stack, &ctx->Locals[index]))
 				{
 					vm->Error = ERR_STACK_UNDERFLOW;
@@ -258,7 +271,9 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					index = opcode->Value.I4;
 				}
 
-				if (!AdrenoStack_Push(&ctx->Stack, &ctx->Locals[index], ADRENOSTACK_CAN_EXPAND))
+				AdrenoVM_LoadValue(&rvalue, &value, &ctx->Locals[index], prefix == P_REFERENCE);
+
+				if (!AdrenoStack_Push(&ctx->Stack, rvalue, ADRENOSTACK_CAN_EXPAND))
 				{
 					vm->Error = ERR_STACK_OVERFLOW;
 					vm->State = ST_END;
@@ -272,7 +287,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			{
 				value.Type = AT_NULL;
 				value.GCFlags = GC_NONE;
-				value.ReferenceCounter = 0;
+				value.ReferenceCounter = 1;
 				value.Value.I4 = 0;
 
 				if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
@@ -300,7 +315,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 				value.Type = AT_INTEGER;
 				value.GCFlags = GC_NONE;
-				value.ReferenceCounter = 0;
+				value.ReferenceCounter = 1;
 				value.Value.I4 = i4;
 
 				if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
@@ -315,10 +330,8 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			{
 				opSize += 4;
 
-				value.Type = AT_STRING;
-				value.GCFlags = GC_NONE;
-				value.ReferenceCounter = 0;
-				value.Value.String = (AdrenoString *)ctx->LoadedScript->Strings.NodeHeap[opcode->Value.I4].Value.Value;
+				rvalue = (AdrenoValue *)ctx->LoadedScript->Strings.NodeHeap[opcode->Value.I4].Value.Value;
+				AdrenoValue_CreateReference(&value, rvalue);
 
 				if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
 				{
@@ -332,12 +345,15 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			// Arrays
 		case OP_NEWARR:
 			{
-				value.Type = AT_ARRAY;
-				value.GCFlags = GC_COLLECT;
-				value.ReferenceCounter = 0;
-				value.Value.Array = (AdrenoArray *)AdrenoAlloc(sizeof(AdrenoArray));
-				value.Value.Array->Type = AT_NULL;
-				AdrenoHashtable_Init(&value.Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoVM_ValueHash, (AdrenoHashtable_LenFunction)AdrenoVM_GetStringLen);
+				rvalue = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+				rvalue->Type = AT_ARRAY;
+				rvalue->GCFlags = (AdrenoGCFlags)(GC_COLLECT | GC_FREE);
+				rvalue->ReferenceCounter = 0;
+				rvalue->Value.Array = (AdrenoArray *)AdrenoAlloc(sizeof(AdrenoArray));
+				rvalue->Value.Array->Type = AT_NULL;
+				AdrenoHashtable_Init(&rvalue->Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoVM_ValueHash, (AdrenoHashtable_LenFunction)AdrenoVM_GetStringLen);
+
+				AdrenoValue_CreateReference(&value, rvalue);
 
 				if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
 				{
@@ -381,15 +397,23 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 						break;
 					}
 
-					rvalue4 = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
-					memcpy(rvalue4, rvalue3, sizeof(AdrenoValue));
-					rvalue4->GCFlags = (AdrenoGCFlags)(rvalue3->GCFlags | GC_FREE);
-					rvalue3->GCFlags = (AdrenoGCFlags)(rvalue3->GCFlags & ~GC_COLLECT);
+					if (ADRENOVALUE_IS_REF_TYPE(rvalue3))
+					{
+						rvalue4 = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+						AdrenoValue_CreateReference(rvalue4, rvalue3);
+					}
+					else
+					{
+						rvalue4 = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+						*rvalue4 = *rvalue3;
+						rvalue4->GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
+					}
 
-					AdrenoHashtable_Set(&value.Value.Array->Array, rvalue2, rvalue4);
+					AdrenoHashtable_Set(&rvalue->Value.Array->Array, rvalue2, rvalue4);
 
 					AdrenoValue_Dereference(&value);
 					AdrenoValue_Dereference(&value2);
+					AdrenoValue_Dereference(&value3);
 				}
 				else
 				{
@@ -432,13 +456,13 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 						break;
 					}
 
-					if (!AdrenoHashtable_Get(&value.Value.Array->Array, rvalue2, (void **)&rvalue3))
+					if (!AdrenoHashtable_Get(&rvalue->Value.Array->Array, rvalue2, (void **)&rvalue3))
 					{
 						value3.Type = AT_NULL;
 					}
 					else
 					{
-						memcpy(&value3, rvalue3, sizeof(AdrenoValue));
+						value3 = *rvalue3;
 						rvalue3->GCFlags = (AdrenoGCFlags)(rvalue3->GCFlags & ~GC_COLLECT);
 					}
 
@@ -480,7 +504,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 				value.Type = AT_INTEGER;
 				value.GCFlags = GC_NONE;
-				value.ReferenceCounter = 0;
+				value.ReferenceCounter = 1;
 
 				if (rvalue->Type == AT_ARRAY)
 				{
@@ -532,7 +556,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 						break;
 					}
 
-					AdrenoHashtable_Remove(&value.Value.Array->Array, rvalue2);
+					AdrenoHashtable_Remove(&rvalue->Value.Array->Array, rvalue2);
 
 					AdrenoValue_Dereference(&value);
 					AdrenoValue_Dereference(&value2);
@@ -556,16 +580,19 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					ADRENOVM_MATHOP_DUAL_SIMPLE_OP(AT_INTEGER, I4, +)
 					ADRENOVM_MATHOP_DUAL_CHECKTYPE(AT_STRING)
 					{
-						value3.Type = AT_STRING;
-						value3.GCFlags = GC_COLLECT;
-						value3.Value.String = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
-						value3.Value.String->Size = rvalue->Value.String->Size + rvalue2->Value.String->Size;
-						value3.Value.String->Value = (wchar_t *)AdrenoAlloc(value3.Value.String->Size * sizeof(wchar_t) + 2);
-						value3.Value.String->Flags = SF_FREE;
+						rvalue3 = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+						rvalue3->Type = AT_STRING;
+						rvalue3->GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
+						rvalue3->Value.String = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
+						rvalue3->Value.String->Size = rvalue->Value.String->Size + rvalue2->Value.String->Size;
+						rvalue3->Value.String->Value = (wchar_t *)AdrenoAlloc(value3.Value.String->Size * sizeof(wchar_t) + 2);
+						rvalue3->Value.String->Flags = SF_FREE;
 						
-						memcpy(&value3.Value.String->Value[0], rvalue->Value.String->Value, rvalue->Value.String->Size * sizeof(wchar_t));
-						memcpy(&value3.Value.String->Value[rvalue->Value.String->Size], rvalue2->Value.String->Value, rvalue2->Value.String->Size * sizeof(wchar_t));
-						value3.Value.String->Value[value3.Value.String->Size] = 0;
+						memcpy(&rvalue3->Value.String->Value[0], rvalue->Value.String->Value, rvalue->Value.String->Size * sizeof(wchar_t));
+						memcpy(&rvalue3->Value.String->Value[rvalue->Value.String->Size], rvalue2->Value.String->Value, rvalue2->Value.String->Size * sizeof(wchar_t));
+						rvalue3->Value.String->Value[value3.Value.String->Size] = 0;
+
+						AdrenoValue_CreateReference(&value3, rvalue3);
 					}
 					ADRENOVM_MATHOP_DUAL_FINISH()
 				}
@@ -1079,5 +1106,5 @@ void AdrenoContext_SetFunction(AdrenoContext *ctx, AdrenoFunction *func)
 
 void AdrenoContext_Free(AdrenoContext *ctx)
 {
-	AdrenoStack_Clear(&ctx->Stack);
+	AdrenoStack_Free(&ctx->Stack);
 }
