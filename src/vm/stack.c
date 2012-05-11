@@ -1,4 +1,4 @@
-#include "AdrenoVM.h"
+#include <adreno/vm/vm.h>
 
 #include <memory.h>
 

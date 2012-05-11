@@ -1,5 +1,5 @@
-#include "AdrenoHashtable.h"
-#include "../AdrenoMemory.h"
+#include <adreno/utils/hashtable.h>
+#include <adreno/memory.h>
 
 #include <stdlib.h>
 #include <memory.h>
@@ -133,7 +133,7 @@ void AdrenoHashtable_HeapFree(AdrenoHashtable *hashtable, AdrenoHashtableNode *p
 	}
 }
 
-void AdrenoHashtable_Init(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len)
+void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len)
 {
 	if (!hashtable)
 		return;

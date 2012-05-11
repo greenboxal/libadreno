@@ -1,7 +1,7 @@
 #ifndef ADRENOEMIT_H
 #define ADRENOEMIT_H
 
-#include "AdrenoVM.h"
+#include <adreno/vm/vm.h>
 
 #ifdef __cplusplus
 extern "C"

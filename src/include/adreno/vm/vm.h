@@ -1,7 +1,7 @@
 #ifndef ADRENOVM_H
 #define ADRENOVM_H
 
-#include "../AdrenoHelpers/AdrenoHashtable.h"
+#include <adreno/utils/hashtable.h>
 
 typedef struct adrenovm AdrenoVM;
 typedef struct adrenocontext AdrenoContext;
@@ -15,11 +15,11 @@ typedef struct adrenovalue AdrenoValue;
 typedef struct adrenostack AdrenoStack;
 typedef enum adrenogcflags AdrenoGCFlags;
 
-#include "../AdrenoConfig.h"
-#include "../AdrenoMemory.h"
-#include "AdrenoScript.h"
-#include "AdrenoValue.h"
-#include "AdrenoStack.h"
+#include <adreno/config.h>
+#include <adreno/memory.h>
+#include <adreno/vm/script.h>
+#include <adreno/vm/value.h>
+#include <adreno/vm/stack.h>
 
 typedef enum
 {

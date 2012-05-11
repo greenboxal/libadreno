@@ -1,7 +1,7 @@
 #ifndef ADRENOMEMORY_H
 #define ADRENOMEMORY_H
 
-#include "AdrenoConfig.h"
+#include <adreno/config.h>
 
 #include <wchar.h>
 

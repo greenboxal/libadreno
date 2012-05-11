@@ -1,4 +1,4 @@
-#include "AdrenoVM.h"
+#include <adreno/vm/vm.h>
 
 AdrenoValue *AdrenoValue_GetValue(AdrenoValue *ref)
 {

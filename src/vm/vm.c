@@ -1,10 +1,10 @@
-#include "AdrenoVM.h"
+#include <adreno/vm/vm.h>
 
 #include <memory.h>
 
 void AdrenoVM_Initialize(AdrenoVM *vm)
 {
-	AdrenoHashtable_Init(&vm->GlobalFunctions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
+	AdrenoHashtable_Initialize(&vm->GlobalFunctions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
 
 	vm->GlobalFunctions.ExpansionFactor = 2;
 
@@ -351,7 +351,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				rvalue->ReferenceCounter = 0;
 				rvalue->Value.Array = (AdrenoArray *)AdrenoAlloc(sizeof(AdrenoArray));
 				rvalue->Value.Array->Type = AT_NULL;
-				AdrenoHashtable_Init(&rvalue->Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoVM_ValueHash, (AdrenoHashtable_LenFunction)AdrenoVM_GetStringLen);
+				AdrenoHashtable_Initialize(&rvalue->Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoVM_ValueHash, (AdrenoHashtable_LenFunction)AdrenoVM_GetStringLen);
 
 				AdrenoValue_CreateReference(&value, rvalue);
 

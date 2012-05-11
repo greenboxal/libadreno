@@ -53,7 +53,7 @@ extern "C"
 	} AdrenoHashtable;
 
 	// Hashtable functions
-	extern void AdrenoHashtable_Init(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len);
+	extern void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len);
 	extern void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable);
 
 	extern void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value);

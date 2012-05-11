@@ -1,7 +1,7 @@
 #ifndef AILC_H
 #define AILC_H
 
-#include "../AdrenoVM/AdrenoVM.h"
+#include <adreno/vm/vm.h>
 
 typedef struct
 {

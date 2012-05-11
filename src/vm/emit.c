@@ -1,4 +1,4 @@
-#include "AdrenoEmit.h"
+#include <adreno/vm/emit.h>
 
 typedef struct
 {
@@ -88,8 +88,8 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, wchar_t *name)
 	f->Function.Owner = script;
 	f->Function.GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
 
-	AdrenoHashtable_Init(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
-	AdrenoHashtable_Init(&f->RLabels, NULL, NULL);
+	AdrenoHashtable_Initialize(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
+	AdrenoHashtable_Initialize(&f->RLabels, NULL, NULL);
 
 	AdrenoHashtable_Set(&script->Functions, script->Strings.NodeHeap[f->Function.NameIndex].Value.Value, f);
 

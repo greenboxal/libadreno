@@ -1,11 +1,11 @@
-#include "ailc.h"
+#include <adreno/ail/ailc.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
 #include <sys/stat.h>
 
-#include "../AdrenoVM/AdrenoEmit.h"
+#include <adreno/vm/emit.h>
 
 #include "engine.h"
 #include "ailgrammar.h"

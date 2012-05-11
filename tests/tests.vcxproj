@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6719A577-847E-4980-A500-0EA6C21FA2B0}</ProjectGuid>
+    <ProjectGuid>{45EF06DD-32AD-4DDA-9ED4-44FF676596A8}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>boxscriptengine</RootNamespace>
+    <RootNamespace>tests</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,20 +39,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)build/$(Configuration)/$(ProjectName)/</OutDir>
+    <IntDir>$(SolutionDir)stage/$(Configuration)/$(ProjectName)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)build/$(Configuration)/$(ProjectName)/</OutDir>
+    <IntDir>$(SolutionDir)stage/$(Configuration)/$(ProjectName)/</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)src/include/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)build/$(Configuration)/libadreno/</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libadreno.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -62,43 +69,19 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)src/include/</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)build/$(Configuration)/libadreno/</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Adreno\AdrenoMemory.c" />
-    <ClCompile Include="Adreno\AdrenoVM\AdrenoEmit.c" />
-    <ClCompile Include="Adreno\AdrenoHelpers\AdrenoHashtable.c" />
-    <ClCompile Include="Adreno\AdrenoVM\AdrenoScript.c" />
-    <ClCompile Include="Adreno\AdrenoVM\AdrenoStack.c" />
-    <ClCompile Include="Adreno\AdrenoVM\AdrenoValue.c" />
-    <ClCompile Include="Adreno\AdrenoVM\AdrenoVM.c" />
-    <ClCompile Include="Adreno\AIL\ailc.c" />
-    <ClCompile Include="Adreno\AIL\engine.c" />
-    <ClCompile Include="main.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Adreno\AdrenoScript\adrenoscript.h" />
-    <ClInclude Include="Adreno\AdrenoConfig.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoEmit.h" />
-    <ClInclude Include="Adreno\AdrenoHelpers\AdrenoHashtable.h" />
-    <ClInclude Include="Adreno\AdrenoMemory.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoScript.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoStack.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoValue.h" />
-    <ClInclude Include="Adreno\AdrenoVM\AdrenoVM.h" />
-    <ClInclude Include="Adreno\AIL\ailc.h" />
-    <ClInclude Include="Adreno\AIL\ailgrammar.h" />
-    <ClInclude Include="Adreno\AIL\engine.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="input.txt" />
+    <ClCompile Include="tests.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

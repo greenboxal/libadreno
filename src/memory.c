@@ -1,4 +1,4 @@
-#include "AdrenoMemory.h"
+#include <adreno/memory.h>
 
 #if defined(USE_DEBUG_MALLOC)
 
@@ -213,6 +213,7 @@ static struct unit_head_large *unit_head_large_first = NULL;
 static struct block* block_malloc(unsigned short hash);
 static void          block_free(struct block* p);
 static unsigned int        memmgr_usage_bytes;
+static unsigned int		   memmgr_max_used_bytes;
 
 #define block2unit(p, n) ((struct unit_head*)(&(p)->data[ p->unit_size * (n) ]))
 #define memmgr_assert(v) do { if(!(v)) { printf("Memory manager: assertion '" #v "' failed!\n"); } } while(0)
@@ -253,7 +254,8 @@ void* _mmalloc(unsigned int size, const char *file, int line, const char *func )
 		return NULL;
 	}
 	memmgr_usage_bytes += size;
-	printf("Musage: %d\n", memmgr_usage_bytes);
+	if (memmgr_usage_bytes > memmgr_max_used_bytes)
+		memmgr_max_used_bytes = memmgr_usage_bytes;
 
 	/* ブロック長を超える領域の確保には、malloc() を用いる */
 	/* その際、unit_head.block に NULL を代入して区別する */
@@ -469,8 +471,6 @@ void _mfree(void *ptr, const char *file, int line, const char *func )
 			}
 		}
 	}
-
-	printf("Musage: %d\n", memmgr_usage_bytes);
 }
 
 /* ブロックを確保する */
@@ -668,6 +668,7 @@ static void memmgr_final (void)
 		large = large2;
 	}
 #ifdef LOG_MEMMGR
+	printf("Memory manager: %d max bytes used.\n", memmgr_max_used_bytes);
 	if(count == 0) {
 		printf("Memory manager: No memory leaks found.\n");
 	} else {

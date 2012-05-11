@@ -4,9 +4,9 @@
 #include <memory.h>
 #include <sys/stat.h>
 
-#include "Adreno/AdrenoVM/AdrenoVM.h"
-#include "Adreno/AdrenoVM/AdrenoEmit.h"
-#include "Adreno/AIL/ailc.h"
+#include <adreno/vm/vm.h>
+#include <adreno/vm/emit.h>
+#include <adreno/ail/ailc.h>
 
 #include <Windows.h>
 
@@ -109,8 +109,10 @@ int main(int argc, char **argv)
 	AilCompiler c;
 	long double start;
 	int j;
-
+	
+#ifdef USE_DEBUG_MALLOC
 	malloc_init();
+#endif
 
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
@@ -122,7 +124,7 @@ int main(int argc, char **argv)
 	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 1; j++)
+	for (j = 0; j < 100000; j++)
 	{
 		AdrenoContext_SetFunction(&ctx, (AdrenoFunction *)script->Functions.NodeHeap[0].Value.Value);
  		AdrenoVM_Run(&vm, &ctx);
@@ -134,7 +136,9 @@ int main(int argc, char **argv)
 	AdrenoContext_Free(&ctx);
 	AdrenoVM_Free(&vm);
 
+#ifdef USE_DEBUG_MALLOC
 	malloc_final();
+#endif
 
 	getchar();
 	return 0;
