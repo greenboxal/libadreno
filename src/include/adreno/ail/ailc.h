@@ -2,14 +2,15 @@
 #define AILC_H
 
 #include <adreno/vm/vm.h>
+#include <stdio.h>
 
 typedef struct
 {
-	wchar_t *data;
-	AdrenoScript *script;
-	AdrenoFunction *currentFunction;
-
-	AdrenoOpcodePrefixes currentPrefix;
+	char *Data;
+	unsigned int DataPosition, DataSize;
+	AdrenoScript *Script;
+	AdrenoFunction *CurrentFunction;
+	AdrenoOpcodePrefixes Prefix;
 } AilCompiler;
 
 #ifdef __cplusplus
@@ -17,7 +18,7 @@ extern "C"
 {
 #endif
 
-	extern void AilCompiler_Initialize(AilCompiler *compiler, wchar_t *data);
+	extern void AilCompiler_Initialize(AilCompiler *compiler, char *data);
 	extern AdrenoScript *AilCompiler_Compile(AilCompiler *compiler);
 	extern void AilCompiler_Free(AilCompiler *compiler);
 

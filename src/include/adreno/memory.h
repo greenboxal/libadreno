@@ -13,7 +13,7 @@ void *_mmalloc	(unsigned int size, const char *file, int line, const char *func)
 void *_mcalloc	(unsigned int num, unsigned int size, const char *file, int line, const char *func);
 void *_mrealloc	(void *p, unsigned int size, const char *file, int line, const char *func);
 char *_mstrdup	(const char *p, const char *file, int line, const char *func);
-wchar_t *_mwstrdup	(const wchar_t *p, const char *file, int line, const char *func);
+char *_mwstrdup	(const char *p, const char *file, int line, const char *func);
 void  _mfree	(void *p, const char *file, int line, const char *func);
 
 #define AdrenoAlloc(size) _mmalloc((size), ALC_MARK)

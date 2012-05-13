@@ -12,20 +12,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ail\ailc.c" />
-    <ClCompile Include="ail\engine.c" />
+    <ClCompile Include="ail\lex.ail_.c" />
+    <ClCompile Include="ail\y.tab.c" />
     <ClCompile Include="memory.c" />
     <ClCompile Include="utils\hashtable.c" />
-    <ClCompile Include="VM\emit.c" />
+    <ClCompile Include="utils\memorystream.c" />
+    <ClCompile Include="vm\emit.c" />
     <ClCompile Include="vm\script.c" />
     <ClCompile Include="vm\stack.c" />
     <ClCompile Include="vm\value.c" />
     <ClCompile Include="vm\vm.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ail\ailgrammar.h" />
-    <ClInclude Include="config.h" />
+    <ClInclude Include="ail\ailp.h" />
+    <ClInclude Include="ail\y.tab.h" />
     <ClInclude Include="include\adreno\ail\ailc.h" />
-    <ClInclude Include="include\adreno\ail\engine.h" />
+    <ClInclude Include="include\adreno\config.h" />
     <ClInclude Include="include\adreno\memory.h" />
     <ClInclude Include="include\adreno\utils\hashtable.h" />
     <ClInclude Include="include\adreno\vm\emit.h" />
@@ -33,6 +35,12 @@
     <ClInclude Include="include\adreno\vm\stack.h" />
     <ClInclude Include="include\adreno\vm\value.h" />
     <ClInclude Include="include\adreno\vm\vm.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ail\ail.l" />
+    <None Include="ail\ail.y" />
+    <None Include="ail\regen.bat" />
+    <None Include="include\adreno\utils\memorystream.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6719A577-847E-4980-A500-0EA6C21FA2B0}</ProjectGuid>

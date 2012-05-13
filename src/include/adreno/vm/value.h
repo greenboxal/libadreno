@@ -58,7 +58,7 @@ typedef enum
 struct adrenostring
 {
 	AdrenoStringFlags Flags;
-	wchar_t *Value;
+	char *Value;
 	unsigned int Size;
 };
 

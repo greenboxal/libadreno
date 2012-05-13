@@ -172,7 +172,7 @@ extern "C"
 
 	extern void AdrenoContext_Initialize(AdrenoContext *ctx);
 	extern void AdrenoContext_AttachScript(AdrenoContext *ctx, AdrenoScript *script);
-	extern void AdrenoContext_SetFunctionByName(AdrenoContext *ctx, wchar_t *name);
+	extern void AdrenoContext_SetFunctionByName(AdrenoContext *ctx, char *name);
 	extern void AdrenoContext_SetFunction(AdrenoContext *ctx, AdrenoFunction *func);
 	extern void AdrenoContext_Free(AdrenoContext *ctx);
 

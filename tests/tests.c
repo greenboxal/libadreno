@@ -10,11 +10,10 @@
 
 #include <Windows.h>
 
-wchar_t *LoadInputFile(char *FileName) 
+char *LoadInputFile(char *FileName) 
 {
 	FILE *Fin;
 	char *Buf1;
-	wchar_t *Buf2;
 	struct stat statbuf;
 	size_t BytesRead;
 	unsigned long i;
@@ -39,14 +38,12 @@ wchar_t *LoadInputFile(char *FileName)
 	}
 
 	/* Allocate memory for the input. */
-	Buf1 = (char *)malloc(statbuf.st_size + 1);
-	Buf2 = (wchar_t *)malloc(sizeof(wchar_t) * (statbuf.st_size + 1));
-	if ((Buf1 == NULL) || (Buf2 == NULL)) 
+	Buf1 = (char *)AdrenoAlloc(statbuf.st_size + 1);
+	if ((Buf1 == NULL)) 
 	{
 		fprintf(stdout,"Not enough memory to load the file: %s\n",FileName);
 		fclose(Fin);
 		if (Buf1 != NULL) free(Buf1);
-		if (Buf2 != NULL) free(Buf2);
 		return(NULL);
 	}
 
@@ -62,16 +59,10 @@ wchar_t *LoadInputFile(char *FileName)
 	{
 		fprintf(stdout,"Error while reading input file: %s\n",FileName);
 		free(Buf1);
-		free(Buf2);
 		return(NULL);
 	}
 
-	/* Convert from ASCII to Unicode. */
-	for (i = 0; i <= BytesRead; i++) 
-		Buf2[i] = Buf1[i];
-
-	free(Buf1);
-	return Buf2;
+	return Buf1;
 }
 
 long double GetTime()
@@ -120,11 +111,12 @@ int main(int argc, char **argv)
 	AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
 	script = AilCompiler_Compile(&c);
 	AilCompiler_Free(&c);
-
+	AdrenoFree(c.Data);
+getchar();
 	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 100000; j++)
+	for (j = 0; j < 1000; j++)
 	{
 		AdrenoContext_SetFunction(&ctx, (AdrenoFunction *)script->Functions.NodeHeap[0].Value.Value);
  		AdrenoVM_Run(&vm, &ctx);

@@ -367,10 +367,10 @@ unsigned int AdrenoHashtable_Len_String(void *key)
 
 unsigned int AdrenoHashtable_Len_WString(void *key)
 {
-	wchar_t *str = (wchar_t *)key;
+	char *str = (char *)key;
 	int size = 0;
 
 	while (str[size++]) ;
 
-	return size * sizeof(wchar_t);
+	return size;
 }
