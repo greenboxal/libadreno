@@ -20,8 +20,6 @@ void ail_comment();
 %%
 
 "/*"					{ ail_comment(); }
-"{"						{ return '{'; }
-"}"						{ return '}'; }
 
 "function"				{ return T_FUNCTION; }
 
@@ -117,7 +115,7 @@ void ail_comment();
 						}
 
 [ \t\v\r\n\f]			{ }
-.						{ }
+.						{ return yytext[0]; }
 
 %%
 

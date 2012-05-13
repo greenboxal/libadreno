@@ -178,12 +178,16 @@
 typedef union YYSTYPE
 {
 
+/* Line 1676 of yacc.c  */
+#line 28 "ail.y"
 
 	unsigned int num;
 	char *str;
 
 
 
+/* Line 1676 of yacc.c  */
+#line 191 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
