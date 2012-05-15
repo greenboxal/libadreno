@@ -28,6 +28,7 @@ void ail_comment();
 
 "nop"					{ return T_NOP; }
 "pop"					{ return T_POP; }
+"pop.s"					{ return T_POP_S; }
 
 "stloc.0"				{ return T_STLOC_0; }
 "stloc.1"				{ return T_STLOC_1; }
@@ -91,8 +92,7 @@ void ail_comment();
 "ref"					{ return T_REF; }
 
 \"(\\.|[^\\"])*\"		{ 
-							ail_lval.str = AdrenoStrdup(&yytext[1]); 
-							ail_lval.str[yyleng - 1] = 0; 
+							ail_lval.str = ail_parse_string(yytext);
 							return T_STRINGLITERAL; 
 						}
 						
@@ -145,6 +145,50 @@ loop:
 
 	if (c != 0)
 		putchar(c1);
+}
+
+char *ail_parse_string(char *str)
+{
+	int i = 0, j = 0, maxLen = strlen(str);
+	char *ret = (char *)AdrenoAlloc(maxLen);
+
+	for (i = 1; i < maxLen - 1; i++)
+	{
+		if (str[i] == '\\')
+		{
+			i++;
+
+			if (str[i] == '\\')
+				ret[j] = '\\';
+			else if (str[i] == 'r')
+				ret[j] = '\r';
+			else if (str[i] == 'n')
+				ret[j] = '\n';
+			else if (str[i] == 't')
+				ret[j] = '\t';
+			else if (str[i] == 'b')
+				ret[j] = '\b';
+			else if (str[i] == '"')
+				ret[j] = '"';
+			else if (str[i] == '\'')
+				ret[j] = '\'';
+			else
+			{
+				ret[j++] = '\\';
+				ret[j] = str[i];
+			}
+		}
+		else
+		{
+			ret[j] = str[i];
+		}
+
+		j++;
+	}
+
+	ret[j] = 0;
+
+	return ret;
 }
 
 static YY_BUFFER_STATE ail_buffState;

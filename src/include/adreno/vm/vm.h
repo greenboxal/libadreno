@@ -15,6 +15,8 @@ typedef struct adrenovalue AdrenoValue;
 typedef struct adrenostack AdrenoStack;
 typedef enum adrenogcflags AdrenoGCFlags;
 
+typedef void (*AdrenoAPIFunction)(AdrenoVM *vm, AdrenoContext *context);
+
 #include <adreno/config.h>
 #include <adreno/memory.h>
 #include <adreno/vm/script.h>
@@ -34,6 +36,7 @@ typedef enum
 
     // Stack
     OP_POP,
+	OP_POP_S,
 
     // Locals
     OP_STLOC_0,
@@ -121,14 +124,18 @@ typedef enum
 typedef enum
 {
 	ERR_NONE,
+	ERR_SCRIPT_END,
 	ERR_DIVISON_BY_0,
 	ERR_BAD_OP,
+	ERR_STACK_CORRUPTION,
 	ERR_STACK_OVERFLOW,
 	ERR_STACK_UNDERFLOW,
 	ERR_NULL_REFERENCE,
 	ERR_OUT_OF_BOUNDS,
 	ERR_FOREING_CAST,
 	ERR_INVALID_OPERAND,
+	ERR_INVALID_ARGUMENT,
+	ERR_UNKNOWN_FUNCTION,
 } AdrenoVMError;
 
 struct adrenoop
@@ -148,6 +155,7 @@ struct adrenocontext
 	AdrenoScript *LoadedScript;
 	AdrenoFunction *CurrentFunction;
 	unsigned int InstructionPointer;
+	unsigned int ArgumentsPointer;
 
 	AdrenoValue *Locals;
 };
@@ -168,12 +176,14 @@ extern "C"
 	extern void AdrenoVM_Initialize(AdrenoVM *vm);
 	extern unsigned int AdrenoVM_AttachScript(AdrenoVM *vm, AdrenoScript *script);
 	extern void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx);
+	extern void AdrenoVM_AddAPIFunction(AdrenoVM *vm, char *name, AdrenoAPIFunction function);
 	extern void AdrenoVM_Free(AdrenoVM *vm);
 
 	extern void AdrenoContext_Initialize(AdrenoContext *ctx);
 	extern void AdrenoContext_AttachScript(AdrenoContext *ctx, AdrenoScript *script);
 	extern void AdrenoContext_SetFunctionByName(AdrenoContext *ctx, char *name);
 	extern void AdrenoContext_SetFunction(AdrenoContext *ctx, AdrenoFunction *func);
+	extern AdrenoValue *AdrenoContext_GetArgument(AdrenoContext *ctx, int index);
 	extern void AdrenoContext_Free(AdrenoContext *ctx);
 
 #ifdef __cplusplus

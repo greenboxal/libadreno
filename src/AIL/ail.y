@@ -37,7 +37,7 @@
 %token T_INITLOCALS T_INITARGS
 
 %token T_NOP
-%token T_POP
+%token T_POP T_POP_S
 %token T_STLOC_0 T_STLOC_1 T_STLOC_2 T_STLOC_3 T_STLOC_S
 %token T_LDLOC_0 T_LDLOC_1 T_LDLOC_2 T_LDLOC_3 T_LDLOC_S
 %token T_LDARG_0 T_LDARG_1 T_LDARG_2 T_LDARG_3 T_LDARG_S
@@ -102,6 +102,7 @@ prefix		: 													{ SetPrefix(P_NONE); }
 
 opcode		: T_NOP												{ EmitOp(OP_NOP); }
 			| T_POP												{ EmitOp(OP_POP); }
+			| T_POP_S T_CONSTANT								{ EmitOp2(OP_POP_S, $2); }
 			
 			| T_STLOC_0											{ EmitOp(OP_STLOC_0); }
 			| T_STLOC_1											{ EmitOp(OP_STLOC_1); }
@@ -163,7 +164,7 @@ opcode		: T_NOP												{ EmitOp(OP_NOP); }
 			| T_BRFALSE T_IDENTIFIER							{ EmitJump(OP_BRFALSE, $2); AdrenoFree($2); }						
 			| T_SWITCH											{ EmitOp(OP_SWITCH); }
 
-			| T_LDFUNC T_STRINGLITERAL
+			| T_LDFUNC T_STRINGLITERAL							{ EmitOp2(OP_LDFUNC, AddString($2)); AdrenoFree($2); }
 			| T_CALL											{ EmitOp(OP_CALL); }
 			| T_ENTER											{ EmitOp(OP_ENTER); }
 			| T_RET												{ EmitOp(OP_RET); }

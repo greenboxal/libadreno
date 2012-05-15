@@ -5,8 +5,15 @@
 #error You should not include this file directly
 #endif
 
+typedef enum
+{
+	AF_SCRIPT,
+	AF_API,
+} AdrenoFunctionType;
+
 struct adrenofunction
 {
+	AdrenoFunctionType Type;
 	unsigned int Index;
 	unsigned int NameIndex;
 	unsigned int ArgumentCount;
@@ -17,6 +24,8 @@ struct adrenofunction
 	AdrenoGCFlags GCFlags;
 	unsigned char *Bytecode;
 	unsigned int BytecodeSize;
+
+	AdrenoAPIFunction APIFunction;
 };
 
 struct adrenoscript

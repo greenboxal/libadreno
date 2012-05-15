@@ -68,7 +68,7 @@ extern "C"
 
 	// General len functions
 	extern unsigned int AdrenoHashtable_Len_String(void *key);
-	extern unsigned int AdrenoHashtable_Len_WString(void *key);
+	extern unsigned int AdrenoHashtable_Len_String(void *key);
 
 #ifdef __cplusplus
 }

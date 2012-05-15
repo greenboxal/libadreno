@@ -47,62 +47,63 @@
      T_INITARGS = 263,
      T_NOP = 264,
      T_POP = 265,
-     T_STLOC_0 = 266,
-     T_STLOC_1 = 267,
-     T_STLOC_2 = 268,
-     T_STLOC_3 = 269,
-     T_STLOC_S = 270,
-     T_LDLOC_0 = 271,
-     T_LDLOC_1 = 272,
-     T_LDLOC_2 = 273,
-     T_LDLOC_3 = 274,
-     T_LDLOC_S = 275,
-     T_LDARG_0 = 276,
-     T_LDARG_1 = 277,
-     T_LDARG_2 = 278,
-     T_LDARG_3 = 279,
-     T_LDARG_S = 280,
-     T_LDNULL = 281,
-     T_LDC_I4 = 282,
-     T_LDC_I4_M1 = 283,
-     T_LDC_I4_0 = 284,
-     T_LDC_I4_1 = 285,
-     T_LDSTR = 286,
-     T_NEWARR = 287,
-     T_STELEM = 288,
-     T_LDELEM = 289,
-     T_RMELEM = 290,
-     T_LDLEN = 291,
-     T_ADD = 292,
-     T_SUB = 293,
-     T_MUL = 294,
-     T_DIV = 295,
-     T_REM = 296,
-     T_NEG = 297,
-     T_OR = 298,
-     T_AND = 299,
-     T_XOR = 300,
-     T_NOT = 301,
-     T_SHL = 302,
-     T_SHR = 303,
-     T_LOR = 304,
-     T_LAND = 305,
-     T_LNOT = 306,
-     T_EQ = 307,
-     T_NE = 308,
-     T_GT = 309,
-     T_GE = 310,
-     T_LT = 311,
-     T_LE = 312,
-     T_JUMP = 313,
-     T_BRTRUE = 314,
-     T_BRFALSE = 315,
-     T_SWITCH = 316,
-     T_LDFUNC = 317,
-     T_CALL = 318,
-     T_ENTER = 319,
-     T_RET = 320,
-     T_REF = 321
+     T_POP_S = 266,
+     T_STLOC_0 = 267,
+     T_STLOC_1 = 268,
+     T_STLOC_2 = 269,
+     T_STLOC_3 = 270,
+     T_STLOC_S = 271,
+     T_LDLOC_0 = 272,
+     T_LDLOC_1 = 273,
+     T_LDLOC_2 = 274,
+     T_LDLOC_3 = 275,
+     T_LDLOC_S = 276,
+     T_LDARG_0 = 277,
+     T_LDARG_1 = 278,
+     T_LDARG_2 = 279,
+     T_LDARG_3 = 280,
+     T_LDARG_S = 281,
+     T_LDNULL = 282,
+     T_LDC_I4 = 283,
+     T_LDC_I4_M1 = 284,
+     T_LDC_I4_0 = 285,
+     T_LDC_I4_1 = 286,
+     T_LDSTR = 287,
+     T_NEWARR = 288,
+     T_STELEM = 289,
+     T_LDELEM = 290,
+     T_RMELEM = 291,
+     T_LDLEN = 292,
+     T_ADD = 293,
+     T_SUB = 294,
+     T_MUL = 295,
+     T_DIV = 296,
+     T_REM = 297,
+     T_NEG = 298,
+     T_OR = 299,
+     T_AND = 300,
+     T_XOR = 301,
+     T_NOT = 302,
+     T_SHL = 303,
+     T_SHR = 304,
+     T_LOR = 305,
+     T_LAND = 306,
+     T_LNOT = 307,
+     T_EQ = 308,
+     T_NE = 309,
+     T_GT = 310,
+     T_GE = 311,
+     T_LT = 312,
+     T_LE = 313,
+     T_JUMP = 314,
+     T_BRTRUE = 315,
+     T_BRFALSE = 316,
+     T_SWITCH = 317,
+     T_LDFUNC = 318,
+     T_CALL = 319,
+     T_ENTER = 320,
+     T_RET = 321,
+     T_REF = 322
    };
 #endif
 /* Tokens.  */
@@ -114,62 +115,63 @@
 #define T_INITARGS 263
 #define T_NOP 264
 #define T_POP 265
-#define T_STLOC_0 266
-#define T_STLOC_1 267
-#define T_STLOC_2 268
-#define T_STLOC_3 269
-#define T_STLOC_S 270
-#define T_LDLOC_0 271
-#define T_LDLOC_1 272
-#define T_LDLOC_2 273
-#define T_LDLOC_3 274
-#define T_LDLOC_S 275
-#define T_LDARG_0 276
-#define T_LDARG_1 277
-#define T_LDARG_2 278
-#define T_LDARG_3 279
-#define T_LDARG_S 280
-#define T_LDNULL 281
-#define T_LDC_I4 282
-#define T_LDC_I4_M1 283
-#define T_LDC_I4_0 284
-#define T_LDC_I4_1 285
-#define T_LDSTR 286
-#define T_NEWARR 287
-#define T_STELEM 288
-#define T_LDELEM 289
-#define T_RMELEM 290
-#define T_LDLEN 291
-#define T_ADD 292
-#define T_SUB 293
-#define T_MUL 294
-#define T_DIV 295
-#define T_REM 296
-#define T_NEG 297
-#define T_OR 298
-#define T_AND 299
-#define T_XOR 300
-#define T_NOT 301
-#define T_SHL 302
-#define T_SHR 303
-#define T_LOR 304
-#define T_LAND 305
-#define T_LNOT 306
-#define T_EQ 307
-#define T_NE 308
-#define T_GT 309
-#define T_GE 310
-#define T_LT 311
-#define T_LE 312
-#define T_JUMP 313
-#define T_BRTRUE 314
-#define T_BRFALSE 315
-#define T_SWITCH 316
-#define T_LDFUNC 317
-#define T_CALL 318
-#define T_ENTER 319
-#define T_RET 320
-#define T_REF 321
+#define T_POP_S 266
+#define T_STLOC_0 267
+#define T_STLOC_1 268
+#define T_STLOC_2 269
+#define T_STLOC_3 270
+#define T_STLOC_S 271
+#define T_LDLOC_0 272
+#define T_LDLOC_1 273
+#define T_LDLOC_2 274
+#define T_LDLOC_3 275
+#define T_LDLOC_S 276
+#define T_LDARG_0 277
+#define T_LDARG_1 278
+#define T_LDARG_2 279
+#define T_LDARG_3 280
+#define T_LDARG_S 281
+#define T_LDNULL 282
+#define T_LDC_I4 283
+#define T_LDC_I4_M1 284
+#define T_LDC_I4_0 285
+#define T_LDC_I4_1 286
+#define T_LDSTR 287
+#define T_NEWARR 288
+#define T_STELEM 289
+#define T_LDELEM 290
+#define T_RMELEM 291
+#define T_LDLEN 292
+#define T_ADD 293
+#define T_SUB 294
+#define T_MUL 295
+#define T_DIV 296
+#define T_REM 297
+#define T_NEG 298
+#define T_OR 299
+#define T_AND 300
+#define T_XOR 301
+#define T_NOT 302
+#define T_SHL 303
+#define T_SHR 304
+#define T_LOR 305
+#define T_LAND 306
+#define T_LNOT 307
+#define T_EQ 308
+#define T_NE 309
+#define T_GT 310
+#define T_GE 311
+#define T_LT 312
+#define T_LE 313
+#define T_JUMP 314
+#define T_BRTRUE 315
+#define T_BRFALSE 316
+#define T_SWITCH 317
+#define T_LDFUNC 318
+#define T_CALL 319
+#define T_ENTER 320
+#define T_RET 321
+#define T_REF 322
 
 
 
@@ -187,7 +189,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 191 "y.tab.h"
+#line 193 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

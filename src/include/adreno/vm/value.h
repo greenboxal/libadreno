@@ -73,6 +73,7 @@ struct adrenoretvalue
 	AdrenoScript *Script;
 	AdrenoFunction *Function;
 	unsigned int InstructionPointer;
+	unsigned int ArgumentsPointer;
 	AdrenoValue *Locals;
 };
 
@@ -102,6 +103,10 @@ extern "C"
 	extern AdrenoValue *AdrenoValue_GetValue(AdrenoValue *ref);
 	extern void AdrenoValue_CreateReference(AdrenoValue *ref, AdrenoValue *value);
 	extern void AdrenoValue_Dereference(AdrenoValue *value);
+	extern int AdrenoValue_LoadNull(AdrenoValue *value);
+	extern int AdrenoValue_LoadInteger(AdrenoValue *value, unsigned int i4);
+	extern int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, int copy);
+	extern int AdrenoValue_LoadArray(AdrenoValue *value);
 	extern void AdrenoValue_Free(AdrenoValue *value);
 
 #ifdef __cplusplus

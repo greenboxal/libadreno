@@ -2,7 +2,7 @@
 
 void AdrenoScript_Initialize(AdrenoScript *script)
 {
-	AdrenoHashtable_Initialize(&script->Functions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
+	AdrenoHashtable_Initialize(&script->Functions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
 	AdrenoHashtable_Initialize(&script->Strings, NULL, NULL);
 
 	script->Functions.ExpansionFactor = 2;
@@ -17,7 +17,7 @@ void AdrenoScript_Free(AdrenoScript *script)
 	{
 		AdrenoFunction *fnc = (AdrenoFunction *)script->Functions.NodeHeap[i].Value.Value;
 		
-		if (fnc->GCFlags & GC_COLLECT && fnc->Bytecode)
+		if (fnc->Type == AF_SCRIPT && fnc->GCFlags & GC_COLLECT && fnc->Bytecode)
 			AdrenoFree(fnc->Bytecode);
 
 		if (fnc->GCFlags & GC_FREE)

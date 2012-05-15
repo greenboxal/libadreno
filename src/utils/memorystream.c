@@ -10,7 +10,7 @@ void AdrenoMS_Open(AdrenoMS *ms)
 	ms->expansionFactor = 100;
 }
 
-int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, int offset, int size)
+int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size)
 {
 	if (ms->bufferPosition + size > ms->bufferSize)
 	{
@@ -19,7 +19,7 @@ int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, int offset, int size)
 		if (ms->bufferSize > ms->bufferMaxSize)
 		{
 			ms->bufferMaxSize = (ms->bufferSize / ms->expansionFactor + 1) * ms->expansionFactor;
-			ms->buffer = (char *)AdrenoRealloc(ms->buffer, ms->bufferMaxSize);
+			ms->buffer = (unsigned char *)AdrenoRealloc(ms->buffer, ms->bufferMaxSize);
 		}
 	}
 
@@ -29,7 +29,7 @@ int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, int offset, int size)
 	return size;
 }
 
-int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, int offset, int size)
+int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size)
 {
 	int read = size;
 	

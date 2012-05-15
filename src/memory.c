@@ -112,9 +112,9 @@ char* aStrdup_(const char *p, const char *file, int line, const char *func)
 	}
 	return ret;
 }
-char* aWStrdup_(const char *p, const char *file, int line, const char *func)
+wchar_t* aWStrdup_(const wchar_t *p, const char *file, int line, const char *func)
 {
-	char *ret = WCSDUP(p, file, line, func);
+	wchar_t *ret = WCSDUP(p, file, line, func);
 	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aStrdup error out of memory!\n", file, line, func);
@@ -390,14 +390,14 @@ char* _mstrdup(const char *p, const char *file, int line, const char *func )
 	}
 }
 
-char* _mwstrdup(const char *p, const char *file, int line, const char *func )
+wchar_t* _mwstrdup(const wchar_t *p, const char *file, int line, const char *func )
 {
 	if(p == NULL) {
 		return NULL;
 	} else {
 		unsigned int len = wcslen(p);
-		char *string  = (char *)_mmalloc((len+1),file,line,func);
-		memcpy(string,p,(len+1));
+		wchar_t *string  = (wchar_t *)_mmalloc((len+1),file,line,func);
+		memcpy(string,p,((len+1)*sizeof(wchar_t)));
 		return string;
 	}
 }

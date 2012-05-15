@@ -17,8 +17,10 @@ unsigned int AdrenoEmit_AddString(AdrenoScript *script, char *string, unsigned i
 	AdrenoValue *value;
 
 	for (i = 0; i < script->Strings.NodeCount; i++)
-		if (((AdrenoString *)script->Strings.NodeHeap[i].Value.Value)->Size == len && memcmp(((AdrenoString *)script->Strings.NodeHeap[i].Value.Value)->Value, string, len) == 0)
+	{
+		if (((AdrenoValue *)script->Strings.NodeHeap[i].Value.Value)->Value.String->Size == len && memcmp(((AdrenoValue *)script->Strings.NodeHeap[i].Value.Value)->Value.String->Value, string, len) == 0)
 			return i;
+	}
 	
 	i = script->Strings.NodeCount;
 
@@ -42,6 +44,7 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, char *name)
 {
 	EmitFunction *f = (EmitFunction *)AdrenoAlloc(sizeof(EmitFunction));
 
+	f->Function.Type = AF_SCRIPT;
 	f->Function.Index = script->Functions.NodeCount;
 	f->Function.NameIndex = AdrenoEmit_AddString(script, name, (unsigned int)strlen(name));
 	f->Function.Bytecode = NULL;
@@ -51,10 +54,10 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, char *name)
 	f->Function.Owner = script;
 	f->Function.GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
 
-	AdrenoHashtable_Initialize(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_WString);
+	AdrenoHashtable_Initialize(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
 	AdrenoHashtable_Initialize(&f->RLabels, NULL, NULL);
 
-	AdrenoHashtable_Set(&script->Functions, script->Strings.NodeHeap[f->Function.NameIndex].Value.Value, f);
+	AdrenoHashtable_Set(&script->Functions, ((AdrenoValue *)script->Strings.NodeHeap[f->Function.NameIndex].Value.Value)->Value.String->Value, f);
 	AdrenoMS_Open(&f->Stream);
 
 	return (AdrenoFunction *)f;

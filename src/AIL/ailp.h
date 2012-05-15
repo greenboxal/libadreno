@@ -15,6 +15,7 @@ extern "C"
 	extern int ail_lex(); 
 	extern int ail_parse(void *context); 
 	extern void ail_error(const char* s);
+	extern char *ail_parse_string(char *s);
 
 #ifdef __cplusplus
 }

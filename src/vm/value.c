@@ -1,5 +1,20 @@
 #include <adreno/vm/vm.h>
 
+unsigned int AdrenoValue_ValueHash(AdrenoValue *value, unsigned int size)
+{
+	AdrenoValue *v = AdrenoValue_GetValue(value);
+
+	if (value->Type == AT_STRING)
+		return AdrenoHashtable_Hash_Fnv(v->Value.String->Value, v->Value.String->Size);
+	
+	return v->Value.I4;
+}
+
+unsigned int AdrenoValue_GetValueLen(AdrenoValue *value)
+{
+	return 0;
+}
+
 AdrenoValue *AdrenoValue_GetValue(AdrenoValue *ref)
 {
 	if (ref->Type == AT_REFERENCE)
@@ -31,6 +46,70 @@ void AdrenoValue_Dereference(AdrenoValue *value)
 
 	if (value->ReferenceCounter == 0)
 		AdrenoValue_Free(value);
+}
+
+int AdrenoValue_LoadNull(AdrenoValue *value)
+{
+	value->Type = AT_NULL;
+	value->GCFlags = GC_NONE;
+	value->ReferenceCounter = 1;
+	value->Value.I4 = 0;
+
+	return 1;
+}
+
+int AdrenoValue_LoadInteger(AdrenoValue *value, unsigned int i4)
+{
+	value->Type = AT_INTEGER;
+	value->GCFlags = GC_NONE;
+	value->ReferenceCounter = 1;
+	value->Value.I4 = i4;
+
+	return 1;
+}
+
+int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, int copy)
+{
+	AdrenoValue *rvalue;
+
+	rvalue = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+	rvalue->Type = AT_STRING;
+	rvalue->GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
+	rvalue->ReferenceCounter = 0;
+	rvalue->Value.String = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
+	rvalue->Value.String->Size = len;
+
+	if (copy)
+	{
+		rvalue->Value.String->Value = (char *)AdrenoAlloc(len + 1);
+		rvalue->Value.String->Flags = SF_FREE;
+		memcpy(&rvalue->Value.String->Value, string, rvalue->Value.String->Size);
+		rvalue->Value.String->Value[len] = 0;
+	}
+	else
+	{
+		rvalue->Value.String->Flags = SF_NONE;
+		rvalue->Value.String->Value = string;
+	}
+	
+	AdrenoValue_CreateReference(value, rvalue);
+
+	return 1;
+}
+
+int AdrenoValue_LoadArray(AdrenoValue *value)
+{
+	AdrenoValue *rvalue = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+	rvalue->Type = AT_ARRAY;
+	rvalue->GCFlags = (AdrenoGCFlags)(GC_COLLECT | GC_FREE);
+	rvalue->ReferenceCounter = 0;
+	rvalue->Value.Array = (AdrenoArray *)AdrenoAlloc(sizeof(AdrenoArray));
+	rvalue->Value.Array->Type = AT_NULL;
+	AdrenoHashtable_Initialize(&rvalue->Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoValue_ValueHash, (AdrenoHashtable_LenFunction)AdrenoValue_GetValueLen);
+				
+	AdrenoValue_CreateReference(value, rvalue);
+
+	return 1;
 }
 
 void AdrenoValue_Free(AdrenoValue *value)
