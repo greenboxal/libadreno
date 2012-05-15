@@ -75,39 +75,7 @@ long double GetTime()
 	return (long double)time.QuadPart / (long double)frequency.QuadPart;
 }
 
-void printFunction(AdrenoVM *vm, AdrenoContext *ctx)
-{
-	AdrenoValue value, *vvalue, *rvalue;
 
-	vvalue = AdrenoContext_GetArgument(ctx, 0);
-	rvalue = AdrenoValue_GetValue(vvalue);
-
-	if (!rvalue)
-	{
-		vm->Error = ERR_NULL_REFERENCE;
-		vm->State = ST_END;
-		return;
-	}
-
-	if (rvalue->Type == AT_STRING)
-	{
-		printf("%s", rvalue->Value.String->Value);
-	}
-	else if (rvalue->Type == AT_INTEGER)
-	{
-		printf("%d", rvalue->Value.I4);
-	}
-	
-	AdrenoValue_Dereference(vvalue);
-
-	AdrenoValue_LoadInteger(&value, 0);
-	if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
-	{
-		vm->Error = ERR_STACK_OVERFLOW;
-		vm->State = ST_END;
-		return;
-	}
-}
 
 int main(int argc, char **argv)
 {
@@ -125,7 +93,7 @@ int main(int argc, char **argv)
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
 
-	AdrenoVM_AddAPIFunction(&vm, "print", printFunction);
+	AdrenoVM_LoadStdlib(&vm);
 
 	AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
 	script = AilCompiler_Compile(&c);
@@ -135,7 +103,7 @@ int main(int argc, char **argv)
 	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 1; j++)
+	for (j = 0; j < 100000; j++)
 	{
 		AdrenoContext_SetFunctionByName(&ctx, "main");
  		AdrenoVM_Run(&vm, &ctx);

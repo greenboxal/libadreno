@@ -176,6 +176,7 @@ extern "C"
 	extern void AdrenoVM_Initialize(AdrenoVM *vm);
 	extern unsigned int AdrenoVM_AttachScript(AdrenoVM *vm, AdrenoScript *script);
 	extern void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx);
+	extern void AdrenoVM_LoadStdlib(AdrenoVM *vm);
 	extern void AdrenoVM_AddAPIFunction(AdrenoVM *vm, char *name, AdrenoAPIFunction function);
 	extern void AdrenoVM_Free(AdrenoVM *vm);
 

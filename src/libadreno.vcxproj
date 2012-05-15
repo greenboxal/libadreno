@@ -20,6 +20,7 @@
     <ClCompile Include="vm\emit.c" />
     <ClCompile Include="vm\script.c" />
     <ClCompile Include="vm\stack.c" />
+    <ClCompile Include="vm\stdlib.c" />
     <ClCompile Include="vm\value.c" />
     <ClCompile Include="vm\vm.c" />
   </ItemGroup>

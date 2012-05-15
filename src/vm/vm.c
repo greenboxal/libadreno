@@ -247,7 +247,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 		case OP_STLOC_3:
 		case OP_STLOC_S:
 			{
-				int index;
+				unsigned int index;
 
 				if (op >= OP_STLOC_0 && op <= OP_STLOC_3)
 				{
@@ -259,7 +259,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					index = opcode->Value.I4;
 				}
 
-				if (index < 0 || index >= ctx->CurrentFunction->LocalsCount)
+				if (index >= ctx->CurrentFunction->LocalsCount)
 				{
 					vm->Error = ERR_OUT_OF_BOUNDS;
 					vm->State = ST_END;
@@ -281,7 +281,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 		case OP_LDLOC_3:
 		case OP_LDLOC_S:
 			{
-				int index;
+				unsigned int index;
 
 				if (op >= OP_LDLOC_0 && op <= OP_LDLOC_3)
 				{
@@ -293,7 +293,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					index = opcode->Value.I4;
 				}
 				
-				if (index < 0 || index >= ctx->CurrentFunction->LocalsCount)
+				if (index >= ctx->CurrentFunction->LocalsCount)
 				{
 					vm->Error = ERR_OUT_OF_BOUNDS;
 					vm->State = ST_END;
