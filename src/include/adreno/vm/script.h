@@ -41,6 +41,8 @@ extern "C"
 #endif
 
 	extern void AdrenoScript_Initialize(AdrenoScript *script);
+	extern char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size);
+	extern AdrenoScript *AdrenoScript_Load(char *data);
 	extern void AdrenoScript_Free(AdrenoScript *script);
 
 #ifdef __cplusplus

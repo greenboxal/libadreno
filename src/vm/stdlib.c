@@ -29,11 +29,11 @@ APIDEF(print)
 
 	if (rvalue->Type == AT_STRING)
 	{
-		printf("%s", rvalue->Value.String->Value);
+		printf("%s\n", rvalue->Value.String->Value);
 	}
 	else if (rvalue->Type == AT_INTEGER)
 	{
-		printf("%d", rvalue->Value.I4);
+		printf("%d\n", rvalue->Value.I4);
 	}
 	
 	AdrenoValue_Dereference(vvalue);

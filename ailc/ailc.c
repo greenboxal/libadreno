@@ -5,10 +5,7 @@
 #include <sys/stat.h>
 
 #include <adreno/vm/vm.h>
-#include <adreno/vm/emit.h>
 #include <adreno/ail/ailc.h>
-
-#include <Windows.h>
 
 char *LoadInputFile(char *FileName) 
 {
@@ -64,69 +61,97 @@ char *LoadInputFile(char *FileName)
 	return Buf1;
 }
 
-long double GetTime()
+void WriteData(char *data, unsigned int size, char *to)
 {
-	LARGE_INTEGER frequency;
-	LARGE_INTEGER time;
+	FILE *fp = fopen(to, "wb");
 
-	QueryPerformanceFrequency(&frequency);
-	QueryPerformanceCounter(&time);
+	if (!fp)
+	{
+		printf("Error opening output file!\n");
+		return;
+	}
 
-	return (long double)time.QuadPart / (long double)frequency.QuadPart;
+	fwrite(data, size, 1, fp);
+	fclose(fp);
 }
 
-
-
-int main(int argc, char **argv)
+void ShowUsage()
 {
-	AdrenoVM vm;
-	AdrenoContext ctx;
-	AdrenoScript *script;
-	AilCompiler c;
-	long double start;
-	int j;
-	unsigned int size;
-	char *data;
+	printf("usage: ailc [options] [input file]\n");
+	printf("If no input is specified stdin is used.\n");
+	printf("Options:\n");
+	printf("\t-o <output file>: Save the output to output file [default = ail.bin]\n");
+	printf("\t-h: Show this text\n");
+	printf("\n");
+}
+
+int main(int argc, char *argv[])
+{
+	char *inFile;
+	char *outFile = "ail.bin";
+	int i = 0;
 	
 #ifdef USE_DEBUG_MALLOC
 	malloc_init();
 #endif
 
-	AdrenoVM_Initialize(&vm);
-	AdrenoContext_Initialize(&ctx);
-
-	AdrenoVM_LoadStdlib(&vm);
-
-	/*AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
-	script = AilCompiler_Compile(&c);
-	AilCompiler_Free(&c);
-	AdrenoFree(c.Data);
-
-	data = AdrenoScript_Save(script, &size);*/
-	
-	data = LoadInputFile("test.bin");
-	script = AdrenoScript_Load(data);
-	AdrenoFree(data);
-
-	AdrenoContext_AttachScript(&ctx, script);
-
-	start = GetTime();
-	for (j = 0; j < 1; j++)
+	if (argc < 2)
 	{
-		AdrenoContext_SetFunctionByName(&ctx, "main");
- 		AdrenoVM_Run(&vm, &ctx);
+		ShowUsage();
+		return;
 	}
-	start = GetTime() - start;
-	printf("Time: %Lf\n", start);
 
-	AdrenoScript_Free(script);
-	AdrenoContext_Free(&ctx);
-	AdrenoVM_Free(&vm);
+	for (i = 1; i < argc; i++)
+	{
+		if (strcmp(argv[i], "-h") == 0)
+		{
+			ShowUsage();
+			return;
+		}
+		else if (strcmp(argv[i], "-o") == 0)
+		{
+			i++;
 
+			if (i >= argc)
+			{
+				ShowUsage();
+				return;
+			}
+
+			outFile = argv[i];
+		}
+		else if (i == argc - 1)
+		{
+			inFile = argv[i];
+		}
+		else
+		{
+			ShowUsage();
+			return;
+		}
+	}
+
+	{
+		AilCompiler c;
+		AdrenoScript *s;
+		unsigned int size;
+		char *data;
+
+		AilCompiler_Initialize(&c, LoadInputFile(inFile));
+		s = AilCompiler_Compile(&c);
+		AilCompiler_Free(&c);
+		AdrenoFree(c.Data);
+
+		data = AdrenoScript_Save(s, &size);
+
+		WriteData(data, size, outFile);
+		AdrenoScript_Free(s);
+		AdrenoFree(data);
+	}
+	
 #ifdef USE_DEBUG_MALLOC
 	malloc_final();
 #endif
 
-	getchar();
 	return 0;
 }

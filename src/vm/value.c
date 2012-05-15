@@ -83,7 +83,7 @@ int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, i
 	{
 		rvalue->Value.String->Value = (char *)AdrenoAlloc(len + 1);
 		rvalue->Value.String->Flags = SF_FREE;
-		memcpy(&rvalue->Value.String->Value, string, rvalue->Value.String->Size);
+		memcpy(rvalue->Value.String->Value, string, rvalue->Value.String->Size);
 		rvalue->Value.String->Value[len] = 0;
 	}
 	else
