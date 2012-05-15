@@ -618,13 +618,14 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					ADRENOVM_MATHOP_DUAL_SIMPLE_OP(AT_INTEGER, I4, +)
 					ADRENOVM_MATHOP_DUAL_CHECKTYPE(AT_STRING)
 					{
-						char *newString = (char *)AdrenoAlloc(rvalue->Value.String->Size + rvalue2->Value.String->Size + 1);
+						int newSize =  rvalue->Value.String->Size + rvalue2->Value.String->Size;
+						char *newString = (char *)AdrenoAlloc(newSize + 1);
 						
 						memcpy(&newString[0], rvalue->Value.String->Value, rvalue->Value.String->Size);
 						memcpy(&newString[rvalue->Value.String->Size], rvalue2->Value.String->Value, rvalue2->Value.String->Size);
-						newString[value3.Value.String->Size] = 0;
+						newString[newSize] = 0;
 
-						AdrenoValue_LoadString(&value3, newString, rvalue->Value.String->Size + rvalue2->Value.String->Size, 0);
+						AdrenoValue_LoadString(&value3, newString, newSize, 2);
 					}
 					ADRENOVM_MATHOP_DUAL_FINISH()
 				}

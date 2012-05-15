@@ -79,7 +79,7 @@ int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, i
 	rvalue->Value.String = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
 	rvalue->Value.String->Size = len;
 
-	if (copy)
+	if (copy == 1)
 	{
 		rvalue->Value.String->Value = (char *)AdrenoAlloc(len + 1);
 		rvalue->Value.String->Flags = SF_FREE;
@@ -88,7 +88,7 @@ int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, i
 	}
 	else
 	{
-		rvalue->Value.String->Flags = SF_NONE;
+		rvalue->Value.String->Flags = copy == 2 ? SF_FREE : SF_NONE;
 		rvalue->Value.String->Value = string;
 	}
 	
