@@ -17,7 +17,6 @@
 #define SetLabel(name) AdrenoEmit_SetLabel(MyCompiler->CurrentFunction, (name))
 #define AddString(string) AdrenoEmit_AddString(MyCompiler->Script, (string), strlen((string)))
 #define SetLocalCount(count) MyCompiler->CurrentFunction->LocalsCount = (count)
-#define SetArgCount(count) MyCompiler->CurrentFunction->ArgumentCount = (count)
 #define FinalizeFunction() AdrenoEmit_Finalize(MyCompiler->CurrentFunction)
 
 #define YYMALLOC AdrenoAlloc
@@ -93,7 +92,6 @@ fopcode		: mopcode
 			;
 			
 mopcode		: T_INITLOCALS T_CONSTANT							{ SetLocalCount($2); }
-			| T_INITARGS T_CONSTANT								{ SetArgCount($2); }
 			;
 
 prefix		: 													{ SetPrefix(P_NONE); }

@@ -16,7 +16,6 @@ struct adrenofunction
 	AdrenoFunctionType Type;
 	unsigned int Index;
 	unsigned int NameIndex;
-	unsigned int ArgumentCount;
 	unsigned int LocalsCount;
 
 	AdrenoScript *Owner;

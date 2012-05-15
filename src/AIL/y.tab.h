@@ -181,7 +181,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 28 "ail.y"
+#line 27 "ail.y"
 
 	unsigned int num;
 	char *str;

@@ -157,7 +157,7 @@ AdrenoFunction *AdrenoVM_GetFunction(AdrenoVM *vm, AdrenoContext *ctx, AdrenoVal
 
 void AdrenoVM_LoadValue(AdrenoValue **loadTo, AdrenoValue *tmp, AdrenoValue *value, int forceRef)
 {
-	if (value->Type == AT_REFERENCE || forceRef)
+	if ((value->Type == AT_REFERENCE || forceRef == 1) && forceRef != -1)
 	{
 		*loadTo = tmp;
 		AdrenoValue_CreateReference(tmp, value);
@@ -258,7 +258,15 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					opSize += 4;
 					index = opcode->Value.I4;
 				}
+
+				if (index < 0 || index >= ctx->CurrentFunction->LocalsCount)
+				{
+					vm->Error = ERR_OUT_OF_BOUNDS;
+					vm->State = ST_END;
+					break;
+				}
 				
+				AdrenoValue_Dereference(&ctx->Locals[index]);
 				if (!AdrenoStack_Pop(&ctx->Stack, &ctx->Locals[index]))
 				{
 					vm->Error = ERR_STACK_UNDERFLOW;
@@ -283,6 +291,13 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				{
 					opSize += 4;
 					index = opcode->Value.I4;
+				}
+				
+				if (index < 0 || index >= ctx->CurrentFunction->LocalsCount)
+				{
+					vm->Error = ERR_OUT_OF_BOUNDS;
+					vm->State = ST_END;
+					break;
 				}
 
 				AdrenoVM_LoadValue(&rvalue, &value, &ctx->Locals[index], prefix == P_REFERENCE);
@@ -323,9 +338,10 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 					vm->State = ST_END;
 					break;
 				}
+				
+				AdrenoVM_LoadValue(&rvalue2, &value, rvalue, prefix == P_REFERENCE);
 
-				rvalue->ReferenceCounter++;
-				if (!AdrenoStack_Push(&ctx->Stack, rvalue, ADRENOSTACK_CAN_EXPAND))
+				if (!AdrenoStack_Push(&ctx->Stack, rvalue2, ADRENOSTACK_CAN_EXPAND))
 				{
 					vm->Error = ERR_STACK_OVERFLOW;
 					vm->State = ST_END;
@@ -1039,12 +1055,17 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				}
 				else if (function->Type == AF_API)
 				{
+					int oldArgAddr = ctx->ArgumentsPointer;
+					ctx->ArgumentsPointer = ctx->Stack.StackPointer;
 					function->APIFunction(vm, ctx);
+					ctx->ArgumentsPointer = oldArgAddr;
 				}
 			}
 			break;
 		case OP_ENTER:
 			{
+				ctx->ArgumentsPointer = ctx->Stack.StackPointer + 1;
+
 				if (ctx->CurrentFunction->LocalsCount)
 				{
 					if (!AdrenoStack_Take(&ctx->Stack, &ctx->Locals, ctx->CurrentFunction->LocalsCount, ADRENOSTACK_CAN_EXPAND))
@@ -1058,8 +1079,6 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 				{
 					ctx->Locals = NULL;
 				}
-
-				ctx->ArgumentsPointer = ctx->Stack.StackPointer + 2;
 			}
 			break;
 		case OP_RET:
@@ -1118,6 +1137,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 		default:
 			{
+				vm->Error = ERR_BAD_OP;
 				vm->State = ST_END;
 			}
 			break;

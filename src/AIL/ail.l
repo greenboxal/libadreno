@@ -24,7 +24,6 @@ void ail_comment();
 "function"				{ return T_FUNCTION; }
 
 ".initlocals"			{ return T_INITLOCALS; }
-".initargs"				{ return T_INITARGS; }
 
 "nop"					{ return T_NOP; }
 "pop"					{ return T_POP; }
@@ -135,16 +134,13 @@ void ail_comment()
 
 loop:
 	while ((c = input()) != '*' && c != 0)
-		putchar(c);
+		;
 
 	if ((c1 = input()) != '/' && c != 0)
 	{
 		unput(c1);
 		goto loop;
 	}
-
-	if (c != 0)
-		putchar(c1);
 }
 
 char *ail_parse_string(char *str)

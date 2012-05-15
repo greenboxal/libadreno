@@ -49,7 +49,6 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, char *name)
 	f->Function.NameIndex = AdrenoEmit_AddString(script, name, (unsigned int)strlen(name));
 	f->Function.Bytecode = NULL;
 	f->Function.BytecodeSize = 0;
-	f->Function.ArgumentCount = 0;
 	f->Function.LocalsCount = 0;
 	f->Function.Owner = script;
 	f->Function.GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
@@ -82,7 +81,7 @@ void AdrenoEmit_EmitJump(AdrenoFunction *function, unsigned char op, char *name)
 {
 	EmitFunction *e = (EmitFunction *)function;
 	
-	AdrenoHashtable_Set(&e->RLabels, (void *)(e->Function.BytecodeSize + 1), name);
+	AdrenoHashtable_Set(&e->RLabels, (void *)(e->Stream.bufferPosition + 1), AdrenoStrdup(name));
 	AdrenoEmit_EmitOp2_I4(function, op, 0);
 }
 
@@ -90,7 +89,7 @@ unsigned int AdrenoEmit_SetLabel(AdrenoFunction *fnc, char *name)
 {
 	EmitFunction *e = (EmitFunction *)fnc;
 	
-	AdrenoHashtable_Set(&e->Labels, name, (void *)e->Function.BytecodeSize);
+	AdrenoHashtable_Set(&e->Labels, name, (void *)e->Stream.bufferPosition);
 
 	return e->Labels.NodeCount - 1;
 }
@@ -99,6 +98,10 @@ int AdrenoEmit_Finalize(AdrenoFunction *function)
 {
 	EmitFunction *e = (EmitFunction *)function;
 	unsigned int i;
+	
+	e->Function.Bytecode = AdrenoMS_Clone(&e->Stream);
+	e->Function.BytecodeSize = e->Stream.bufferSize;
+	AdrenoMS_Close(&e->Stream);
 
 	for (i = 0; i < e->RLabels.NodeCount; i++)
 	{
@@ -111,14 +114,11 @@ int AdrenoEmit_Finalize(AdrenoFunction *function)
 			return 0;
 
 		*addr = tAddr - (offset + 4);
+		AdrenoFree(name);
 	}
 
 	AdrenoHashtable_Clear(&e->Labels);
 	AdrenoHashtable_Clear(&e->RLabels);
-
-	e->Function.Bytecode = AdrenoMS_Clone(&e->Stream);
-	e->Function.BytecodeSize = e->Stream.bufferSize;
-	AdrenoMS_Close(&e->Stream);
 
 	return 1;
 }

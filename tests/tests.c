@@ -16,7 +16,6 @@ char *LoadInputFile(char *FileName)
 	char *Buf1;
 	struct stat statbuf;
 	size_t BytesRead;
-	unsigned long i;
 
 	/* Sanity check. */
 	if ((FileName == NULL) || (*FileName == '\0')) return(NULL);
@@ -76,24 +75,42 @@ long double GetTime()
 	return (long double)time.QuadPart / (long double)frequency.QuadPart;
 }
 
+void printFunction(AdrenoVM *vm, AdrenoContext *ctx)
+{
+	AdrenoValue value, *vvalue, *rvalue;
+
+	vvalue = AdrenoContext_GetArgument(ctx, 0);
+	rvalue = AdrenoValue_GetValue(vvalue);
+
+	if (!rvalue)
+	{
+		vm->Error = ERR_NULL_REFERENCE;
+		vm->State = ST_END;
+		return;
+	}
+
+	if (rvalue->Type == AT_STRING)
+	{
+		printf("%s", rvalue->Value.String->Value);
+	}
+	else if (rvalue->Type == AT_INTEGER)
+	{
+		printf("%d", rvalue->Value.I4);
+	}
+	
+	AdrenoValue_Dereference(vvalue);
+
+	AdrenoValue_LoadInteger(&value, 0);
+	if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
+	{
+		vm->Error = ERR_STACK_OVERFLOW;
+		vm->State = ST_END;
+		return;
+	}
+}
+
 int main(int argc, char **argv)
 {
-	/*adreno_compiler compiler;
-	adrenovm vm;
-	char *source = readFile("input.txt");
-	int size = 0;
-	char *data;
-
-	adreno_compiler_init(&compiler, source);
-	adreno_compiler_compile(&compiler);
-	data = adreno_compiler_save(&compiler, &size);
-	adreno_compiler_free(&compiler);
-
-	adreno_init(&vm);
-	adreno_load_script(&vm, data, size);
-	adreno_run(&vm);
-	adreno_free(&vm);*/
-
 	AdrenoVM vm;
 	AdrenoContext ctx;
 	AdrenoScript *script;
@@ -108,17 +125,19 @@ int main(int argc, char **argv)
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
 
+	AdrenoVM_AddAPIFunction(&vm, "print", printFunction);
+
 	AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
 	script = AilCompiler_Compile(&c);
 	AilCompiler_Free(&c);
 	AdrenoFree(c.Data);
-getchar();
+
 	AdrenoContext_AttachScript(&ctx, script);
 
 	start = GetTime();
-	for (j = 0; j < 1000; j++)
+	for (j = 0; j < 1; j++)
 	{
-		AdrenoContext_SetFunction(&ctx, (AdrenoFunction *)script->Functions.NodeHeap[0].Value.Value);
+		AdrenoContext_SetFunctionByName(&ctx, "main");
  		AdrenoVM_Run(&vm, &ctx);
 	}
 	start = GetTime() - start;
