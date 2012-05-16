@@ -3,7 +3,11 @@
 
 // Memory
 #define USE_MALLOC 1
-#define USE_DEBUG_MALLOC 1
+#define USE_MEMORY_MANAGER 1
+
+#ifdef _DEBUG
+#define MEMORYMANAGER_LOG 1
+#endif
 
 // Stack
 #define ADRENOSTACK_DEFAULT_STACK 32

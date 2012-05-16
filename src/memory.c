@@ -1,7 +1,9 @@
 #include <adreno/memory.h>
 
-#if defined(USE_DEBUG_MALLOC)
+// This memory manager was taken from rAthena Ragnarök Online emulator, all credits goes to the original creators
+// Some modifications by libadreno team
 
+#if defined(USE_MEMORY_MANAGER)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,7 +134,7 @@ void aFree_(void *p, const char *file, int line, const char *func)
 }
 
 #define USE_MEMMGR
-#define LOG_MEMMGR
+#define MEMORYMANAGER_LOG
 
 #ifdef USE_MEMMGR
 
@@ -553,7 +555,7 @@ unsigned int memmgr_usage (void)
 	return memmgr_usage_bytes / 1024;
 }
 
-#ifdef LOG_MEMMGR
+#ifdef MEMORYMANAGER_LOG
 static char memmer_logfile[128];
 static FILE *log_fp;
 
@@ -575,7 +577,7 @@ static void memmgr_log (char *buf)
 	fprintf(log_fp, "%s", buf);
 	return;
 }
-#endif /* LOG_MEMMGR */
+#endif /* MEMORYMANAGER_LOG */
 
 /// Returns 1 if the memory location is active.
 /// Active means it is allocated and points to a usable part.
@@ -628,9 +630,9 @@ static void memmgr_final (void)
 	struct block *block = block_first;
 	struct unit_head_large *large = unit_head_large_first;
 
-#ifdef LOG_MEMMGR
+#ifdef MEMORYMANAGER_LOG
 	int count = 0;
-#endif /* LOG_MEMMGR */
+#endif /* MEMORYMANAGER_LOG */
 
 	while (block) {
 		if (block->unit_used) {
@@ -639,13 +641,13 @@ static void memmgr_final (void)
 				struct unit_head *head = block2unit(block, i);
 				if(head->block != NULL) {
 					char* ptr = (char *)head + sizeof(struct unit_head) - sizeof(long);
-#ifdef LOG_MEMMGR
+#ifdef MEMORYMANAGER_LOG
 					char buf[1024];
 					sprintf (buf,
 						"%04d : %s line %d size %lu address 0x%p\n", ++count,
 						head->file, head->line, (unsigned long)head->size, ptr);
 					memmgr_log (buf);
-#endif /* LOG_MEMMGR */
+#endif /* MEMORYMANAGER_LOG */
 					// get block pointer and free it [celest]
 					_mfree(ptr, ALC_MARK);
 				}
@@ -656,18 +658,18 @@ static void memmgr_final (void)
 
 	while(large) {
 		struct unit_head_large *large2;
-#ifdef LOG_MEMMGR
+#ifdef MEMORYMANAGER_LOG
 		char buf[1024];
 		sprintf (buf,
 			"%04d : %s line %d size %lu address 0x%p\n", ++count,
 			large->unit_head.file, large->unit_head.line, (unsigned long)large->size, &large->unit_head.checksum);
 		memmgr_log (buf);
-#endif /* LOG_MEMMGR */
+#endif /* MEMORYMANAGER_LOG */
 		large2 = large->next;
 		FREE(large,file,line,func);
 		large = large2;
 	}
-#ifdef LOG_MEMMGR
+#ifdef MEMORYMANAGER_LOG
 	printf("Memory manager: %d max bytes used.\n", memmgr_max_used_bytes);
 	if(count == 0) {
 		printf("Memory manager: No memory leaks found.\n");
@@ -675,16 +677,16 @@ static void memmgr_final (void)
 		printf("Memory manager: Memory leaks found and fixed.\n");
 		fclose(log_fp);
 	}
-#endif /* LOG_MEMMGR */
+#endif /* MEMORYMANAGER_LOG */
 }
 
 static void memmgr_init (void)
 {
-#ifdef LOG_MEMMGR
+#ifdef MEMORYMANAGER_LOG
 	sprintf(memmer_logfile, "log/%s.leaks", "AdrenoVM");
 	printf("Memory manager initialised: %s\n", memmer_logfile);
 	memset(hash_unfill, 0, sizeof(hash_unfill));
-#endif /* LOG_MEMMGR */
+#endif /* MEMORYMANAGER_LOG */
 }
 #endif /* USE_MEMMGR */
 

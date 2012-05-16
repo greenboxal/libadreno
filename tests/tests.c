@@ -2,11 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <malloc.h>
 #include <sys/stat.h>
 
 #include <adreno/vm/vm.h>
 #include <adreno/vm/emit.h>
 #include <adreno/ail/ailc.h>
+
+#include <adreno/utils/memorypool.h>
 
 #include <Windows.h>
 
@@ -75,9 +78,67 @@ long double GetTime()
 	return (long double)time.QuadPart / (long double)frequency.QuadPart;
 }
 
-
-
 int main(int argc, char **argv)
+{
+	AdrenoMemoryPool *pool;
+	void *a;
+	long double start;
+	int i;
+	
+#ifdef USE_DEBUG_MALLOC
+	malloc_init();
+#endif
+
+#define dosize 1375
+#define docount 10000
+#define dofree
+
+	pool = AdrenoMemoryPool_New(dosize, 1);
+	
+	start = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		a = (AdrenoValue *)AdrenoAlloc(dosize);
+#ifdef dofree
+		AdrenoFree(a);
+#endif
+	}
+	start = GetTime() - start;
+	printf("memmgr: %Lf\n", start);
+
+	start = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		a = (AdrenoValue *)AdrenoMemoryPool_Alloc(pool);
+#ifdef dofree
+		AdrenoMemoryPool_Free(pool, a);
+#endif
+	}
+	start = GetTime() - start;
+	printf("AdrenoMemoryPool: %Lf\n", start);
+	
+	start = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		a = (AdrenoValue *)malloc(dosize);
+#ifdef dofree
+		free(a);
+#endif
+	}
+	start = GetTime() - start;
+	printf("malloc: %Lf\n", start);
+
+	AdrenoMemoryPool_Destroy(pool);
+	
+#ifdef USE_DEBUG_MALLOC
+	malloc_final();
+#endif
+
+	getchar();
+	return 0;
+}
+
+int main_vm(int argc, char **argv)
 {
 	AdrenoVM vm;
 	AdrenoContext ctx;

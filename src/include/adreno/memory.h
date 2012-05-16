@@ -5,7 +5,7 @@
 
 #include <wchar.h>
 
-#if defined(USE_DEBUG_MALLOC)
+#if defined(USE_MEMORY_MANAGER)
 
 #define ALC_MARK __FILE__, __LINE__, __FUNCTION__
 
