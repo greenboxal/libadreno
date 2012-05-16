@@ -34,7 +34,7 @@
 // 0 = VM
 // 1 = Memory Pool
 // 2 = Hashtable + Array
-#define TEST_TYPE 1
+#define TEST_TYPE 2
 
 char *LoadInputFile(char *FileName) 
 {

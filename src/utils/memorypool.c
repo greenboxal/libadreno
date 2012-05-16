@@ -19,11 +19,6 @@
 
 #include <stdlib.h>
 
-#define PAGE_SIZE 4096
-
-// This will force the use of libadreno memory manager for allocate memory for the pool
-//#define FORCE_MEMMGR_ALLOC
-
 static AdrenoMemoryPool **MPools;
 static unsigned int MPoolsCount = 0;
 
@@ -32,28 +27,28 @@ static unsigned int MPoolsCount = 0;
 
 void *AP_ReservePage(int count)
 {
-	int size = count * PAGE_SIZE;
+	int size = count * ADRENOMP_PAGE_SIZE;
 
 	return VirtualAlloc(NULL, size, MEM_RESERVE, PAGE_READWRITE);
 }
 
 void *AP_CommitPage(void *addr, int count)
 {
-	int size = count * PAGE_SIZE;
+	int size = count * ADRENOMP_PAGE_SIZE;
 	
 	return VirtualAlloc(addr, size, MEM_COMMIT, PAGE_READWRITE);
 }
 
 void AP_FreePage(void *addr, int count)
 {
-	int size = count * PAGE_SIZE;
+	int size = count * ADRENOMP_PAGE_SIZE;
 	
 	VirtualAlloc(addr, size, MEM_FREE, PAGE_READWRITE);
 }
 #else
 void *AP_ReservePage(int count)
 {
-	int size = count * PAGE_SIZE;
+	int size = count * ADRENOMP_PAGE_SIZE;
 
 	return AdrenoAlloc(size);
 }
@@ -136,7 +131,7 @@ void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, unsigned int objectSize, 
 	objectSize += 4;
 #endif
 
-	mp->PageSize = (PAGE_SIZE / objectSize) * objectSize;
+	mp->PageSize = (ADRENOMP_PAGE_SIZE / objectSize) * objectSize;
 	mp->ObjectSize = objectSize;
 	mp->ExpansionFactor = 0;
 

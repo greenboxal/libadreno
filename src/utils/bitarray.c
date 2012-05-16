@@ -27,7 +27,7 @@ void AdrenoBitArray_Initialize(AdrenoBitArray *ba, unsigned int initialSize)
 	ba->DataCount = 0;
 	ba->Data = NULL;
 	ba->AnchorIndex = 0;
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 	ba->AnchorOffset = 0;
 #endif
 
@@ -48,7 +48,7 @@ void AdrenoBitArray_Set(AdrenoBitArray *ba, unsigned int idx)
 	if (index == ba->AnchorIndex && ba->Data[index] == 0xFFFFFFFF)
 	{
 		ba->AnchorIndex++;
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 		ba->AnchorOffset = 0;
 #endif
 	}
@@ -68,7 +68,7 @@ void AdrenoBitArray_Unset(AdrenoBitArray *ba, unsigned int idx)
 	{
 		ba->AnchorIndex = index;
 		
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 		if (offset < ba->AnchorOffset)
 			ba->AnchorOffset = offset;
 #endif
@@ -90,7 +90,7 @@ int AdrenoBitArray_Search(AdrenoBitArray *ba)
 {
 	unsigned int i, j, s;
 	
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 	s = ba->AnchorOffset;
 #else
 	s = 0;
@@ -100,7 +100,7 @@ int AdrenoBitArray_Search(AdrenoBitArray *ba)
 	{
 		if (ba->Data[i] == 0xFFFFFFFF)
 		{
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 			s = 0;
 #endif
 			continue;
@@ -113,7 +113,7 @@ int AdrenoBitArray_Search(AdrenoBitArray *ba)
 			if (!(ba->Data[i] & mask))
 			{
 				ba->AnchorIndex = i;
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 				ba->AnchorOffset = j;
 #endif
 
@@ -121,7 +121,7 @@ int AdrenoBitArray_Search(AdrenoBitArray *ba)
 			}
 		}
 		
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 		s = 0;
 #endif
 	}
@@ -159,7 +159,7 @@ void AdrenoBitArray_Free(AdrenoBitArray *ba)
 	ba->DataCount = 0;
 	ba->Data = NULL;
 	ba->AnchorIndex = 0;
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 	ba->AnchorOffset = 0;
 #endif
 }

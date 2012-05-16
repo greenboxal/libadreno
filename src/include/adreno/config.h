@@ -32,5 +32,12 @@
 
 // Memory Pool
 #define ADRENOMP_USE_LINKED_LIST
+#define ADRENOMP_PAGE_SIZE 4096
+
+// This will force the use of libadreno memory manager for allocate memory for the pool
+//#define ADRENOMP_FORCE_MEMMGR_ALLOC
+
+// Bitarray
+#define BITARRAY_USE_ANCHOR_OFFSET
 
 #endif

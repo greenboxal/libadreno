@@ -17,14 +17,14 @@
 #ifndef ADRENOBITARRAY_H
 #define ADRENOBITARRAY_H
 
-#define USE_ANCHOR_OFFSET
+#include <adreno/config.h>
 
 typedef struct
 {
 	unsigned int *Data;
 	unsigned int DataCount;
 	unsigned int AnchorIndex;
-#ifdef USE_ANCHOR_OFFSET
+#ifdef BITARRAY_USE_ANCHOR_OFFSET
 	unsigned int AnchorOffset;
 #endif
 } AdrenoBitArray;
