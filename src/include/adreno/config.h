@@ -30,4 +30,7 @@
 #define ADRENOSTACK_CAN_EXPAND 1
 #define ADRENOSTACK_EXPANSION_FACTOR 5
 
+// Memory Pool
+#define ADRENOMP_USE_LINKED_LIST
+
 #endif

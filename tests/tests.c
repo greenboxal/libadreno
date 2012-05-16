@@ -34,7 +34,7 @@
 // 0 = VM
 // 1 = Memory Pool
 // 2 = Hashtable + Array
-#define TEST_TYPE 2
+#define TEST_TYPE 1
 
 char *LoadInputFile(char *FileName) 
 {
@@ -178,11 +178,11 @@ int main(int argc, char **argv)
 	malloc_init();
 #endif
 
-#define dosize 1000
-#define docount 1000000
+#define dosize 16
+#define docount 1000
 //#define dofree
 
-	pool = AdrenoMemoryPool_New(dosize, 1000);
+	pool = AdrenoMemoryPool_New(dosize, 5);
 	
 	start = GetTime();
 	for (i = 0; i < docount; i++)
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 #endif
 	}
 	start = GetTime() - start;
-	printf("AdrenoMemoryPool: %Lf\n", start);
+	printf("\nAdrenoMemoryPool: %Lf\n", start);
 
 	start = GetTime();
 	for (i = 0; i < docount; i++)

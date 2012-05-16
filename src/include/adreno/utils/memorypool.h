@@ -17,12 +17,15 @@
 #ifndef ADRENOMEMORYPOOL_H
 #define ADRENOMEMORYPOOL_H
 
+#include <adreno/config.h>
 #include <adreno/utils/bitarray.h>
 
 typedef struct
 {
 	char *Address;
-	unsigned int CommitedCount;
+#ifdef ADRENOMP_USE_LINKED_LIST
+	unsigned int UseCount;
+#endif
 } AdrenoMemoryPoolPage;
 
 typedef struct
@@ -37,7 +40,11 @@ typedef struct
 	AdrenoMemoryPoolPage *Pages;
 	unsigned int PageCount;
 
+#ifdef ADRENOMP_USE_LINKED_LIST
+	unsigned int *Reuse;
+#else
 	AdrenoBitArray FreeList;
+#endif
 
 	unsigned int Index;
 	unsigned int DestroyLock;

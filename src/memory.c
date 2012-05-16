@@ -149,16 +149,9 @@ void aFree_(void *p, const char *file, int line, const char *func)
 	p = NULL;
 }
 
-#define USE_MEMMGR
-#define MEMORYMANAGER_LOG
+#ifdef USE_MEMORY_MANAGER
 
-#ifdef USE_MEMMGR
-
-#if defined(DEBUG)
-#define DEBUG_MEMMGR
-#endif
-
-/* USE_MEMMGR */
+/* USE_MEMORY_MANAGER */
 
 /*
  * メモリマネージャ
@@ -704,7 +697,7 @@ static void memmgr_init (void)
 	memset(hash_unfill, 0, sizeof(hash_unfill));
 #endif /* MEMORYMANAGER_LOG */
 }
-#endif /* USE_MEMMGR */
+#endif /* USE_MEMORY_MANAGER */
 
 
 /*======================================
@@ -724,7 +717,7 @@ void malloc_memory_check(void)
 /// The check is best-effort, 0 positives are possible.
 int malloc_verify_ptr(void* ptr)
 {
-#ifdef USE_MEMMGR
+#ifdef USE_MEMORY_MANAGER
 	return memmgr_verify(ptr) && MEMORY_VERIFY(ptr);
 #else
 	return MEMORY_VERIFY(ptr);
@@ -734,7 +727,7 @@ int malloc_verify_ptr(void* ptr)
 
 unsigned int malloc_usage (void)
 {
-#ifdef USE_MEMMGR
+#ifdef USE_MEMORY_MANAGER
 	return memmgr_usage ();
 #else
 	return MEMORY_USAGE();
@@ -743,7 +736,7 @@ unsigned int malloc_usage (void)
 
 void malloc_final (void)
 {
-#ifdef USE_MEMMGR
+#ifdef USE_MEMORY_MANAGER
 	memmgr_final ();
 #endif
 	MEMORY_CHECK();
@@ -760,7 +753,7 @@ void malloc_init (void)
 	GC_find_leak = 1;
 	GC_INIT();
 #endif
-#ifdef USE_MEMMGR
+#ifdef USE_MEMORY_MANAGER
 	memmgr_init ();
 #endif
 }
