@@ -15,7 +15,7 @@
 
 // 0 = VM
 // 1 = Memory Pool
-#define TEST_TYPE 0
+#define TEST_TYPE 1
 
 char *LoadInputFile(char *FileName) 
 {
@@ -159,11 +159,11 @@ int main(int argc, char **argv)
 	malloc_init();
 #endif
 
-#define dosize 1375
-#define docount 100000
-#define dofree
+#define dosize 16
+#define docount 1000
+//#define dofree
 
-	pool = AdrenoMemoryPool_New(dosize, 1);
+	pool = AdrenoMemoryPool_New(dosize, 10);
 	
 	start = GetTime();
 	for (i = 0; i < docount; i++)
@@ -200,6 +200,9 @@ int main(int argc, char **argv)
 
 	AdrenoMemoryPool_Destroy(pool);
 
+#ifndef dofree
+	getchar();
+#endif
 #ifdef USE_MEMORY_MANAGER
 	malloc_final();
 #endif
