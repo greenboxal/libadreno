@@ -27,6 +27,7 @@ typedef struct
 
 typedef struct
 {
+	unsigned int FakeObjectSize;
 	unsigned int ObjectSize;
 	unsigned int ExpansionFactor;
 

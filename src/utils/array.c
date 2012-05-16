@@ -38,7 +38,7 @@ void AdrenoArray_Remove(AdrenoArray *arr, unsigned int idx)
 	if (idx >= arr->Count)
 		return;
 
-	memcpy(&arr->Data[idx], &arr->Data[idx + 1], (--arr->Count - idx * sizeof(void *)));
+	memcpy(&arr->Data[idx], &arr->Data[idx + 1], (--arr->Count - idx) * sizeof(void *));
 	
 	arr->Data = (void **)AdrenoRealloc(arr->Data, arr->Count * sizeof(void *));
 }

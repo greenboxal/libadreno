@@ -25,6 +25,7 @@
 #include <adreno/vm/emit.h>
 #include <adreno/ail/ailc.h>
 
+#include <adreno/utils/array.h>
 #include <adreno/utils/memorypool.h>
 #include <adreno/utils/hashtable.h>
 
@@ -32,8 +33,8 @@
 
 // 0 = VM
 // 1 = Memory Pool
-// 2 = Hashtable
-#define TEST_TYPE 0
+// 2 = Hashtable + Array
+#define TEST_TYPE 2
 
 char *LoadInputFile(char *FileName) 
 {
@@ -230,14 +231,78 @@ int main(int argc, char **argv)
 }
 
 #elif TEST_TYPE == 2
+char *rand_str(char *dst, int size)
+{
+   static const char text[] = "abcdefghijklmnopqrstuvwxyz"
+                              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+							  "0123456789"
+							  "!@#$%¨&*()_";
+   int i, len = rand() % (size - 1);
+   for ( i = 0; i < len; ++i )
+   {
+      dst[i] = text[rand() % (sizeof text - 1)];
+   }
+   dst[i] = '\0';
+   return dst;
+}
+
 int main(int argc, char **argv)
 {
 	AdrenoHashtable ht;
+	AdrenoArray arr;
+	int i;
+	char tmp[30];
+	long double time;
+	
+#ifdef USE_MEMORY_MANAGER
+	malloc_init();
+#endif
 
 	AdrenoHashtable_Initialize(&ht, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
+	AdrenoArray_Initialize(&arr);
+	
+#define docount 100000
 
+	time = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		rand_str(tmp, sizeof(tmp));
+		AdrenoArray_Add(&arr, AdrenoStrdup(tmp));
+	}
+	time = GetTime() - time;
+	printf("Array add with rand_str + strdup: %Lf\n", time);
+	
+	time = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		AdrenoHashtable_Set(&ht, arr.Data[i], arr.Data[i]);
+	}
+	time = GetTime() - time;
+	printf("Hashtable add: %Lf\n", time);
+	
+	time = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		AdrenoHashtable_Remove(&ht, arr.Data[i]);
+	}
+	time = GetTime() - time;
+	printf("Hashtable remove: %Lf\n", time);
+
+	time = GetTime();
+	while(arr.Count)
+	{
+		AdrenoFree(arr.Data[0]);
+		AdrenoArray_Remove(&arr, 0);
+	}
+	time = GetTime() - time;
+	printf("Array remove + free: %Lf\n", time);
 
 	AdrenoHashtable_Destroy(&ht);
+	AdrenoArray_Free(&arr);
+	
+#ifdef USE_MEMORY_MANAGER
+	malloc_final();
+#endif
 
 	getchar();
 	return 0;

@@ -221,14 +221,16 @@ void AdrenoHashtable_RemoveHashed(AdrenoHashtable *hashtable, unsigned int keyHa
 
 		if (hashtable->RootNode)
 			hashtable->RootNode->Parent = NULL;
-
+		
+		hashtable->NodeCount--;
 		if (removedNode != NULL)
 			AdrenoMemoryPool_Free(AHT_NodePool, removedNode);
 	}
 	else
 	{
 		AdrenoHashtableNode *removedNode = AdrenoHashtable_TreeRemove(hashtable->RootNode, keyHash, NULL);
-
+		
+		hashtable->NodeCount--;
 		if (removedNode != NULL)
 			AdrenoMemoryPool_Free(AHT_NodePool, removedNode);
 	}

@@ -97,7 +97,7 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 
 	for (i = 0; i < MPoolsCount; i++)
 	{
-		if (MPools[i] && MPools[i]->ObjectSize == objectSize && MPools[i]->ExpansionFactor == expansionFactor)
+		if (MPools[i] && MPools[i]->FakeObjectSize == objectSize && MPools[i]->ExpansionFactor == expansionFactor)
 		{
 			MPools[i]->DestroyLock++;
 
@@ -119,11 +119,16 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 
 void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, unsigned int objectSize, unsigned int expansionFactor)
 {
+	mp->FakeObjectSize = objectSize;
+	mp->ExpansionFactor = 0;
+	
 	if (objectSize % 2)
 		objectSize++;
 
+	while (PAGE_SIZE % objectSize)
+		objectSize += 2;
+		
 	mp->ObjectSize = objectSize;
-	mp->ExpansionFactor = 0;
 
 	mp->TotalCount = 0;
 	mp->TotalMaxCount = 0;
