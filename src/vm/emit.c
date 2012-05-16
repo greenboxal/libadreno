@@ -24,7 +24,7 @@ unsigned int AdrenoEmit_AddString(AdrenoScript *script, char *string, unsigned i
 	
 	i = script->Strings.NodeCount;
 
-	value = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+	value = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
 	value->Type = AT_STRING;
 	value->GCFlags = GC_FINAL_FREE;
 	value->ReferenceCounter = 0;

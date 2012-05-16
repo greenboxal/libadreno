@@ -72,7 +72,7 @@ int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, i
 {
 	AdrenoValue *rvalue;
 
-	rvalue = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+	rvalue = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
 	rvalue->Type = AT_STRING;
 	rvalue->GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
 	rvalue->ReferenceCounter = 0;
@@ -99,7 +99,7 @@ int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, i
 
 int AdrenoValue_LoadArray(AdrenoValue *value)
 {
-	AdrenoValue *rvalue = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+	AdrenoValue *rvalue = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
 	rvalue->Type = AT_ARRAY;
 	rvalue->GCFlags = (AdrenoGCFlags)(GC_COLLECT | GC_FREE);
 	rvalue->ReferenceCounter = 0;
@@ -147,6 +147,10 @@ void AdrenoValue_Free(AdrenoValue *value)
 	value->ReferenceCounter = 0;
 
 	if (value->GCFlags & GC_FREE)
+	{
+		AdrenoMemoryPool_Free(AdrenoVM_ValuePool, value);
+	}
+	else if (value->GCFlags & GC_FREE_NP)
 	{
 		AdrenoFree(value);
 	}

@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	char *outFile = "ail.bin";
 	int i = 0;
 	
-#ifdef USE_DEBUG_MALLOC
+#ifdef USE_MEMORY_MANAGER
 	malloc_init();
 #endif
 
@@ -137,6 +137,8 @@ int main(int argc, char *argv[])
 		unsigned int size;
 		char *data;
 
+		AdrenoVM_StaticInit();
+
 		AilCompiler_Initialize(&c, LoadInputFile(inFile));
 		s = AilCompiler_Compile(&c);
 		AilCompiler_Free(&c);
@@ -147,9 +149,11 @@ int main(int argc, char *argv[])
 		WriteData(data, size, outFile);
 		AdrenoScript_Free(s);
 		AdrenoFree(data);
+
+		AdrenoVM_StaticDestroy();
 	}
 	
-#ifdef USE_DEBUG_MALLOC
+#ifdef USE_MEMORY_MANAGER
 	malloc_final();
 #endif
 

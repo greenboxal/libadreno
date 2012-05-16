@@ -2,13 +2,27 @@
 
 #include <memory.h>
 
+AdrenoMemoryPool *AdrenoVM_ValuePool = NULL;
+
+void AdrenoVM_StaticInit()
+{
+	AdrenoVM_ValuePool = AdrenoMemoryPool_New(sizeof(AdrenoValue), 1);
+}
+
+void AdrenoVM_StaticDestroy()
+{
+	AdrenoMemoryPool_Destroy(AdrenoVM_ValuePool);
+}
+
 void AdrenoVM_Initialize(AdrenoVM *vm)
 {
 	AdrenoHashtable_Initialize(&vm->GlobalFunctions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
 
 	vm->GlobalFunctions.ExpansionFactor = 2;
-
 	vm->State = ST_IDLE;
+
+	if (!AdrenoVM_ValuePool)
+		AdrenoVM_StaticInit();
 }
 
 AdrenoFunction *AdrenoVM_GetFunction(AdrenoVM *vm, AdrenoContext *ctx, AdrenoValue *value)
@@ -453,12 +467,12 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 					if (ADRENOVALUE_IS_REF_TYPE(rvalue3))
 					{
-						rvalue4 = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+						rvalue4 = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
 						AdrenoValue_CreateReference(rvalue4, rvalue3);
 					}
 					else
 					{
-						rvalue4 = (AdrenoValue *)AdrenoAlloc(sizeof(AdrenoValue));
+						rvalue4 = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
 						*rvalue4 = *rvalue3;
 						rvalue4->GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
 					}

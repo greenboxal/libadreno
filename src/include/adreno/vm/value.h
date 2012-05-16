@@ -15,11 +15,14 @@ typedef enum adrenogcflags
 	/* The GC should free the referenced memory in the value field */
     GC_COLLECT = 0x00000001,
 
-	/* The GC should free the pointer to the AdrenoValue struct */
+	/* The GC should free the pointer to the AdrenoValue struct using the MemoryPool */
     GC_FREE = 0x00000002,
 
+	/* The GC should free the pointer to the AdrenoValue struct using AdrenoFree */
+	GC_FREE_NP = 0x00000004,
+
 	/* Used by constants, must be freed when the scripts is being freed */
-	GC_FINAL_FREE = 0x00000004,
+	GC_FINAL_FREE = 0x00000008,
 } AdrenoGCFlags;
 
 typedef enum

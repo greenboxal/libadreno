@@ -2,6 +2,7 @@
 #define ADRENOVM_H
 
 #include <adreno/utils/hashtable.h>
+#include <adreno/utils/memorypool.h>
 
 typedef struct adrenovm AdrenoVM;
 typedef struct adrenocontext AdrenoContext;
@@ -173,6 +174,9 @@ extern "C"
 {
 #endif
 
+	extern void AdrenoVM_StaticInit();
+	extern void AdrenoVM_StaticDestroy();
+
 	extern void AdrenoVM_Initialize(AdrenoVM *vm);
 	extern unsigned int AdrenoVM_AttachScript(AdrenoVM *vm, AdrenoScript *script);
 	extern void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx);
@@ -186,6 +190,8 @@ extern "C"
 	extern void AdrenoContext_SetFunction(AdrenoContext *ctx, AdrenoFunction *func);
 	extern AdrenoValue *AdrenoContext_GetArgument(AdrenoContext *ctx, int index);
 	extern void AdrenoContext_Free(AdrenoContext *ctx);
+
+	extern AdrenoMemoryPool *AdrenoVM_ValuePool;
 
 #ifdef __cplusplus
 }

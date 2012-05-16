@@ -13,6 +13,10 @@
 
 #include <Windows.h>
 
+// 0 = VM
+// 1 = Memory Pool
+#define TEST_TYPE 0
+
 char *LoadInputFile(char *FileName) 
 {
 	FILE *Fin;
@@ -78,67 +82,9 @@ long double GetTime()
 	return (long double)time.QuadPart / (long double)frequency.QuadPart;
 }
 
+#if TEST_TYPE == 0
+
 int main(int argc, char **argv)
-{
-	AdrenoMemoryPool *pool;
-	void *a;
-	long double start;
-	int i;
-	
-#ifdef USE_DEBUG_MALLOC
-	malloc_init();
-#endif
-
-#define dosize 1375
-#define docount 10000
-#define dofree
-
-	pool = AdrenoMemoryPool_New(dosize, 1);
-	
-	start = GetTime();
-	for (i = 0; i < docount; i++)
-	{
-		a = (AdrenoValue *)AdrenoAlloc(dosize);
-#ifdef dofree
-		AdrenoFree(a);
-#endif
-	}
-	start = GetTime() - start;
-	printf("memmgr: %Lf\n", start);
-
-	start = GetTime();
-	for (i = 0; i < docount; i++)
-	{
-		a = (AdrenoValue *)AdrenoMemoryPool_Alloc(pool);
-#ifdef dofree
-		AdrenoMemoryPool_Free(pool, a);
-#endif
-	}
-	start = GetTime() - start;
-	printf("AdrenoMemoryPool: %Lf\n", start);
-	
-	start = GetTime();
-	for (i = 0; i < docount; i++)
-	{
-		a = (AdrenoValue *)malloc(dosize);
-#ifdef dofree
-		free(a);
-#endif
-	}
-	start = GetTime() - start;
-	printf("malloc: %Lf\n", start);
-
-	AdrenoMemoryPool_Destroy(pool);
-	
-#ifdef USE_DEBUG_MALLOC
-	malloc_final();
-#endif
-
-	getchar();
-	return 0;
-}
-
-int main_vm(int argc, char **argv)
 {
 	AdrenoVM vm;
 	AdrenoContext ctx;
@@ -149,25 +95,31 @@ int main_vm(int argc, char **argv)
 	unsigned int size;
 	char *data;
 	
-#ifdef USE_DEBUG_MALLOC
+#ifdef USE_MEMORY_MANAGER
 	malloc_init();
 #endif
+
+	AdrenoVM_StaticInit();
 
 	AdrenoVM_Initialize(&vm);
 	AdrenoContext_Initialize(&ctx);
 
 	AdrenoVM_LoadStdlib(&vm);
 
-	/*AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
-	script = AilCompiler_Compile(&c);
-	AilCompiler_Free(&c);
-	AdrenoFree(c.Data);
+// 0 = Read Binary
+// 1 = Compile
+#define S_TYPE 0
 
-	data = AdrenoScript_Save(script, &size);*/
-	
+#if S_TYPE == 0
 	data = LoadInputFile("test.bin");
 	script = AdrenoScript_Load(data);
 	AdrenoFree(data);
+#elif S_TYPE == 1
+	AilCompiler_Initialize(&c, LoadInputFile("input.txt"));
+	script = AilCompiler_Compile(&c);
+	AilCompiler_Free(&c);
+	AdrenoFree(c.Data);
+#endif
 
 	AdrenoContext_AttachScript(&ctx, script);
 
@@ -184,10 +136,76 @@ int main_vm(int argc, char **argv)
 	AdrenoContext_Free(&ctx);
 	AdrenoVM_Free(&vm);
 
-#ifdef USE_DEBUG_MALLOC
+	AdrenoVM_StaticDestroy();
+
+#ifdef USE_MEMORY_MANAGER
 	malloc_final();
 #endif
 
 	getchar();
 	return 0;
 }
+
+#elif TEST_TYPE == 1
+
+int main(int argc, char **argv)
+{
+	AdrenoMemoryPool *pool;
+	void *a;
+	long double start;
+	int i;
+	
+#ifdef USE_MEMORY_MANAGER
+	malloc_init();
+#endif
+
+#define dosize 1375
+#define docount 100000
+#define dofree
+
+	pool = AdrenoMemoryPool_New(dosize, 1);
+	
+	start = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		a = AdrenoAlloc(dosize);
+#ifdef dofree
+		AdrenoFree(a);
+#endif
+	}
+	start = GetTime() - start;
+	printf("memmgr: %Lf\n", start);
+
+	start = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		a = AdrenoMemoryPool_Alloc(pool);
+#ifdef dofree
+		AdrenoMemoryPool_Free(pool, a);
+#endif
+	}
+	start = GetTime() - start;
+	printf("AdrenoMemoryPool: %Lf\n", start);
+
+	start = GetTime();
+	for (i = 0; i < docount; i++)
+	{
+		a = malloc(dosize);
+#ifdef dofree
+		free(a);
+#endif
+	}
+	start = GetTime() - start;
+	printf("malloc: %Lf\n", start);
+
+	AdrenoMemoryPool_Destroy(pool);
+
+#ifdef USE_MEMORY_MANAGER
+	malloc_final();
+#endif
+
+	getchar();
+	return 0;
+}
+
+#endif
