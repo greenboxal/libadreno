@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 	AdrenoHashtable_Initialize(&ht, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
 	AdrenoArray_Initialize(&arr);
 	
-#define docount 100000
+#define docount 10000
 
 	time = GetTime();
 	for (i = 0; i < docount; i++)

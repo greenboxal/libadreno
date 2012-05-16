@@ -82,7 +82,7 @@ void AdrenoMemoryPool_Expand(AdrenoMemoryPool *mp)
 	// For now commit the pages too
 	AP_CommitPage(mp->Pages[nIdx].Address, mp->ExpansionFactor);
 
-	mp->TotalMaxCount += mp->ExpansionFactor * PAGE_SIZE / mp->ObjectSize;
+	mp->TotalMaxCount += mp->ExpansionFactor * mp->PageSize / mp->ObjectSize;
 
 	AdrenoBitArray_Resize(&mp->FreeList, mp->TotalMaxCount);
 }
@@ -97,7 +97,7 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 
 	for (i = 0; i < MPoolsCount; i++)
 	{
-		if (MPools[i] && MPools[i]->FakeObjectSize == objectSize && MPools[i]->ExpansionFactor == expansionFactor)
+		if (MPools[i] && MPools[i]->ObjectSize == objectSize && MPools[i]->ExpansionFactor == expansionFactor)
 		{
 			MPools[i]->DestroyLock++;
 
@@ -119,27 +119,23 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 
 void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, unsigned int objectSize, unsigned int expansionFactor)
 {
-	mp->FakeObjectSize = objectSize;
-	mp->ExpansionFactor = 0;
-	
 	if (objectSize % 2)
 		objectSize++;
 
-	while (PAGE_SIZE % objectSize)
-		objectSize += 2;
-		
+	mp->PageSize = (PAGE_SIZE / objectSize) * objectSize;
 	mp->ObjectSize = objectSize;
+	mp->ExpansionFactor = 0;
 
-	mp->TotalCount = 0;
-	mp->TotalMaxCount = 0;
-
-	while (mp->ExpansionFactor * PAGE_SIZE < objectSize)
+	while (mp->ExpansionFactor * mp->PageSize < objectSize)
 		mp->ExpansionFactor++;
 
 	mp->ExpansionFactor *= expansionFactor;
 
 	mp->Pages = NULL;
 	mp->PageCount = 0;
+
+	mp->TotalCount = 0;
+	mp->TotalMaxCount = 0;
 
 	mp->Index = -1;
 	mp->DestroyLock = 1;
@@ -162,7 +158,7 @@ void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp)
 	}
 	
 	freeIdx = AdrenoBitArray_Search(&mp->FreeList);
-	total = mp->ExpansionFactor * PAGE_SIZE;
+	total = mp->ExpansionFactor * mp->PageSize;
 	total2 = mp->ObjectSize * freeIdx;
 
 	pageIndex = total2 / total;
@@ -181,12 +177,12 @@ void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr)
 	for (i = 0; i < mp->PageCount; i++)
 	{
 		if ((unsigned int)ptr >= (unsigned int)mp->Pages[i].Address &&
-			(unsigned int)ptr < (unsigned int)(mp->Pages[i].Address + mp->ExpansionFactor * PAGE_SIZE))
+			(unsigned int)ptr < (unsigned int)(mp->Pages[i].Address + mp->ExpansionFactor * mp->PageSize))
 		{
 			int pageOffset, freeIdx;
 
 			pageOffset = ((unsigned int)ptr - (unsigned int)mp->Pages[i].Address);
-			freeIdx = ((i * mp->ExpansionFactor * PAGE_SIZE) / mp->ObjectSize) + (pageOffset / mp->ObjectSize);
+			freeIdx = ((i * mp->ExpansionFactor * mp->PageSize) / mp->ObjectSize) + (pageOffset / mp->ObjectSize);
 
 			mp->TotalCount--;
 			AdrenoBitArray_Unset(&mp->FreeList, freeIdx);
@@ -205,7 +201,7 @@ void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp)
 
 	for (i = 0; i < mp->PageCount; i++)
 	{
-		AP_FreePage((void *)mp->Pages[i].Address, mp->ExpansionFactor * PAGE_SIZE);
+		AP_FreePage((void *)mp->Pages[i].Address, mp->ExpansionFactor);
 	}
 	
 	if (mp->Pages)
