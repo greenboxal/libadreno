@@ -32,7 +32,7 @@ struct adrenoscript
 	AdrenoGCFlags GCFlags;
 
 	AdrenoHashtable Functions;
-	AdrenoHashtable Strings;
+	AdrenoArray Strings;
 };
 
 #ifdef __cplusplus

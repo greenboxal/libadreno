@@ -35,7 +35,6 @@ extern "C"
 	{
 		// Nodes
 		unsigned int NodeCount;
-		AdrenoHashtableNode *NodeHeap;
 		AdrenoHashtableNode *RootNode;
 
 		// Functions
@@ -45,12 +44,13 @@ extern "C"
 		// Expansion settings
 		int FreeSlots;
 		int ExpansionFactor;
-
-#if HEAP_DEBUG > 0
-		// Debug stuff
-		int ReallocCount;
-#endif
 	} AdrenoHashtable;
+
+	typedef struct
+	{
+		AdrenoHashtable *Hashtable;
+		AdrenoHashtableNode *CurrentNode;
+	} AdrenoHashtableIterator;
 
 	// Hashtable functions
 	extern void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len);
@@ -59,6 +59,10 @@ extern "C"
 	extern void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value);
 	extern int AdrenoHashtable_Get(AdrenoHashtable *hashtable, void *key, void **value);
 	extern void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key);
+
+	extern AdrenoHashtableIterator *AdrenoHashtable_CreateIterator(AdrenoHashtable *hashtable);
+	extern void AdrenoHashtableIterator_Next(AdrenoHashtableIterator *it);
+	extern void AdrenoHashtableIterator_Free(AdrenoHashtableIterator *it);
 
 	extern int AdrenoHashtable_Count(AdrenoHashtable *hashtable);
 	extern void AdrenoHashtable_Clear(AdrenoHashtable *hashtable);

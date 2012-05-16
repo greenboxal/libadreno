@@ -21,5 +21,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="input.txt" />
+    <None Include="test.bin">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

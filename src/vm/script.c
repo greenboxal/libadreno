@@ -28,16 +28,16 @@ typedef struct
 void AdrenoScript_Initialize(AdrenoScript *script)
 {
 	AdrenoHashtable_Initialize(&script->Functions, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
-	AdrenoHashtable_Initialize(&script->Strings, NULL, NULL);
+	AdrenoArray_Initialize(&script->Strings);
 
 	script->Functions.ExpansionFactor = 2;
-	script->Strings.ExpansionFactor = 2;
 }
 
 char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size)
 {
 	unsigned int i;
 	char *result;
+	AdrenoHashtableIterator *it;
 
 	AdrenoMS ms;
 	AdrenoMS_Open(&ms);
@@ -48,14 +48,14 @@ char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size)
 		header.Magic = AdrenoBinHeaderMagic;
 		header.Version = AdrenoBinHeaderVersion;
 		header.FunctionCount = script->Functions.NodeCount;
-		header.StringCount = script->Strings.NodeCount;
+		header.StringCount = script->Strings.Count;
 
 		AdrenoMS_Write(&ms, (unsigned char *)&header, 0, sizeof(AdrenoBinHeader));
 	}
 
-	for (i = 0; i < script->Strings.NodeCount; i++)
+	for (i = 0; i < script->Strings.Count; i++)
 	{
-		AdrenoValue *value = (AdrenoValue *)script->Strings.NodeHeap[i].Value.Value;
+		AdrenoValue *value = (AdrenoValue *)script->Strings.Data[i];
 		AdrenoBinString bin;
 
 		bin.Size = value->Value.String->Size;
@@ -64,9 +64,9 @@ char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size)
 		AdrenoMS_Write(&ms, (unsigned char *)value->Value.String->Value, 0, value->Value.String->Size);
 	}
 
-	for (i = 0; i < script->Functions.NodeCount; i++)
+	for (it = AdrenoHashtable_CreateIterator(&script->Functions); it->CurrentNode; AdrenoHashtableIterator_Next(it))
 	{
-		AdrenoFunction *func = (AdrenoFunction *)script->Functions.NodeHeap[i].Value.Value;
+		AdrenoFunction *func = (AdrenoFunction *)it->CurrentNode->Value.Value;
 		AdrenoBinFunction bin;
 
 		bin.NameIndex = func->NameIndex;
@@ -76,6 +76,7 @@ char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size)
 		AdrenoMS_Write(&ms, (unsigned char *)&bin, 0, sizeof(AdrenoBinFunction));
 		AdrenoMS_Write(&ms, (unsigned char *)func->Bytecode, 0, func->BytecodeSize);
 	}
+	AdrenoHashtableIterator_Free(it);
 	
 	*size = ms.bufferSize;
 	result = (char *)AdrenoMS_Clone(&ms);
@@ -113,7 +114,7 @@ AdrenoScript *AdrenoScript_Load(char *data)
 		AdrenoValue_LoadString(&value, &data[position], string->Size, 1);
 		value.Value.Reference->GCFlags = GC_FINAL_FREE;
 		
-		AdrenoHashtable_Set(&as->Strings, (void *)i, value.Value.Reference);
+		AdrenoArray_Add(&as->Strings, value.Value.Reference);
 
 		position += string->Size;
 	}
@@ -135,7 +136,7 @@ AdrenoScript *AdrenoScript_Load(char *data)
 		f->Index = i;
 		f->APIFunction = NULL;
 
-		AdrenoHashtable_Set(&as->Functions, ((AdrenoValue *)as->Strings.NodeHeap[f->NameIndex].Value.Value)->Value.String->Value, f);
+		AdrenoHashtable_Set(&as->Functions, ((AdrenoValue *)as->Strings.Data[f->NameIndex])->Value.String->Value, f);
 
 		memcpy(f->Bytecode, (unsigned char *)(data + position), f->BytecodeSize);
 
@@ -148,10 +149,11 @@ AdrenoScript *AdrenoScript_Load(char *data)
 void AdrenoScript_Free(AdrenoScript *script)
 {	
 	unsigned int i;
-
-	for (i = 0; i < script->Functions.NodeCount; i++)
+	AdrenoHashtableIterator *it;
+	
+	for (it = AdrenoHashtable_CreateIterator(&script->Functions); it->CurrentNode; AdrenoHashtableIterator_Next(it))
 	{
-		AdrenoFunction *fnc = (AdrenoFunction *)script->Functions.NodeHeap[i].Value.Value;
+		AdrenoFunction *fnc = (AdrenoFunction *)it->CurrentNode->Value.Value;
 		
 		if (fnc->Type == AF_SCRIPT && fnc->GCFlags & GC_COLLECT && fnc->Bytecode)
 			AdrenoFree(fnc->Bytecode);
@@ -159,10 +161,11 @@ void AdrenoScript_Free(AdrenoScript *script)
 		if (fnc->GCFlags & GC_FREE)
 			AdrenoFree(fnc);
 	}
+	AdrenoHashtableIterator_Free(it);
 
-	for (i = 0; i < script->Strings.NodeCount; i++)
+	for (i = 0; i < script->Strings.Count; i++)
 	{
-		AdrenoValue *val = (AdrenoValue *)script->Strings.NodeHeap[i].Value.Value;
+		AdrenoValue *val = (AdrenoValue *)script->Strings.Data[i];
 		
 		if (val->GCFlags & GC_FINAL_FREE)
 			val->GCFlags = (AdrenoGCFlags)(val->GCFlags | GC_FREE | GC_COLLECT);
@@ -171,7 +174,7 @@ void AdrenoScript_Free(AdrenoScript *script)
 	}
 
 	AdrenoHashtable_Destroy(&script->Functions);
-	AdrenoHashtable_Destroy(&script->Strings);
+	AdrenoArray_Free(&script->Strings);
 
 	if (script->GCFlags & GC_FREE)
 		AdrenoFree(script);

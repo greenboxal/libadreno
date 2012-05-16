@@ -1,6 +1,7 @@
 #ifndef ADRENOVM_H
 #define ADRENOVM_H
 
+#include <adreno/utils/array.h>
 #include <adreno/utils/hashtable.h>
 #include <adreno/utils/memorypool.h>
 
@@ -10,7 +11,7 @@ typedef struct adrenoscript AdrenoScript;
 typedef struct adrenoop AdrenoOpcodeData;
 typedef struct adrenofunction AdrenoFunction;
 typedef struct adrenostring AdrenoString;
-typedef struct adrenoarray AdrenoArray;
+typedef struct adrenovmarray AdrenoVMArray;
 typedef struct adrenoretvalue AdrenoReturnInfo;
 typedef struct adrenovalue AdrenoValue;
 typedef struct adrenostack AdrenoStack;

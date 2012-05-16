@@ -103,7 +103,7 @@ int AdrenoValue_LoadArray(AdrenoValue *value)
 	rvalue->Type = AT_ARRAY;
 	rvalue->GCFlags = (AdrenoGCFlags)(GC_COLLECT | GC_FREE);
 	rvalue->ReferenceCounter = 0;
-	rvalue->Value.Array = (AdrenoArray *)AdrenoAlloc(sizeof(AdrenoArray));
+	rvalue->Value.Array = (AdrenoVMArray *)AdrenoAlloc(sizeof(AdrenoVMArray));
 	rvalue->Value.Array->Type = AT_NULL;
 	AdrenoHashtable_Initialize(&rvalue->Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoValue_ValueHash, (AdrenoHashtable_LenFunction)AdrenoValue_GetValueLen);
 				
@@ -126,12 +126,13 @@ void AdrenoValue_Free(AdrenoValue *value)
 		}
 		else if (value->Type == AT_ARRAY)
 		{
-			unsigned int i;
-
-			for (i = 0; i < value->Value.Array->Array.NodeCount; i++)
+			AdrenoHashtableIterator *it;
+			
+			for (it = AdrenoHashtable_CreateIterator(&value->Value.Array->Array); it->CurrentNode; AdrenoHashtableIterator_Next(it))
 			{
-				AdrenoValue_Dereference((AdrenoValue *)value->Value.Array->Array.NodeHeap[i].Value.Value);
+				AdrenoValue_Dereference((AdrenoValue *)it->CurrentNode->Value.Value);
 			}
+			AdrenoHashtableIterator_Free(it);
 
 			AdrenoHashtable_Destroy(&value->Value.Array->Array);
 			AdrenoFree(value->Value.Array);

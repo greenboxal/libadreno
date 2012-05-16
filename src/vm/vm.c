@@ -406,7 +406,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			{
 				opSize += 4;
 
-				rvalue = (AdrenoValue *)ctx->LoadedScript->Strings.NodeHeap[opcode->Value.I4].Value.Value;
+				rvalue = (AdrenoValue *)ctx->LoadedScript->Strings.Data[opcode->Value.I4];
 				AdrenoValue_CreateReference(&value, rvalue);
 
 				if (!AdrenoStack_Push(&ctx->Stack, &value, ADRENOSTACK_CAN_EXPAND))
@@ -988,7 +988,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 				opSize += 4;
 
-				rvalue = (AdrenoValue *)ctx->LoadedScript->Strings.NodeHeap[opcode->Value.I4].Value.Value;
+				rvalue = (AdrenoValue *)ctx->LoadedScript->Strings.Data[opcode->Value.I4];
 
 				function = AdrenoVM_GetFunction(vm, ctx, rvalue);
 				if (!function)
@@ -1173,11 +1173,11 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 
 void AdrenoVM_Free(AdrenoVM *vm)
 {
-	unsigned int i;
-
-	for (i = 0; i < vm->GlobalFunctions.NodeCount; i++)
+	AdrenoHashtableIterator *it;
+	
+	for (it = AdrenoHashtable_CreateIterator(&vm->GlobalFunctions); it->CurrentNode; AdrenoHashtableIterator_Next(it))
 	{
-		AdrenoFunction *fnc = (AdrenoFunction *)vm->GlobalFunctions.NodeHeap[i].Value.Value;
+		AdrenoFunction *fnc = (AdrenoFunction *)it->CurrentNode->Value.Value;
 		
 		if (fnc->Type == AF_SCRIPT && fnc->GCFlags & GC_COLLECT && fnc->Bytecode)
 			AdrenoFree(fnc->Bytecode);
@@ -1185,6 +1185,7 @@ void AdrenoVM_Free(AdrenoVM *vm)
 		if (fnc->GCFlags & GC_FREE)
 			AdrenoFree(fnc);
 	}
+	AdrenoHashtableIterator_Free(it);
 
 	AdrenoHashtable_Destroy(&vm->GlobalFunctions);
 }

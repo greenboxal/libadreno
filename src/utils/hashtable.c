@@ -1,24 +1,15 @@
 #include <adreno/utils/hashtable.h>
+#include <adreno/utils/memorypool.h>
 #include <adreno/memory.h>
 
 #include <stdlib.h>
 #include <memory.h>
 #include <stdio.h>
 
-#if HEAP_DEBUG > 1
-#define ADJUST_POINTER(x, type, delta) \
-	if (x) { unsigned int oldX = (unsigned int)x; \
-		x = (type *)((unsigned int)x + (unsigned int)delta); printf("(%x -> %x) ", oldX, x); }
-#else
-#define ADJUST_POINTER(x, type, delta) \
-	if (x) \
-		x = (type *)((unsigned int)x + (unsigned int)delta)
-#endif
+static AdrenoMemoryPool *AHT_NodePool = NULL;
+static unsigned HT_UseCount = 0;
 
-#define CREALLOC(var, type, count) \
-	var = (type *)AdrenoRealloc(var, (count) * sizeof(type))
-
-AdrenoHashtableNode *hashtable_find(AdrenoHashtable *hashtable, unsigned int keyHash)
+AdrenoHashtableNode *AdrenoHashtable_Find(AdrenoHashtable *hashtable, unsigned int keyHash)
 {
 	AdrenoHashtableNode *next = hashtable->RootNode;
 
@@ -35,111 +26,17 @@ AdrenoHashtableNode *hashtable_find(AdrenoHashtable *hashtable, unsigned int key
 	return NULL;
 }
 
-int AdrenoHashtable_HeapAdjust(AdrenoHashtable *hashtable)
-{
-	unsigned int i, delta = 0;
-	AdrenoHashtableNode *node, *oldBase = hashtable->NodeHeap;
-
-	if (hashtable->FreeSlots <= 0)
-		hashtable->FreeSlots = hashtable->ExpansionFactor;
-
-	CREALLOC(hashtable->NodeHeap, AdrenoHashtableNode, hashtable->NodeCount + hashtable->FreeSlots);
-
-	if (!hashtable->NodeHeap)
-		return 0;
-
-	if (oldBase != NULL)
-	{
-		delta = (unsigned int)((unsigned int)hashtable->NodeHeap - (unsigned int)oldBase);
-
-#if HEAP_DEBUG > 1
-		printf("Relocating node heap: %x => %x(%d bytes). root = %x\n", oldBase, hashtable->NodeHeap, delta, hashtable->RootNode);
-#endif
-
-		if (delta != 0)
-		{
-#if HEAP_DEBUG > 1
-			printf("Root Node: ");
-#endif
-			ADJUST_POINTER(hashtable->RootNode, AdrenoHashtableNode, delta);
-#if HEAP_DEBUG > 1
-			printf("\n");
-#endif
-
-			for (i = 0; i < hashtable->NodeCount; i++)
-			{
-				node = (AdrenoHashtableNode *)&hashtable->NodeHeap[i];
-
-#if HEAP_DEBUG > 1
-				printf("Node %d(%x): ", i, node);
-#endif
-				ADJUST_POINTER(node->Left, AdrenoHashtableNode, delta);
-				ADJUST_POINTER(node->Right, AdrenoHashtableNode, delta);
-				ADJUST_POINTER(node->Parent, AdrenoHashtableNode, delta);
-#if HEAP_DEBUG > 1
-				printf("\n");
-#endif
-			}
-		}
-	}
-
-	return delta;
-}
-
-AdrenoHashtableNode *AdrenoHashtable_HeapAlloc(AdrenoHashtable *hashtable, unsigned int *heapMove)
-{
-	if (hashtable->FreeSlots <= 0)
-	{
-		unsigned int tmp = AdrenoHashtable_HeapAdjust(hashtable);
-
-		if (heapMove)
-			*heapMove = tmp;
-	}
-
-	hashtable->FreeSlots--;
-
-	return &hashtable->NodeHeap[hashtable->NodeCount++];
-}
-
-void AdrenoHashtable_HeapFree(AdrenoHashtable *hashtable, AdrenoHashtableNode *ptr)
-{
-	hashtable->NodeCount--;
-
-	if (hashtable->NodeCount <= 0)
-	{
-		AdrenoHashtable_Clear(hashtable);
-	}
-	else
-	{
-		memcpy(ptr, &hashtable->NodeHeap[hashtable->NodeCount - 1], sizeof(AdrenoHashtableNode));
-
-		if (ptr->Right)
-			ptr->Right->Parent = ptr;
-
-		if (ptr->Left)
-			ptr->Left->Parent = ptr;
-
-		if (ptr->Value.Key > ptr->Parent->Value.Key)
-			ptr->Parent->Right = ptr;
-		else if (ptr->Value.Key < ptr->Parent->Value.Key)
-			ptr->Parent->Left = ptr;
-
-		hashtable->FreeSlots++;
-		if (hashtable->FreeSlots >= hashtable->ExpansionFactor * 2)
-		{
-			hashtable->FreeSlots = hashtable->ExpansionFactor;
-			AdrenoHashtable_HeapAdjust(hashtable);
-		}
-	}
-}
-
 void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len)
 {
+	HT_UseCount++;
+
+	if (!AHT_NodePool)
+		AHT_NodePool = AdrenoMemoryPool_New(sizeof(AdrenoHashtableNode), 1);
+
 	if (!hashtable)
 		return;
 
 	hashtable->NodeCount = 0;
-	hashtable->NodeHeap = NULL;
 	hashtable->RootNode = NULL;
 
 	hashtable->Hash = hash;
@@ -147,15 +44,18 @@ void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_Hash
 
 	hashtable->FreeSlots = 0;
 	hashtable->ExpansionFactor = DEFAULT_EXPANSION_FACTOR;
-
-#if HEAP_DEBUG > 0
-	hashtable->ReallocCount = 0;
-#endif
 }
 
 void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable)
 {
 	AdrenoHashtable_Clear(hashtable);
+
+	HT_UseCount--;
+	if (HT_UseCount <= 0)
+	{
+		AdrenoMemoryPool_Destroy(AHT_NodePool);
+		AHT_NodePool = NULL;
+	}
 }
 
 void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value)
@@ -166,11 +66,9 @@ void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value)
 
 #define CREATE_NODE(node, parentNode) \
 	{ \
-		unsigned int delta = 0; \
-		node = AdrenoHashtable_HeapAlloc(hashtable, &delta); \
+		node = (AdrenoHashtableNode *)AdrenoMemoryPool_Alloc(AHT_NodePool); \
 		if (!node) \
 			return; \
-		ADJUST_POINTER(next, AdrenoHashtableNode, delta); \
 		node->Value.Key = keyHash; \
 		node->Value.Value = value; \
 		node->Parent = parentNode; \
@@ -195,8 +93,9 @@ void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value)
 			{
 				if (next->Left == NULL)
 				{
-					CREATE_NODE(ptr, NULL);
+					CREATE_NODE(ptr, next);
 					next->Left = ptr;
+					hashtable->NodeCount++;
 					break;
 				}
 				else
@@ -208,8 +107,9 @@ void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value)
 			{
 				if (next->Right == NULL)
 				{
-					CREATE_NODE(ptr, NULL);
+					CREATE_NODE(ptr, next);
 					next->Right = ptr;
+					hashtable->NodeCount++;
 					break;
 				}
 				else
@@ -228,7 +128,7 @@ int AdrenoHashtable_Get(AdrenoHashtable *hashtable, void *key, void **value)
 	unsigned int keyHash = hashtable->Hash ? hashtable->Hash(key, hashtable->Len(key)) : (unsigned int)key;
 	AdrenoHashtableNode *ptr;
 
-	if ((ptr = hashtable_find(hashtable, keyHash)) != NULL)
+	if ((ptr = AdrenoHashtable_Find(hashtable, keyHash)) != NULL)
 	{
 		if (value)
 			*value = ptr->Value.Value;
@@ -239,18 +139,12 @@ int AdrenoHashtable_Get(AdrenoHashtable *hashtable, void *key, void **value)
 	return 0;
 }
 
-KeyValuePair hashtable_minKeyHash(AdrenoHashtableNode *node)
+AdrenoHashtableNode *Hashtable_GetLeftMost(AdrenoHashtableNode *node)
 {
-	KeyValuePair *value;
-
-	do
-	{
-		value = &node->Value;
+	while (node->Left != NULL)
 		node = node->Left;
-	}
-	while (node != NULL);
 
-	return *value;
+	return node;
 }
 
 AdrenoHashtableNode *AdrenoHashtable_TreeRemove(AdrenoHashtableNode *node, unsigned int keyHash, AdrenoHashtableNode *parent)
@@ -273,7 +167,7 @@ AdrenoHashtableNode *AdrenoHashtable_TreeRemove(AdrenoHashtableNode *node, unsig
 	{
 		if (node->Left != NULL && node->Right != NULL)
 		{
-			node->Value = hashtable_minKeyHash(node->Right);
+			node->Value = Hashtable_GetLeftMost(node->Right)->Value;
 
 			return AdrenoHashtable_TreeRemove(node->Right, node->Value.Key, node);
 		}
@@ -294,11 +188,9 @@ AdrenoHashtableNode *AdrenoHashtable_TreeRemove(AdrenoHashtableNode *node, unsig
 	return NULL;
 }
 
-void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key)
+void AdrenoHashtable_RemoveHashed(AdrenoHashtable *hashtable, unsigned int keyHash)
 {
-	unsigned int keyHash = hashtable->Hash ? hashtable->Hash(key, hashtable->Len(key)) : (unsigned int)key;
-
-	if (hashtable->RootNode)
+	if (!hashtable->RootNode)
 		return;
 
 	if (hashtable->RootNode->Value.Key == keyHash)
@@ -311,16 +203,26 @@ void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key)
 		removedNode = AdrenoHashtable_TreeRemove(hashtable->RootNode, keyHash, &auxRoot);
 		hashtable->RootNode = auxRoot.Left;
 
+		if (hashtable->RootNode)
+			hashtable->RootNode->Parent = NULL;
+
 		if (removedNode != NULL)
-			AdrenoHashtable_HeapFree(hashtable, removedNode);
+			AdrenoMemoryPool_Free(AHT_NodePool, removedNode);
 	}
 	else
 	{
 		AdrenoHashtableNode *removedNode = AdrenoHashtable_TreeRemove(hashtable->RootNode, keyHash, NULL);
 
 		if (removedNode != NULL)
-			AdrenoHashtable_HeapFree(hashtable, removedNode);
+			AdrenoMemoryPool_Free(AHT_NodePool, removedNode);
 	}
+}
+
+void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key)
+{
+	unsigned int keyHash = hashtable->Hash ? hashtable->Hash(key, hashtable->Len(key)) : (unsigned int)key;
+
+	AdrenoHashtable_RemoveHashed(hashtable, keyHash);
 }
 
 int AdrenoHashtable_Count(AdrenoHashtable *hashtable)
@@ -330,14 +232,45 @@ int AdrenoHashtable_Count(AdrenoHashtable *hashtable)
 
 void AdrenoHashtable_Clear(AdrenoHashtable *hashtable)
 {
-	if (hashtable->RootNode)
-	{
-		AdrenoFree(hashtable->NodeHeap);
-		hashtable->NodeHeap = NULL;
-	}
+	while (hashtable->RootNode)
+		AdrenoHashtable_RemoveHashed(hashtable, hashtable->RootNode->Value.Key);
 
 	hashtable->NodeCount = 0;
 	hashtable->FreeSlots = 0;
+}
+
+AdrenoHashtableIterator *AdrenoHashtable_CreateIterator(AdrenoHashtable *hashtable)
+{
+	AdrenoHashtableIterator *it = (AdrenoHashtableIterator *)AdrenoAlloc(sizeof(AdrenoHashtableIterator));
+
+	it->Hashtable = hashtable;
+	it->CurrentNode = Hashtable_GetLeftMost(hashtable->RootNode);
+
+	return it;
+}
+
+void AdrenoHashtableIterator_Next(AdrenoHashtableIterator *it)
+{
+	if (it->CurrentNode->Right != NULL) 
+	{
+		it->CurrentNode = Hashtable_GetLeftMost(it->CurrentNode->Right);
+    } 
+	else 
+	{
+        AdrenoHashtableNode *n = it->CurrentNode;
+
+        while (n->Parent != NULL && n == n->Parent->Right) 
+		{
+            n = n->Parent;
+        }
+
+        it->CurrentNode = n->Parent;
+    }
+}
+
+void AdrenoHashtableIterator_Free(AdrenoHashtableIterator *it)
+{
+	AdrenoFree(it);
 }
 
 unsigned int AdrenoHashtable_Hash_Fnv(void *key, unsigned int size)

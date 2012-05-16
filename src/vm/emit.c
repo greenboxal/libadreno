@@ -5,10 +5,16 @@
 
 typedef struct
 {
+	unsigned int Offset;
+	char *Name;
+} EmitLabelRef;
+
+typedef struct
+{
 	AdrenoFunction Function;
 	AdrenoMS Stream;
 	AdrenoHashtable Labels;
-	AdrenoHashtable RLabels;
+	AdrenoArray RLabels;
 } EmitFunction;
 
 unsigned int AdrenoEmit_AddString(AdrenoScript *script, char *string, unsigned int len)
@@ -16,13 +22,13 @@ unsigned int AdrenoEmit_AddString(AdrenoScript *script, char *string, unsigned i
 	unsigned int i;
 	AdrenoValue *value;
 
-	for (i = 0; i < script->Strings.NodeCount; i++)
+	for (i = 0; i < script->Strings.Count; i++)
 	{
-		if (((AdrenoValue *)script->Strings.NodeHeap[i].Value.Value)->Value.String->Size == len && memcmp(((AdrenoValue *)script->Strings.NodeHeap[i].Value.Value)->Value.String->Value, string, len) == 0)
+		if (((AdrenoValue *)script->Strings.Data[i])->Value.String->Size == len && memcmp(((AdrenoValue *)script->Strings.Data[i])->Value.String->Value, string, len) == 0)
 			return i;
 	}
 	
-	i = script->Strings.NodeCount;
+	i = script->Strings.Count;
 
 	value = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
 	value->Type = AT_STRING;
@@ -35,7 +41,7 @@ unsigned int AdrenoEmit_AddString(AdrenoScript *script, char *string, unsigned i
 	value->Value.String->Size = len;
 	value->Value.String->Flags = SF_FREE;
 
-	AdrenoHashtable_Set(&script->Strings, (void *)i, value);
+	AdrenoArray_Add(&script->Strings, value);
 
 	return i;
 }
@@ -54,9 +60,9 @@ AdrenoFunction *AdrenoEmit_CreateFunction(AdrenoScript *script, char *name)
 	f->Function.GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
 
 	AdrenoHashtable_Initialize(&f->Labels, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
-	AdrenoHashtable_Initialize(&f->RLabels, NULL, NULL);
+	AdrenoArray_Initialize(&f->RLabels);
 
-	AdrenoHashtable_Set(&script->Functions, ((AdrenoValue *)script->Strings.NodeHeap[f->Function.NameIndex].Value.Value)->Value.String->Value, f);
+	AdrenoHashtable_Set(&script->Functions, ((AdrenoValue *)script->Strings.Data[f->Function.NameIndex])->Value.String->Value, f);
 	AdrenoMS_Open(&f->Stream);
 
 	return (AdrenoFunction *)f;
@@ -80,8 +86,12 @@ void AdrenoEmit_EmitOp2_I4(AdrenoFunction *function, unsigned char op, unsigned 
 void AdrenoEmit_EmitJump(AdrenoFunction *function, unsigned char op, char *name)
 {
 	EmitFunction *e = (EmitFunction *)function;
+	EmitLabelRef *ref = (EmitLabelRef *)AdrenoAlloc(sizeof(EmitLabelRef));
+
+	ref->Offset = e->Stream.bufferPosition + 1;
+	ref->Name = AdrenoStrdup(name);
 	
-	AdrenoHashtable_Set(&e->RLabels, (void *)(e->Stream.bufferPosition + 1), AdrenoStrdup(name));
+	AdrenoArray_Add(&e->RLabels, ref);
 	AdrenoEmit_EmitOp2_I4(function, op, 0);
 }
 
@@ -103,22 +113,24 @@ int AdrenoEmit_Finalize(AdrenoFunction *function)
 	e->Function.BytecodeSize = e->Stream.bufferSize;
 	AdrenoMS_Close(&e->Stream);
 
-	for (i = 0; i < e->RLabels.NodeCount; i++)
+	for (i = 0; i < e->RLabels.Count; i++)
 	{
 		unsigned int tAddr = 0;
-		unsigned int offset = (unsigned int)e->RLabels.NodeHeap[i].Value.Key;
+		unsigned int offset = ((EmitLabelRef *)e->RLabels.Data[i])->Offset;
 		unsigned int *addr = (unsigned int *)(&e->Function.Bytecode[offset]);
-		char *name = (char *)e->RLabels.NodeHeap[i].Value.Value;
+		char *name = ((EmitLabelRef *)e->RLabels.Data[i])->Name;
 
 		if (!AdrenoHashtable_Get(&e->Labels, name, (void **)&tAddr))
 			return 0;
 
 		*addr = tAddr - (offset + 4);
+
 		AdrenoFree(name);
+		AdrenoFree((EmitLabelRef *)e->RLabels.Data[i]);
 	}
 
-	AdrenoHashtable_Clear(&e->Labels);
-	AdrenoHashtable_Clear(&e->RLabels);
+	AdrenoHashtable_Destroy(&e->Labels);
+	AdrenoArray_Free(&e->RLabels);
 
 	return 1;
 }

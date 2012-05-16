@@ -65,7 +65,7 @@ struct adrenostring
 	unsigned int Size;
 };
 
-struct adrenoarray
+struct adrenovmarray
 {
 	AdrenoType Type;
 	AdrenoHashtable Array;
@@ -91,7 +91,7 @@ struct adrenovalue
 	{
 		unsigned int I4;
 		AdrenoString *String;
-		AdrenoArray *Array;
+		AdrenoVMArray *Array;
 		AdrenoValue *Reference;
 		AdrenoFunction *Function;
 		AdrenoReturnInfo *ReturnInfo;

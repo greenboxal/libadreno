@@ -90,7 +90,7 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 	}
 
 	MPoolsCount++;
-	MPools = (AdrenoMemoryPool **)AdrenoAlloc(MPoolsCount * sizeof(AdrenoMemoryPool *));
+	MPools = (AdrenoMemoryPool **)AdrenoRealloc(MPools, MPoolsCount * sizeof(AdrenoMemoryPool *));
 
 	addr = (AdrenoMemoryPool *)AdrenoAlloc(sizeof(AdrenoMemoryPool));
 	AdrenoMemoryPool_Initialize(addr, objectSize, expansionFactor);
@@ -194,8 +194,6 @@ void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp)
 
 	if (mp->Index >= 0 && mp->DestroyLock == 0)
 	{
-		AdrenoFree(mp);
-
 		MPools[mp->Index] = NULL;
 		MPoolsCount--;
 
@@ -204,5 +202,7 @@ void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp)
 			AdrenoFree(MPools);
 			MPools = NULL;
 		}
+
+		AdrenoFree(mp);
 	}
 }

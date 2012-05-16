@@ -15,6 +15,7 @@
     <ClCompile Include="ail\lex.ail_.c" />
     <ClCompile Include="ail\y.tab.c" />
     <ClCompile Include="memory.c" />
+    <ClCompile Include="utils\array.c" />
     <ClCompile Include="utils\bitarray.c" />
     <ClCompile Include="utils\hashtable.c" />
     <ClCompile Include="utils\memorypool.c" />
@@ -32,6 +33,7 @@
     <ClInclude Include="include\adreno\ail\ailc.h" />
     <ClInclude Include="include\adreno\config.h" />
     <ClInclude Include="include\adreno\memory.h" />
+    <ClInclude Include="include\adreno\utils\array.h" />
     <ClInclude Include="include\adreno\utils\bitarray.h" />
     <ClInclude Include="include\adreno\utils\hashtable.h" />
     <ClInclude Include="include\adreno\utils\memorypool.h" />

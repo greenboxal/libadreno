@@ -10,12 +10,14 @@
 #include <adreno/ail/ailc.h>
 
 #include <adreno/utils/memorypool.h>
+#include <adreno/utils/hashtable.h>
 
 #include <Windows.h>
 
 // 0 = VM
 // 1 = Memory Pool
-#define TEST_TYPE 1
+// 2 = Hashtable
+#define TEST_TYPE 0
 
 char *LoadInputFile(char *FileName) 
 {
@@ -159,11 +161,11 @@ int main(int argc, char **argv)
 	malloc_init();
 #endif
 
-#define dosize 16
-#define docount 1000
+#define dosize 1000
+#define docount 1000000
 //#define dofree
 
-	pool = AdrenoMemoryPool_New(dosize, 10);
+	pool = AdrenoMemoryPool_New(dosize, 1000);
 	
 	start = GetTime();
 	for (i = 0; i < docount; i++)
@@ -211,4 +213,17 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+#elif TEST_TYPE == 2
+int main(int argc, char **argv)
+{
+	AdrenoHashtable ht;
+
+	AdrenoHashtable_Initialize(&ht, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
+
+
+	AdrenoHashtable_Destroy(&ht);
+
+	getchar();
+	return 0;
+}
 #endif
