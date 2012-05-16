@@ -79,6 +79,22 @@
 #line 1 "ail.y"
 
 
+/*	This file is part of libadreno.
+
+    libadreno is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    libadreno is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -104,7 +120,7 @@
 
 
 /* Line 189 of yacc.c  */
-#line 108 "y.tab.c"
+#line 124 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -273,7 +289,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 27 "ail.y"
+#line 43 "ail.y"
 
 	unsigned int num;
 	char *str;
@@ -281,7 +297,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 285 "y.tab.c"
+#line 301 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -293,7 +309,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 297 "y.tab.c"
+#line 313 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -605,14 +621,14 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    59,    59,    62,    63,    66,    69,    72,    75,    78,
-      79,    82,    83,    84,    87,    90,    91,    94,    97,    98,
-     101,   102,   103,   105,   106,   107,   108,   109,   111,   112,
-     113,   114,   115,   117,   118,   119,   120,   121,   123,   124,
-     125,   126,   127,   128,   130,   131,   132,   133,   134,   136,
-     137,   138,   139,   140,   141,   143,   144,   145,   146,   147,
-     148,   150,   151,   152,   153,   154,   155,   156,   157,   158,
-     160,   161,   162,   163,   165,   166,   167,   168
+       0,    75,    75,    78,    79,    82,    85,    88,    91,    94,
+      95,    98,    99,   100,   103,   106,   107,   110,   113,   114,
+     117,   118,   119,   121,   122,   123,   124,   125,   127,   128,
+     129,   130,   131,   133,   134,   135,   136,   137,   139,   140,
+     141,   142,   143,   144,   146,   147,   148,   149,   150,   152,
+     153,   154,   155,   156,   157,   159,   160,   161,   162,   163,
+     164,   166,   167,   168,   169,   170,   171,   172,   173,   174,
+     176,   177,   178,   179,   181,   182,   183,   184
 };
 #endif
 
@@ -1584,455 +1600,455 @@ yyreduce:
         case 7:
 
 /* Line 1455 of yacc.c  */
-#line 72 "ail.y"
+#line 88 "ail.y"
     { StartFunction((yyvsp[(1) - (2)].str)); AdrenoFree((yyvsp[(1) - (2)].str)); }
     break;
 
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 75 "ail.y"
+#line 91 "ail.y"
     { FinalizeFunction(); }
     break;
 
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 87 "ail.y"
+#line 103 "ail.y"
     { SetLabel((yyvsp[(1) - (2)].str)); AdrenoFree((yyvsp[(1) - (2)].str)); }
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 94 "ail.y"
+#line 110 "ail.y"
     { SetLocalCount((yyvsp[(2) - (2)].num)); }
     break;
 
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 97 "ail.y"
+#line 113 "ail.y"
     { SetPrefix(P_NONE); }
     break;
 
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 98 "ail.y"
+#line 114 "ail.y"
     { SetPrefix(P_REFERENCE); }
     break;
 
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 101 "ail.y"
+#line 117 "ail.y"
     { EmitOp(OP_NOP); }
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 102 "ail.y"
+#line 118 "ail.y"
     { EmitOp(OP_POP); }
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 103 "ail.y"
+#line 119 "ail.y"
     { EmitOp2(OP_POP_S, (yyvsp[(2) - (2)].num)); }
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 105 "ail.y"
+#line 121 "ail.y"
     { EmitOp(OP_STLOC_0); }
     break;
 
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 106 "ail.y"
+#line 122 "ail.y"
     { EmitOp(OP_STLOC_1); }
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 107 "ail.y"
+#line 123 "ail.y"
     { EmitOp(OP_STLOC_2); }
     break;
 
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 108 "ail.y"
+#line 124 "ail.y"
     { EmitOp(OP_STLOC_3); }
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 109 "ail.y"
+#line 125 "ail.y"
     { EmitOp2(OP_STLOC_S, (yyvsp[(2) - (2)].num)); }
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 111 "ail.y"
+#line 127 "ail.y"
     { EmitOp(OP_LDLOC_0); }
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 112 "ail.y"
+#line 128 "ail.y"
     { EmitOp(OP_LDLOC_1); }
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 113 "ail.y"
+#line 129 "ail.y"
     { EmitOp(OP_LDLOC_2); }
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 114 "ail.y"
+#line 130 "ail.y"
     { EmitOp(OP_LDLOC_3); }
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 115 "ail.y"
+#line 131 "ail.y"
     { EmitOp2(OP_LDLOC_S, (yyvsp[(2) - (2)].num)); }
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 117 "ail.y"
+#line 133 "ail.y"
     { EmitOp(OP_LDARG_0); }
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 118 "ail.y"
+#line 134 "ail.y"
     { EmitOp(OP_LDARG_1); }
     break;
 
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 119 "ail.y"
+#line 135 "ail.y"
     { EmitOp(OP_LDARG_2); }
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 120 "ail.y"
+#line 136 "ail.y"
     { EmitOp(OP_LDARG_3); }
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 121 "ail.y"
+#line 137 "ail.y"
     { EmitOp2(OP_LDARG_S, (yyvsp[(2) - (2)].num)); }
     break;
 
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 123 "ail.y"
+#line 139 "ail.y"
     { EmitOp(OP_LDNULL); }
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 124 "ail.y"
+#line 140 "ail.y"
     { EmitOp2(OP_LDC_I4, (yyvsp[(2) - (2)].num)); }
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 125 "ail.y"
+#line 141 "ail.y"
     { EmitOp(OP_LDC_I4_M1); }
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 126 "ail.y"
+#line 142 "ail.y"
     { EmitOp(OP_LDC_I4_0); }
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 127 "ail.y"
+#line 143 "ail.y"
     { EmitOp(OP_LDC_I4_1); }
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 128 "ail.y"
+#line 144 "ail.y"
     { EmitOp2(OP_LDSTR, AddString((yyvsp[(2) - (2)].str))); AdrenoFree((yyvsp[(2) - (2)].str)); }
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 130 "ail.y"
+#line 146 "ail.y"
     { EmitOp(OP_NEWARR); }
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 131 "ail.y"
+#line 147 "ail.y"
     { EmitOp(OP_STELEM); }
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 132 "ail.y"
+#line 148 "ail.y"
     { EmitOp(OP_LDELEM); }
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 133 "ail.y"
+#line 149 "ail.y"
     { EmitOp(OP_RMELEM); }
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 134 "ail.y"
+#line 150 "ail.y"
     { EmitOp(OP_LDLEN); }
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 136 "ail.y"
+#line 152 "ail.y"
     { EmitOp(OP_ADD); }
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 137 "ail.y"
+#line 153 "ail.y"
     { EmitOp(OP_SUB); }
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 138 "ail.y"
+#line 154 "ail.y"
     { EmitOp(OP_MUL); }
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 139 "ail.y"
+#line 155 "ail.y"
     { EmitOp(OP_DIV); }
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 140 "ail.y"
+#line 156 "ail.y"
     { EmitOp(OP_REM); }
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 141 "ail.y"
+#line 157 "ail.y"
     { EmitOp(OP_NEG); }
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 143 "ail.y"
+#line 159 "ail.y"
     { EmitOp(OP_OR); }
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 144 "ail.y"
+#line 160 "ail.y"
     { EmitOp(OP_AND); }
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 145 "ail.y"
+#line 161 "ail.y"
     { EmitOp(OP_XOR); }
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 146 "ail.y"
+#line 162 "ail.y"
     { EmitOp(OP_NOT); }
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 147 "ail.y"
+#line 163 "ail.y"
     { EmitOp(OP_SHL); }
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 148 "ail.y"
+#line 164 "ail.y"
     { EmitOp(OP_SHR); }
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 150 "ail.y"
+#line 166 "ail.y"
     { EmitOp(OP_LOR); }
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 151 "ail.y"
+#line 167 "ail.y"
     { EmitOp(OP_LAND); }
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 152 "ail.y"
+#line 168 "ail.y"
     { EmitOp(OP_LNOT); }
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 153 "ail.y"
+#line 169 "ail.y"
     { EmitOp(OP_EQ); }
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 154 "ail.y"
+#line 170 "ail.y"
     { EmitOp(OP_NE); }
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 155 "ail.y"
+#line 171 "ail.y"
     { EmitOp(OP_GT); }
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 156 "ail.y"
+#line 172 "ail.y"
     { EmitOp(OP_GE); }
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 157 "ail.y"
+#line 173 "ail.y"
     { EmitOp(OP_LT); }
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 158 "ail.y"
+#line 174 "ail.y"
     { EmitOp(OP_LE); }
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 160 "ail.y"
+#line 176 "ail.y"
     { EmitJump(OP_JUMP, (yyvsp[(2) - (2)].str)); AdrenoFree((yyvsp[(2) - (2)].str)); }
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 161 "ail.y"
+#line 177 "ail.y"
     { EmitJump(OP_BRTRUE, (yyvsp[(2) - (2)].str)); AdrenoFree((yyvsp[(2) - (2)].str)); }
     break;
 
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 162 "ail.y"
+#line 178 "ail.y"
     { EmitJump(OP_BRFALSE, (yyvsp[(2) - (2)].str)); AdrenoFree((yyvsp[(2) - (2)].str)); }
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 163 "ail.y"
+#line 179 "ail.y"
     { EmitOp(OP_SWITCH); }
     break;
 
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 165 "ail.y"
+#line 181 "ail.y"
     { EmitOp2(OP_LDFUNC, AddString((yyvsp[(2) - (2)].str))); AdrenoFree((yyvsp[(2) - (2)].str)); }
     break;
 
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 166 "ail.y"
+#line 182 "ail.y"
     { EmitOp(OP_CALL); }
     break;
 
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 167 "ail.y"
+#line 183 "ail.y"
     { EmitOp(OP_ENTER); }
     break;
 
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 168 "ail.y"
+#line 184 "ail.y"
     { EmitOp(OP_RET); }
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2036 "y.tab.c"
+#line 2052 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);

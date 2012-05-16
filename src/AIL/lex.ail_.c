@@ -493,6 +493,22 @@ char *yytext;
 #define INITIAL 0
 #line 6 "ail.l"
 
+/*	This file is part of libadreno.
+
+    libadreno is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    libadreno is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -502,7 +518,7 @@ char *yytext;
 
 void ail_comment();
 
-#line 506 "lex.ail_.c"
+#line 522 "lex.ail_.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -653,10 +669,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 20 "ail.l"
+#line 36 "ail.l"
 
 
-#line 660 "lex.ail_.c"
+#line 676 "lex.ail_.c"
 
 	if ( yy_init )
 		{
@@ -741,292 +757,292 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "ail.l"
+#line 38 "ail.l"
 { ail_comment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 24 "ail.l"
+#line 40 "ail.l"
 { return T_FUNCTION; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 26 "ail.l"
+#line 42 "ail.l"
 { return T_INITLOCALS; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 28 "ail.l"
+#line 44 "ail.l"
 { return T_NOP; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 29 "ail.l"
+#line 45 "ail.l"
 { return T_POP; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 30 "ail.l"
+#line 46 "ail.l"
 { return T_POP_S; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 32 "ail.l"
+#line 48 "ail.l"
 { return T_STLOC_0; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 33 "ail.l"
+#line 49 "ail.l"
 { return T_STLOC_1; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 34 "ail.l"
+#line 50 "ail.l"
 { return T_STLOC_2; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 35 "ail.l"
+#line 51 "ail.l"
 { return T_STLOC_3; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 36 "ail.l"
+#line 52 "ail.l"
 { return T_STLOC_S; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 38 "ail.l"
+#line 54 "ail.l"
 { return T_LDLOC_0; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 39 "ail.l"
+#line 55 "ail.l"
 { return T_LDLOC_1; } 
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 40 "ail.l"
+#line 56 "ail.l"
 { return T_LDLOC_2; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 41 "ail.l"
+#line 57 "ail.l"
 { return T_LDLOC_3; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 42 "ail.l"
+#line 58 "ail.l"
 { return T_LDLOC_S; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 44 "ail.l"
+#line 60 "ail.l"
 { return T_LDARG_0; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 45 "ail.l"
+#line 61 "ail.l"
 { return T_LDARG_1; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 46 "ail.l"
+#line 62 "ail.l"
 { return T_LDARG_2; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 47 "ail.l"
+#line 63 "ail.l"
 { return T_LDARG_3; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 48 "ail.l"
+#line 64 "ail.l"
 { return T_LDARG_S; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 50 "ail.l"
+#line 66 "ail.l"
 { return T_LDNULL; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 51 "ail.l"
+#line 67 "ail.l"
 { return T_LDC_I4; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 52 "ail.l"
+#line 68 "ail.l"
 { return T_LDC_I4_M1; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 53 "ail.l"
+#line 69 "ail.l"
 { return T_LDC_I4_0; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 54 "ail.l"
+#line 70 "ail.l"
 { return T_LDC_I4_1; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 55 "ail.l"
+#line 71 "ail.l"
 { return T_LDSTR; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 57 "ail.l"
+#line 73 "ail.l"
 { return T_ADD; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 58 "ail.l"
+#line 74 "ail.l"
 { return T_SUB; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 59 "ail.l"
+#line 75 "ail.l"
 { return T_MUL; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 60 "ail.l"
+#line 76 "ail.l"
 { return T_DIV; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 61 "ail.l"
+#line 77 "ail.l"
 { return T_REM; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 62 "ail.l"
+#line 78 "ail.l"
 { return T_NEG; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 64 "ail.l"
+#line 80 "ail.l"
 { return T_OR; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 65 "ail.l"
+#line 81 "ail.l"
 { return T_AND; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 66 "ail.l"
+#line 82 "ail.l"
 { return T_XOR; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 67 "ail.l"
+#line 83 "ail.l"
 { return T_NOT; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 68 "ail.l"
+#line 84 "ail.l"
 { return T_SHL; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 69 "ail.l"
+#line 85 "ail.l"
 { return T_SHR; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 71 "ail.l"
+#line 87 "ail.l"
 { return T_LOR; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 72 "ail.l"
+#line 88 "ail.l"
 { return T_LAND; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 73 "ail.l"
+#line 89 "ail.l"
 { return T_LNOT; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 74 "ail.l"
+#line 90 "ail.l"
 { return T_EQ; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 75 "ail.l"
+#line 91 "ail.l"
 { return T_NE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 76 "ail.l"
+#line 92 "ail.l"
 { return T_GT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 77 "ail.l"
+#line 93 "ail.l"
 { return T_GE; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 78 "ail.l"
+#line 94 "ail.l"
 { return T_LT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 79 "ail.l"
+#line 95 "ail.l"
 { return T_LE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 81 "ail.l"
+#line 97 "ail.l"
 { return T_JUMP; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 82 "ail.l"
+#line 98 "ail.l"
 { return T_BRTRUE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 83 "ail.l"
+#line 99 "ail.l"
 { return T_BRFALSE; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 84 "ail.l"
+#line 100 "ail.l"
 { return T_SWITCH; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 86 "ail.l"
+#line 102 "ail.l"
 { return T_LDFUNC; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 87 "ail.l"
+#line 103 "ail.l"
 { return T_CALL; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 88 "ail.l"
+#line 104 "ail.l"
 { return T_ENTER; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 89 "ail.l"
+#line 105 "ail.l"
 { return T_RET; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 91 "ail.l"
+#line 107 "ail.l"
 { return T_REF; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 93 "ail.l"
+#line 109 "ail.l"
 { 
 							ail_lval.str = ail_parse_string(yytext);
 							return T_STRINGLITERAL; 
@@ -1034,7 +1050,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 98 "ail.l"
+#line 114 "ail.l"
 { 
 							ail_lval.str = AdrenoStrdup(yytext); 
 							return T_IDENTIFIER; 
@@ -1042,7 +1058,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 103 "ail.l"
+#line 119 "ail.l"
 { 
 							ail_lval.num = strtoul(yytext, NULL, 0);
 							return T_CONSTANT; 
@@ -1050,7 +1066,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 107 "ail.l"
+#line 123 "ail.l"
 { 
 							ail_lval.num = strtoul(yytext, NULL, 0);
 							return T_CONSTANT; 
@@ -1058,7 +1074,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 111 "ail.l"
+#line 127 "ail.l"
 { 
 							ail_lval.num = strtoul(yytext, NULL, 0);
 							return T_CONSTANT; 
@@ -1066,20 +1082,20 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 116 "ail.l"
+#line 132 "ail.l"
 { }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 117 "ail.l"
+#line 133 "ail.l"
 { return yytext[0]; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 119 "ail.l"
+#line 135 "ail.l"
 ECHO;
 	YY_BREAK
-#line 1083 "lex.ail_.c"
+#line 1099 "lex.ail_.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1965,7 +1981,7 @@ int main()
 	return 0;
 	}
 #endif
-#line 119 "ail.l"
+#line 135 "ail.l"
 
 
 void ail_error(const char* errmsg)
