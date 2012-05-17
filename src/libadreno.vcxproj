@@ -14,6 +14,7 @@
     <ClCompile Include="ail\ailc.c" />
     <ClCompile Include="ail\lex.ail_.c" />
     <ClCompile Include="ail\y.tab.c" />
+    <ClCompile Include="crypt\blowfish.c" />
     <ClCompile Include="memory.c" />
     <ClCompile Include="utils\array.c" />
     <ClCompile Include="utils\bitarray.c" />
@@ -30,6 +31,7 @@
   <ItemGroup>
     <ClInclude Include="ail\ailp.h" />
     <ClInclude Include="ail\y.tab.h" />
+    <ClInclude Include="include\adreno\crypt\blowfish.h" />
     <ClInclude Include="include\adreno\ail\ailc.h" />
     <ClInclude Include="include\adreno\config.h" />
     <ClInclude Include="include\adreno\memory.h" />
