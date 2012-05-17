@@ -25,24 +25,33 @@
 
 #define ALC_MARK __FILE__, __LINE__, __FUNCTION__
 
-void *_mmalloc	(unsigned int size, const char *file, int line, const char *func);
-void *_mcalloc	(unsigned int num, unsigned int size, const char *file, int line, const char *func);
-void *_mrealloc	(void *p, unsigned int size, const char *file, int line, const char *func);
-char *_mstrdup	(const char *p, const char *file, int line, const char *func);
-wchar_t *_mwstrdup	(const wchar_t *p, const char *file, int line, const char *func);
-void  _mfree	(void *p, const char *file, int line, const char *func);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
-#define AdrenoAlloc(size) _mmalloc((size), ALC_MARK)
-#define AdrenoRealloc(object, size) _mrealloc((object), (size), ALC_MARK)
-#define AdrenoStrdup(object) _mstrdup((object), ALC_MARK)
-#define AdrenoWStrdup(object) _mwstrdup((object), ALC_MARK)
-#define AdrenoFree(object) _mfree((object), ALC_MARK)
+	void *AdrenoMM_Alloc	(unsigned int size, const char *file, int line, const char *func);
+	void *AdrenoMM_CAlloc	(unsigned int num, unsigned int size, const char *file, int line, const char *func);
+	void *AdrenoMM_Realloc	(void *p, unsigned int size, const char *file, int line, const char *func);
+	char *AdrenoMM_Strdup	(const char *p, const char *file, int line, const char *func);
+	wchar_t *AdrenoMM_WStrdup	(const wchar_t *p, const char *file, int line, const char *func);
+	void  AdrenoMM_Free 	(void *p, const char *file, int line, const char *func);
 
-void malloc_memory_check(void);
-int malloc_verify_ptr(void* ptr);
-unsigned int malloc_usage (void);
-void malloc_init (void);
-void malloc_final (void);
+	#define AdrenoAlloc(size) AdrenoMM_Alloc((size), ALC_MARK)
+	#define AdrenoRealloc(object, size) AdrenoMM_Realloc((object), (size), ALC_MARK)
+	#define AdrenoStrdup(object) AdrenoMM_Strdup((object), ALC_MARK)
+	#define AdrenoWStrdup(object) AdrenoMM_WStrdup((object), ALC_MARK)
+	#define AdrenoFree(object) AdrenoMM_Free((object), ALC_MARK)
+
+	extern void AdrenoMM_MemoryCheck();
+	extern int AdrenoMM_VerifyPointer(void* ptr);
+	extern unsigned int AdrenoMM_Usage();
+	extern void AdrenoMM_Initialize();
+	extern void AdrenoMM_Final();
+
+#ifdef __cplusplus
+}
+#endif
 
 #elif defined(USE_MALLOC)
 
@@ -55,7 +64,9 @@ void malloc_final (void);
 #define AdrenoFree(object) free((object))
 
 #else
+
 #error Memory manager not defined.
+
 #endif
 
 #endif

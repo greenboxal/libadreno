@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	int i = 0;
 	
 #ifdef USE_MEMORY_MANAGER
-	malloc_init();
+	AdrenoMM_Initialize();
 #endif
 
 	if (argc < 2)
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 	}
 	
 #ifdef USE_MEMORY_MANAGER
-	malloc_final();
+	AdrenoMM_Final();
 #endif
 
 	return 0;

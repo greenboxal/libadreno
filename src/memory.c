@@ -250,14 +250,14 @@ static unsigned int hash2size( unsigned short hash )
 	}
 }
 
-void* _mmalloc(unsigned int size, const char *file, int line, const char *func )
+void* AdrenoMM_Alloc(unsigned int size, const char *file, int line, const char *func )
 {
 	struct block *block;
 	short size_hash = size2hash( size );
 	struct unit_head *head;
 
 	if (((long) size) < 0) {
-		printf("_mmalloc: %d\n", size);
+		printf("AdrenoMM_Alloc: %d\n", size);
 		return NULL;
 	}
 	
@@ -357,18 +357,18 @@ void* _mmalloc(unsigned int size, const char *file, int line, const char *func )
 	return (char *)head + sizeof(struct unit_head) - sizeof(long);
 };
 
-void* _mcalloc(unsigned int num, unsigned int size, const char *file, int line, const char *func )
+void* AdrenoMM_CAlloc(unsigned int num, unsigned int size, const char *file, int line, const char *func )
 {
-	void *p = _mmalloc(num * size,file,line,func);
+	void *p = AdrenoMM_Alloc(num * size,file,line,func);
 	memset(p,0,num * size);
 	return p;
 }
 
-void* _mrealloc(void *memblock, unsigned int size, const char *file, int line, const char *func )
+void* AdrenoMM_Realloc(void *memblock, unsigned int size, const char *file, int line, const char *func )
 {
 	unsigned int old_size;
 	if(memblock == NULL) {
-		return _mmalloc(size,file,line,func);
+		return AdrenoMM_Alloc(size,file,line,func);
 	}
 
 	old_size = ((struct unit_head *)((char *)memblock - sizeof(struct unit_head) + sizeof(long)))->size;
@@ -380,40 +380,40 @@ void* _mrealloc(void *memblock, unsigned int size, const char *file, int line, c
 		return memblock;
 	}  else {
 		// ÉTÉCÉYägëÂ
-		void *p = _mmalloc(size,file,line,func);
+		void *p = AdrenoMM_Alloc(size,file,line,func);
 		if(p != NULL) {
 			memcpy(p,memblock,old_size);
 		}
-		_mfree(memblock,file,line,func);
+		AdrenoMM_Free(memblock,file,line,func);
 		return p;
 	}
 }
 
-char* _mstrdup(const char *p, const char *file, int line, const char *func )
+char* AdrenoMM_Strdup(const char *p, const char *file, int line, const char *func )
 {
 	if(p == NULL) {
 		return NULL;
 	} else {
 		unsigned int len = strlen(p);
-		char *string  = (char *)_mmalloc(len + 1,file,line,func);
+		char *string  = (char *)AdrenoMM_Alloc(len + 1,file,line,func);
 		memcpy(string,p,len+1);
 		return string;
 	}
 }
 
-wchar_t* _mwstrdup(const wchar_t *p, const char *file, int line, const char *func )
+wchar_t* AdrenoMM_WStrdup(const wchar_t *p, const char *file, int line, const char *func )
 {
 	if(p == NULL) {
 		return NULL;
 	} else {
 		unsigned int len = wcslen(p);
-		wchar_t *string  = (wchar_t *)_mmalloc((len+1),file,line,func);
+		wchar_t *string  = (wchar_t *)AdrenoMM_Alloc((len+1),file,line,func);
 		memcpy(string,p,((len+1)*sizeof(wchar_t)));
 		return string;
 	}
 }
 
-void _mfree(void *ptr, const char *file, int line, const char *func )
+void AdrenoMM_Free(void *ptr, const char *file, int line, const char *func )
 {
 	struct unit_head *head;
 
@@ -658,7 +658,7 @@ static void memmgr_final (void)
 					memmgr_log (buf);
 #endif /* MEMORYMANAGER_LOG */
 					// get block pointer and free it [celest]
-					_mfree(ptr, ALC_MARK);
+					AdrenoMM_Free(ptr, ALC_MARK);
 				}
 			}
 		}
@@ -707,7 +707,7 @@ static void memmgr_init (void)
 
 
 /// Tests the memory for errors and memory leaks.
-void malloc_memory_check(void)
+void AdrenoMM_MemoryCheck()
 {
 	MEMORY_CHECK();
 }
@@ -715,7 +715,7 @@ void malloc_memory_check(void)
 
 /// Returns 1 if a pointer is valid.
 /// The check is best-effort, 0 positives are possible.
-int malloc_verify_ptr(void* ptr)
+int AdrenoMM_VerifyPointer(void* ptr)
 {
 #ifdef USE_MEMORY_MANAGER
 	return memmgr_verify(ptr) && MEMORY_VERIFY(ptr);
@@ -725,7 +725,7 @@ int malloc_verify_ptr(void* ptr)
 }
 
 
-unsigned int malloc_usage (void)
+unsigned int AdrenoMM_Usage()
 {
 #ifdef USE_MEMORY_MANAGER
 	return memmgr_usage ();
@@ -734,15 +734,15 @@ unsigned int malloc_usage (void)
 #endif
 }
 
-void malloc_final (void)
+void AdrenoMM_Final()
 {
 #ifdef USE_MEMORY_MANAGER
-	memmgr_final ();
+	memmgr_final();
 #endif
 	MEMORY_CHECK();
 }
 
-void malloc_init (void)
+void AdrenoMM_Initialize()
 {
 #if defined(DMALLOC) && defined(CYGWIN)
 	// http://dmalloc.com/docs/latest/online/dmalloc_19.html
@@ -754,7 +754,7 @@ void malloc_init (void)
 	GC_INIT();
 #endif
 #ifdef USE_MEMORY_MANAGER
-	memmgr_init ();
+	memmgr_init();
 #endif
 }
 

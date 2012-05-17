@@ -115,7 +115,7 @@ int main(int argc, char **argv)
 	char *data;
 	
 #ifdef USE_MEMORY_MANAGER
-	malloc_init();
+	AdrenoMM_Initialize();
 #endif
 
 	AdrenoVM_StaticInit();
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 	AdrenoVM_StaticDestroy();
 
 #ifdef USE_MEMORY_MANAGER
-	malloc_final();
+	AdrenoMM_Final();
 #endif
 
 	getchar();
@@ -175,14 +175,14 @@ int main(int argc, char **argv)
 	int i;
 	
 #ifdef USE_MEMORY_MANAGER
-	malloc_init();
+	AdrenoMM_Initialize();
 #endif
 
-#define dosize 16
-#define docount 1000
-//#define dofree
+#define dosize 50
+#define docount 10000
+#define dofree
 
-	pool = AdrenoMemoryPool_New(dosize, 5);
+	pool = AdrenoMemoryPool_New(dosize, 1);
 	
 	start = GetTime();
 	for (i = 0; i < docount; i++)
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 #endif
 	}
 	start = GetTime() - start;
-	printf("\nAdrenoMemoryPool: %Lf\n", start);
+	printf("AdrenoMemoryPool: %Lf\n", start);
 
 	start = GetTime();
 	for (i = 0; i < docount; i++)
@@ -223,7 +223,7 @@ int main(int argc, char **argv)
 	getchar();
 #endif
 #ifdef USE_MEMORY_MANAGER
-	malloc_final();
+	AdrenoMM_Final();
 #endif
 
 	getchar();
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
 	long double time;
 	
 #ifdef USE_MEMORY_MANAGER
-	malloc_init();
+	AdrenoMM_Initialize();
 #endif
 
 	AdrenoHashtable_Initialize(&ht, AdrenoHashtable_Hash_Fnv, AdrenoHashtable_Len_String);
@@ -301,7 +301,7 @@ int main(int argc, char **argv)
 	AdrenoArray_Free(&arr);
 	
 #ifdef USE_MEMORY_MANAGER
-	malloc_final();
+	AdrenoMM_Final();
 #endif
 
 	getchar();
