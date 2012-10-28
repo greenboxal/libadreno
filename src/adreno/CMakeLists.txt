@@ -53,13 +53,8 @@ add_library (adreno
 
 )
 
-source_group ("Source Files\\ail" FILES ${AIL_SRCS})
-source_group ("Source Files\\crypt" FILES ${CRYPT_SRCS})
-source_group ("Source Files\\utils" FILES ${UTILS_SRCS})
-source_group ("Source Files\\vm" FILES ${VM_SRCS})
-
-source_group ("Header Files" FILES ${BASE_HDRS})
-source_group ("Header Files\\ail" FILES ${AIL_HDRS})
-source_group ("Header Files\\crypt" FILES ${CRYPT_HDRS})
-source_group ("Header Files\\utils" FILES ${UTILS_HDRS})
-source_group ("Header Files\\vm" FILES ${VM_HDRS})
+source_group ("adreno" FILES ${BASE_HDRS})
+source_group ("adreno\\ail" FILES ${AIL_SRCS} ${AIL_HDRS})
+source_group ("adreno\\crypt" FILES ${CRYPT_SRCS} ${CRYPT_HDRS})
+source_group ("adreno\\utils" FILES ${UTILS_SRCS} ${UTILS_HDRS})
+source_group ("adreno\\vm" FILES ${VM_SRCS} ${VM_HDRS})
