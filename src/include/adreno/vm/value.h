@@ -23,7 +23,7 @@
 
 #include <wchar.h>
 
-typedef enum adrenogcflags
+enum adrenogcflags
 {
 	/* None action should be done */
     GC_NONE = 0x00000000,
@@ -39,7 +39,7 @@ typedef enum adrenogcflags
 
 	/* Used by constants, must be freed when the scripts is being freed */
 	GC_FINAL_FREE = 0x00000008,
-} AdrenoGCFlags;
+};
 
 typedef enum
 {
