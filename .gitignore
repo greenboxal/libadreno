@@ -17,3 +17,9 @@
 
 # Temporary files
 *.swp
+
+# CMake generated stuff
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
