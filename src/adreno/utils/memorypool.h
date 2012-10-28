@@ -20,34 +20,36 @@
 #include <adreno/config.h>
 #include <adreno/utils/bitarray.h>
 
+#include <stddef.h> // size_t
+
 typedef struct
 {
 	char *Address;
 #ifdef ADRENOMP_USE_LINKED_LIST
-	unsigned int UseCount;
+	size_t UseCount;
 #endif
 } AdrenoMemoryPoolPage;
 
 typedef struct
 {
-	unsigned int PageSize;
-	unsigned int ObjectSize;
-	unsigned int ExpansionFactor;
+	size_t PageSize;
+	size_t ObjectSize;
+	size_t ExpansionFactor;
 
-	unsigned int TotalCount;
-	unsigned int TotalMaxCount;
+	size_t TotalCount;
+	size_t TotalMaxCount;
 	
 	AdrenoMemoryPoolPage *Pages;
-	unsigned int PageCount;
+	size_t PageCount;
 
 #ifdef ADRENOMP_USE_LINKED_LIST
-	unsigned int *Reuse;
+	size_t *Reuse;
 #else
 	AdrenoBitArray FreeList;
 #endif
 
-	unsigned int Index;
-	unsigned int DestroyLock;
+	size_t Index;
+	size_t DestroyLock;
 } AdrenoMemoryPool;
 
 #ifdef __cplusplus
@@ -55,8 +57,8 @@ extern "C"
 {
 #endif
 	
-	extern AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int expansionFactor);
-	extern void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, unsigned int objectSize, unsigned int expansionFactor);
+	extern AdrenoMemoryPool *AdrenoMemoryPool_New(size_t objectSize, size_t expansionFactor);
+	extern void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, size_t objectSize, size_t expansionFactor);
 	extern void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp);
 	extern void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr);
 	extern void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp);

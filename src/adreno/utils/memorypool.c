@@ -21,7 +21,7 @@
 #include <string.h>
 
 static AdrenoMemoryPool **MPools;
-static unsigned int MPoolsCount = 0;
+static size_t MPoolsCount = 0;
 
 #if defined(_WIN32) && !defined(FORCE_MEMMGR_ALLOC)
 #include <Windows.h>
@@ -78,7 +78,7 @@ void AdrenoMemoryPool_Expand(AdrenoMemoryPool *mp)
 	AP_CommitPage(mp->Pages[nIdx].Address, mp->ExpansionFactor);
 
 #ifdef ADRENOMP_USE_LINKED_LIST
-	*((unsigned int *)mp->Pages[nIdx].Address) = 0;
+	*((size_t *)mp->Pages[nIdx].Address) = 0;
 	mp->Pages[nIdx].UseCount = 0;
 #endif
 
@@ -89,16 +89,16 @@ void AdrenoMemoryPool_Expand(AdrenoMemoryPool *mp)
 #endif
 }
 
-AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int expansionFactor)
+AdrenoMemoryPool *AdrenoMemoryPool_New(size_t objectSize, size_t expansionFactor)
 {
-	unsigned int i;
+	size_t i;
 	AdrenoMemoryPool *addr;
 
 	if (objectSize % 2)
 		objectSize++;
 
 #ifdef ADRENOMP_USE_LINKED_LIST
-	objectSize += 4;
+	objectSize += sizeof( size_t );
 #endif
 
 	for (i = 0; i < MPoolsCount; i++)
@@ -115,7 +115,7 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 	MPools = (AdrenoMemoryPool **)AdrenoRealloc(MPools, MPoolsCount * sizeof(AdrenoMemoryPool *));
 
 	addr = (AdrenoMemoryPool *)AdrenoAlloc(sizeof(AdrenoMemoryPool));
-	AdrenoMemoryPool_Initialize(addr, objectSize - 4, expansionFactor);
+	AdrenoMemoryPool_Initialize(addr, objectSize - sizeof( size_t ), expansionFactor);
 	
 	addr->Index = MPoolsCount - 1;
 	MPools[MPoolsCount - 1] = addr;
@@ -123,13 +123,13 @@ AdrenoMemoryPool *AdrenoMemoryPool_New(unsigned int objectSize, unsigned int exp
 	return addr;
 }
 
-void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, unsigned int objectSize, unsigned int expansionFactor)
+void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, size_t objectSize, size_t expansionFactor)
 {
 	if (objectSize % 2)
 		objectSize++;
 	
 #ifdef ADRENOMP_USE_LINKED_LIST
-	objectSize += 4;
+	objectSize += sizeof( size_t );
 #endif
 
 	mp->PageSize = (ADRENOMP_PAGE_SIZE / objectSize) * objectSize;
@@ -165,13 +165,14 @@ void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp)
 	{
 		void *ret = (void *)(mp->Reuse + 1);
 
-		mp->Reuse = (unsigned int *) (size_t)*mp->Reuse;
+		mp->Reuse = (size_t *) *mp->Reuse;
 
 		return ret;
 	}
 	else if (mp->PageCount && mp->Pages[mp->PageCount - 1].UseCount < mp->ExpansionFactor * mp->PageSize / mp->ObjectSize)
 	{
-		return (void *)(&mp->Pages[mp->PageCount - 1].Address[mp->Pages[mp->PageCount - 1].UseCount++ * mp->ObjectSize] + sizeof(unsigned int));
+		return (void *)(&mp->Pages[mp->PageCount -
+		1].Address[mp->Pages[mp->PageCount - 1].UseCount++ * mp->ObjectSize] + sizeof(size_t));
 	}
 	else
 	{
@@ -209,20 +210,20 @@ void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp)
 void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr)
 {
 #ifdef ADRENOMP_USE_LINKED_LIST
-	unsigned int *reuse = (unsigned int *)((unsigned int)ptr - 4);
-	*reuse = (unsigned int)mp->Reuse;
+	size_t *reuse = (size_t *)(ptr - sizeof( size_t* ));
+	*reuse = (size_t)mp->Reuse;
 	mp->Reuse = reuse;
 #else
-	unsigned int i = 0;
+	size_t i = 0;
 
 	for (i = 0; i < mp->PageCount; i++)
 	{
-		if ((unsigned int)ptr >= (unsigned int)mp->Pages[i].Address &&
-			(unsigned int)ptr < (unsigned int)(mp->Pages[i].Address + mp->ExpansionFactor * mp->PageSize))
+		if ((size_t)ptr >= (size_t)mp->Pages[i].Address &&
+			(size_t)ptr < (size_t)(mp->Pages[i].Address + mp->ExpansionFactor * mp->PageSize))
 		{
 			int pageOffset, freeIdx;
 
-			pageOffset = ((unsigned int)ptr - (unsigned int)mp->Pages[i].Address);
+			pageOffset = ((size_t)ptr - (size_t)mp->Pages[i].Address);
 			freeIdx = ((i * mp->ExpansionFactor * mp->PageSize) / mp->ObjectSize) + (pageOffset / mp->ObjectSize);
 
 			mp->TotalCount--;
@@ -236,7 +237,7 @@ void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr)
 
 void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp)
 {
-	unsigned int i = 0, freeIt = 0;
+	size_t i = 0, freeIt = 0;
 
 	if (--mp->DestroyLock > 0)
 		return;

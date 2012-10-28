@@ -410,8 +410,6 @@ void AdrenoBlowfish_SetKey(AdrenoBlowfish *bf, unsigned char *key, unsigned int 
 
 		for (n = 4; n--; )
 		{
-			int val = (int)(*p);
-
 			k <<= 8;
 			k |= *(p++);
 			

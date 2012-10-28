@@ -8,14 +8,14 @@ if (MSVC)
   else ()
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
   endif ()
-  
+
   # Except M$ only deprecations and warnings
   add_definitions (/D_SCL_SECURE_NO_WARNINGS)
   add_definitions (/D_CRT_SECURE_NO_WARNINGS)
   add_definitions (/D_CRT_SECURE_NO_DEPRECATE)
   add_definitions (/D_CRT_NONSTDC_NO_DEPRECATE)
-elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -pedantic -g")
+elseif (CMAKE_COMPILER_IS_GNUCC)
+  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -Wextra -Wno-unused-parameter -g")
 endif ()
 
 include_directories (${PROJECT_SOURCE_DIR}/src)

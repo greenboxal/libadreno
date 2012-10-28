@@ -257,11 +257,6 @@ void* AdrenoMM_Alloc(unsigned int size, const char *file, int line, const char *
 	short size_hash = size2hash( size );
 	struct unit_head *head;
 
-	if (((long) size) < 0) {
-		printf("AdrenoMM_Alloc: %d\n", size);
-		return NULL;
-	}
-	
 	if(size == 0) {
 		return NULL;
 	}
@@ -450,7 +445,7 @@ void AdrenoMM_Free(void *ptr, const char *file, int line, const char *func )
 	} else {
 		/* ƒ†ƒjƒbƒg‰ð•ú */
 		struct block *block = head->block;
-		if( (char*)head - (char*)block > sizeof(struct block) ) {
+		if( (char*)head - (char*)block > (long)sizeof(struct block) ) {
 			printf("Memory manager: args of aFree 0x%p is invalid pointer %s line %d\n", ptr, file, line);
 		} else if(head->block == NULL) {
 			printf("Memory manager: args of aFree 0x%p is freed pointer %s:%d@%s\n", ptr, file, line, func);
