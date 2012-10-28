@@ -210,7 +210,7 @@ void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp)
 void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr)
 {
 #ifdef ADRENOMP_USE_LINKED_LIST
-	size_t *reuse = (size_t *)(ptr - sizeof( size_t* ));
+	size_t *reuse = (size_t *)ptr - 1;
 	*reuse = (size_t)mp->Reuse;
 	mp->Reuse = reuse;
 #else

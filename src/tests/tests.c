@@ -18,7 +18,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
-#include <malloc.h>
 #include <sys/stat.h>
 
 #ifndef _WIN32
