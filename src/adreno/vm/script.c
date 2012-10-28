@@ -17,6 +17,8 @@
 #include <adreno/vm/vm.h>
 #include <adreno/utils/memorystream.h>
 
+#include <string.h>
+
 #define AdrenoBinHeaderMagic	0xF00D
 #define AdrenoBinHeaderVersion	0x1000
 
