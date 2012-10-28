@@ -23,3 +23,5 @@ CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 Makefile
+ALL_BUILD*
+ZERO_CHECK*

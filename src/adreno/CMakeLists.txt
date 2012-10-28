@@ -18,15 +18,22 @@ add_library (adreno
     ${CRYPT_SRCS}
     ${UTILS_SRCS}
     ${VM_SRCS}
+
+    ${BASE_HDRS}
+    ${AIL_HDRS}
+    ${CRYPT_HDRS}
+    ${UTILS_HDRS}
+    ${VM_HDRS}
+
 )
 
-source_group (ail FILES ${AIL_SRCS})
-source_group (crypt FILES ${CRYPT_SRCS})
-source_group (utils FILES ${UTILS_SRCS})
-source_group (vm FILES ${VM_SRCS})
+source_group ("Source Files\\ail" FILES ${AIL_SRCS})
+source_group ("Source Files\\crypt" FILES ${CRYPT_SRCS})
+source_group ("Source Files\\utils" FILES ${UTILS_SRCS})
+source_group ("Source Files\\vm" FILES ${VM_SRCS})
 
-source_group (include/ail FILES ${BASE_HDRS})
-source_group (include/ail FILES ${AIL_HDRS})
-source_group (include/ail FILES ${CRYPT_HDRS})
-source_group (include/ail FILES ${UTILS_HDRS})
-source_group (include/ail FILES ${VM_HDRS})
+source_group ("Header Files" FILES ${BASE_HDRS})
+source_group ("Header Files\\ail" FILES ${AIL_HDRS})
+source_group ("Header Files\\crypt" FILES ${CRYPT_HDRS})
+source_group ("Header Files\\utils" FILES ${UTILS_HDRS})
+source_group ("Header Files\\vm" FILES ${VM_HDRS})
