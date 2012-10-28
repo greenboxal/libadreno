@@ -23,7 +23,7 @@
 static AdrenoMemoryPool **MPools;
 static size_t MPoolsCount = 0;
 
-#if defined(_WIN32) && !defined(FORCE_MEMMGR_ALLOC)
+#if defined(_WIN32) && !defined(ADRENOMP_FORCE_MEMMGR_ALLOC)
 #include <Windows.h>
 
 void *AP_ReservePage(int count)

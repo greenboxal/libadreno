@@ -16,6 +16,7 @@
 
 #include <adreno/utils/hashtable.h>
 #include <adreno/utils/memorypool.h>
+#include <adreno/config.h>
 #include <adreno/memory.h>
 
 #include <stdlib.h>
@@ -59,7 +60,7 @@ void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_Hash
 	hashtable->Len = len;
 
 	hashtable->FreeSlots = 0;
-	hashtable->ExpansionFactor = DEFAULT_EXPANSION_FACTOR;
+	hashtable->ExpansionFactor = ADRENOHT_DEFAULT_EXPANSION_FACTOR;
 }
 
 void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable)

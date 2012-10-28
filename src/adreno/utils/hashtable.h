@@ -17,11 +17,6 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#define HEAP_DEBUG 0
-
-#define USE_EXPANSION_FACTOR 1
-#define DEFAULT_EXPANSION_FACTOR 100
-
 #ifdef __cplusplus
 extern "C"
 {
