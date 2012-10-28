@@ -18,6 +18,7 @@
 #include <adreno/memory.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 static AdrenoMemoryPool **MPools;
 static unsigned int MPoolsCount = 0;
@@ -164,7 +165,7 @@ void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp)
 	{
 		void *ret = (void *)(mp->Reuse + 1);
 
-		mp->Reuse = (unsigned int *)*mp->Reuse;
+		mp->Reuse = (unsigned int *) (size_t)*mp->Reuse;
 
 		return ret;
 	}

@@ -17,6 +17,8 @@
 #include <adreno/utils/array.h>
 #include <adreno/memory.h>
 
+#include <string.h>
+
 void AdrenoArray_Initialize(AdrenoArray *arr)
 {
 	arr->Data = NULL;

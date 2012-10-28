@@ -16,6 +16,8 @@
 
 #include <adreno/vm/vm.h>
 
+#include <string.h>
+
 unsigned int AdrenoValue_ValueHash(AdrenoValue *value, unsigned int size)
 {
 	AdrenoValue *v = AdrenoValue_GetValue(value);

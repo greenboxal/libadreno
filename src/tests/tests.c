@@ -20,6 +20,7 @@
 #include <memory.h>
 #include <malloc.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 #include <adreno/vm/vm.h>
 #include <adreno/vm/emit.h>
@@ -29,7 +30,9 @@
 #include <adreno/utils/memorypool.h>
 #include <adreno/utils/hashtable.h>
 
+#ifdef _MSC_VER
 #include <Windows.h>
+#endif
 
 // 0 = VM
 // 1 = Memory Pool
@@ -55,7 +58,7 @@ char *LoadInputFile(char *FileName)
 	}
 
 	/* Get the size of the file. */
-	if (fstat(_fileno(Fin),&statbuf) != 0) 
+	if (fstat(fileno(Fin),&statbuf) != 0) 
 	{
 		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
 		fclose(Fin);
@@ -92,6 +95,7 @@ char *LoadInputFile(char *FileName)
 
 long double GetTime()
 {
+#ifdef _MSC_VER
 	LARGE_INTEGER frequency;
 	LARGE_INTEGER time;
 
@@ -99,6 +103,12 @@ long double GetTime()
 	QueryPerformanceCounter(&time);
 
 	return (long double)time.QuadPart / (long double)frequency.QuadPart;
+#else
+	struct timeval tm;
+	gettimeofday( &tm, 0 );
+
+	return tm.tv_sec + (long double)tm.tv_usec / 1000000;
+#endif
 }
 
 #if TEST_TYPE == 0
