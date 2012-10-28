@@ -42,7 +42,7 @@ char *LoadInputFile(char *FileName)
 	}
 
 	/* Get the size of the file. */
-	if (fstat(_fileno(Fin),&statbuf) != 0) 
+	if (fstat(fileno(Fin),&statbuf) != 0) 
 	{
 		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
 		fclose(Fin);

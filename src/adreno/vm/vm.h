@@ -37,8 +37,8 @@ typedef void (*AdrenoAPIFunction)(AdrenoVM *vm, AdrenoContext *context);
 
 #include <adreno/config.h>
 #include <adreno/memory.h>
-#include <adreno/vm/script.h>
 #include <adreno/vm/value.h>
+#include <adreno/vm/script.h>
 #include <adreno/vm/stack.h>
 
 typedef enum
