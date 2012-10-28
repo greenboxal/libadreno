@@ -10,3 +10,18 @@
 *.lai
 *.la
 *.a
+
+# Visual Studio per-user settings
+*.user
+*.suo
+
+# Temporary files
+*.swp
+
+# CMake generated stuff
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+ALL_BUILD*
+ZERO_CHECK*
