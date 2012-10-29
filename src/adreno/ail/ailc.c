@@ -31,7 +31,7 @@ void AilCompiler_Initialize(AilCompiler *compiler, char *data)
 
 AdrenoScript *AilCompiler_Compile(AilCompiler *compiler)
 {
-	// Initialize the script object
+	/* Initialize the script object */
 	compiler->Script = (AdrenoScript *)AdrenoAlloc(sizeof(AdrenoScript));
 	AdrenoScript_Initialize(compiler->Script);
 	compiler->Script->GCFlags = GC_FREE;

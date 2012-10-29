@@ -23,7 +23,7 @@
 
 #include <wchar.h>
 
-enum adrenogcflags
+typedef enum adrenogcflags
 {
 	/* None action should be done */
     GC_NONE = 0x00000000,
@@ -38,8 +38,8 @@ enum adrenogcflags
 	GC_FREE_NP = 0x00000004,
 
 	/* Used by constants, must be freed when the scripts is being freed */
-	GC_FINAL_FREE = 0x00000008,
-};
+	GC_FINAL_FREE = 0x00000008
+} AdrenoGCFlags;
 
 typedef enum
 {
@@ -62,7 +62,7 @@ typedef enum
     AT_FUNCTION,
 
 	/* Function call return info */
-    AT_RETURNINFO,
+    AT_RETURNINFO
 } AdrenoType;
 
 typedef enum
@@ -71,7 +71,7 @@ typedef enum
 	SF_NONE = 0x00000000,
 
 	/* The string should be freed by the GC */
-	SF_FREE = 0x00000001,
+	SF_FREE = 0x00000001
 } AdrenoStringFlags;
 
 struct adrenostring

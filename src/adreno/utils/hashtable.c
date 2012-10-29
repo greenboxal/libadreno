@@ -317,7 +317,7 @@ hash_t AdrenoHashtable_Hash_Fnv(void *key, size_t size)
 
 size_t AdrenoHashtable_Len_String(void *key)
 {
-	// strlen() is better than counting as it will use SSE instructions on Core 2+
+	/* strlen() is better than counting as it will use SSE instructions on Core 2+ */
 	return strlen( (const char*) key );
 }
 

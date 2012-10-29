@@ -74,7 +74,7 @@ void AdrenoMemoryPool_Expand(AdrenoMemoryPool *mp)
 		
 	mp->Pages[nIdx].Address = (char *)AP_ReservePage(mp->ExpansionFactor);
 
-	// For now commit the pages too
+	/* For now commit the pages too */
 	AP_CommitPage(mp->Pages[nIdx].Address, mp->ExpansionFactor);
 
 #ifdef ADRENOMP_USE_LINKED_LIST

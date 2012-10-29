@@ -31,7 +31,6 @@ typedef struct adrenovmarray AdrenoVMArray;
 typedef struct adrenoretvalue AdrenoReturnInfo;
 typedef struct adrenovalue AdrenoValue;
 typedef struct adrenostack AdrenoStack;
-typedef enum adrenogcflags AdrenoGCFlags;
 
 typedef void (*AdrenoAPIFunction)(AdrenoVM *vm, AdrenoContext *context);
 
@@ -45,18 +44,18 @@ typedef enum
 {
     P_NONE = 0x00,
     P_REFERENCE = 0x80,
-    P_MASK = 0x80,
+    P_MASK = 0x80
 } AdrenoOpcodePrefixes;
 
 typedef enum
 {
     OP_NOP,
 
-    // Stack
+    /* Stack */
     OP_POP,
-	OP_POP_S,
+    OP_POP_S,
 
-    // Locals
+    /* Locals */
     OP_STLOC_0,
     OP_STLOC_1,
     OP_STLOC_2,
@@ -68,14 +67,14 @@ typedef enum
     OP_LDLOC_3,
     OP_LDLOC_S,
 
-    // Arguments
+    /* Arguments */
     OP_LDARG_0,
     OP_LDARG_1,
     OP_LDARG_2,
     OP_LDARG_3,
     OP_LDARG_S,
 
-    // Constants
+    /* Constants */
     OP_LDNULL,
     OP_LDC_I4,
     OP_LDC_I4_M1,
@@ -83,14 +82,14 @@ typedef enum
     OP_LDC_I4_1,
     OP_LDSTR,
 
-    // Arrays
+    /* Arrays */
     OP_NEWARR,
     OP_STELEM,
     OP_LDELEM,
-	OP_RMELEM,
+    OP_RMELEM,
     OP_LDLEN,
 
-    // Mathematical Operations
+    /* Mathematical Operations */
     OP_ADD,
     OP_SUB,
     OP_MUL,
@@ -98,7 +97,7 @@ typedef enum
     OP_REM,
     OP_NEG,
 
-    // Bitwise Operations
+    /* Bitwise Operations */
     OP_OR,
     OP_AND,
     OP_XOR,
@@ -106,7 +105,7 @@ typedef enum
     OP_SHL,
     OP_SHR,
 
-    // Logical Operations
+    /* Logical Operations */
     OP_LOR,
     OP_LAND,
     OP_LNOT,
@@ -117,26 +116,26 @@ typedef enum
     OP_LT,
     OP_LE,
 
-    // Flow Control
+    /* Flow Control */
     OP_JUMP,
     OP_BRTRUE,
     OP_BRFALSE,
     OP_SWITCH,
 
-    // Functions
+    /* Functions */
     OP_LDFUNC,
     OP_CALL,
     OP_ENTER,
     OP_RET,
 
-    OP_MASK = 0x7F,
+    OP_MASK = 0x7F
 } AdrenoOpcodes;
 
 typedef enum
 {
     ST_IDLE,
     ST_RUN,
-    ST_END,
+    ST_END
 } AdrenoVMState;
 
 typedef enum
@@ -153,7 +152,7 @@ typedef enum
 	ERR_FOREING_CAST,
 	ERR_INVALID_OPERAND,
 	ERR_INVALID_ARGUMENT,
-	ERR_UNKNOWN_FUNCTION,
+	ERR_UNKNOWN_FUNCTION
 } AdrenoVMError;
 
 struct adrenoop

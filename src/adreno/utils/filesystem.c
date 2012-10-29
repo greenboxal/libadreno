@@ -1,7 +1,7 @@
 #include <adreno/utils/filesystem.h>
 #include <adreno/memory.h>
 
-// TODO: config.h check for this would be nice
+/* TODO: config.h check for this would be nice */
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif

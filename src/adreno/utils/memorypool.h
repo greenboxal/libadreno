@@ -20,7 +20,7 @@
 #include <adreno/config.h>
 #include <adreno/utils/bitarray.h>
 
-#include <stddef.h> // size_t
+#include <stddef.h> /* size_t */
 
 typedef struct
 {

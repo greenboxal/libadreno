@@ -49,15 +49,15 @@ extern "C"
 
 	typedef struct
 	{
-		// Nodes
+		/* Nodes */
 		size_t NodeCount;
 		AdrenoHashtableNode *RootNode;
 
-		// Functions
+		/* Functions */
 		AdrenoHashtable_HashFunction Hash;
 		AdrenoHashtable_LenFunction Len;
 
-		// Expansion settings
+		/* Expansion settings */
 		size_t FreeSlots;
 		size_t ExpansionFactor;
 	} AdrenoHashtable;
@@ -68,7 +68,7 @@ extern "C"
 		AdrenoHashtableNode *CurrentNode;
 	} AdrenoHashtableIterator;
 
-	// Hashtable functions
+	/* Hashtable functions */
 	extern void AdrenoHashtable_Initialize(AdrenoHashtable *hashtable, AdrenoHashtable_HashFunction hash, AdrenoHashtable_LenFunction len);
 	extern void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable);
 
@@ -83,10 +83,10 @@ extern "C"
 	extern int AdrenoHashtable_Count(AdrenoHashtable *hashtable);
 	extern void AdrenoHashtable_Clear(AdrenoHashtable *hashtable);
 
-	// General hash functions
+	/* General hash functions */
 	extern hash_t AdrenoHashtable_Hash_Fnv(void *key, size_t size);
 
-	// General len functions
+	/* General len functions */
 	extern size_t AdrenoHashtable_Len_String(void *key);
 	extern size_t AdrenoHashtable_Len_String(void *key);
 

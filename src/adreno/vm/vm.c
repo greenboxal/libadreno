@@ -238,7 +238,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 		case OP_NOP:
 			break;
 
-			// Stack
+			/* Stack */
 		case OP_POP:
 			{
 				if (!AdrenoStack_Pop(&ctx->Stack, &value))
@@ -270,7 +270,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Locals
+			/* Locals */
 		case OP_STLOC_0:
 		case OP_STLOC_1:
 		case OP_STLOC_2:
@@ -341,7 +341,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Arguments
+			/* Arguments */
 		case OP_LDARG_0:
 		case OP_LDARG_1:
 		case OP_LDARG_2:
@@ -380,7 +380,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Constansts
+			/* Constansts */
 		case OP_LDNULL:
 			{
 				AdrenoValue_LoadNull(&value);
@@ -434,7 +434,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Arrays
+			/* Arrays */
 		case OP_NEWARR:
 			{
 				AdrenoValue_LoadArray(&value);
@@ -654,7 +654,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Mathematical Operations
+			/* Mathematical Operations */
 		case OP_ADD:
 			{
 				ADRENOVM_MATHOP_DUAL_CONTRACT
@@ -738,7 +738,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Bitwise Operations
+			/* Bitwise Operations */
 		case OP_OR:
 			{
 				ADRENOVM_MATHOP_DUAL_CONTRACT
@@ -811,7 +811,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Logical Operations
+			/* Logical Operations */
 		case OP_LOR:
 			{
 				ADRENOVM_MATHOP_DUAL_CONTRACT
@@ -938,7 +938,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Flow Control
+			/* Flow Control */
 		case OP_JUMP:
 			{
 				opSize += 4 + opcode->Value.I4;
@@ -997,7 +997,7 @@ void AdrenoVM_Run(AdrenoVM *vm, AdrenoContext *ctx)
 			}
 			break;
 
-			// Functions
+			/* Functions */
 		case OP_LDFUNC:
 			{
 				AdrenoFunction *function;

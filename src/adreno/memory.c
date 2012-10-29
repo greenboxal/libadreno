@@ -16,8 +16,10 @@
 
 #include <adreno/memory.h>
 
-// This memory manager was taken from rAthena Ragnar Online emulator, all credits goes to the original creators
-// Some modifications by libadreno team
+/* This memory manager was taken from rAthena Ragnar Online emulator, all
+ * credits goes to the original creators.
+ * Some modifications by libadreno team
+ */
 
 #if defined(USE_MEMORY_MANAGER)
 
@@ -27,7 +29,7 @@
 #include <string.h>
 #include <time.h>
 
-////////////// Memory Libraries //////////////////
+/************* Memory Libraries *****************/
 
 #if defined(MEMWATCH)
 
@@ -93,7 +95,7 @@
 void* aMalloc_(unsigned int size, const char *file, int line, const char *func)
 {
 	void *ret = MALLOC(size, file, line, func);
-	// ShowMessage("%s:%d: in func %s: aMalloc %d\n",file,line,func,size);
+	/* ShowMessage("%s:%d: in func %s: aMalloc %d\n",file,line,func,size); */
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aMalloc error out of memory!\n",file,line,func);
 		exit(EXIT_FAILURE);
@@ -104,7 +106,7 @@ void* aMalloc_(unsigned int size, const char *file, int line, const char *func)
 void* aCalloc_(unsigned int num, unsigned int size, const char *file, int line, const char *func)
 {
 	void *ret = CALLOC(num, size, file, line, func);
-	// ShowMessage("%s:%d: in func %s: aCalloc %d %d\n",file,line,func,num,size);
+	/* ShowMessage("%s:%d: in func %s: aCalloc %d %d\n",file,line,func,num,size); */
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aCalloc error out of memory!\n", file, line, func);
 		exit(EXIT_FAILURE);
@@ -114,7 +116,7 @@ void* aCalloc_(unsigned int num, unsigned int size, const char *file, int line, 
 void* aRealloc_(void *p, unsigned int size, const char *file, int line, const char *func)
 {
 	void *ret = REALLOC(p, size, file, line, func);
-	// ShowMessage("%s:%d: in func %s: aRealloc %p %d\n",file,line,func,p,size);
+	/* ShowMessage("%s:%d: in func %s: aRealloc %p %d\n",file,line,func,p,size); */
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aRealloc error out of memory!\n",file,line,func);
 		exit(EXIT_FAILURE);
@@ -124,7 +126,7 @@ void* aRealloc_(void *p, unsigned int size, const char *file, int line, const ch
 char* aStrdup_(const char *p, const char *file, int line, const char *func)
 {
 	char *ret = STRDUP(p, file, line, func);
-	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
+	/* ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p); */
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aStrdup error out of memory!\n", file, line, func);
 		exit(EXIT_FAILURE);
@@ -134,7 +136,7 @@ char* aStrdup_(const char *p, const char *file, int line, const char *func)
 wchar_t* aWStrdup_(const wchar_t *p, const char *file, int line, const char *func)
 {
 	wchar_t *ret = WCSDUP(p, file, line, func);
-	// ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p);
+	/* ShowMessage("%s:%d: in func %s: aStrdup %p\n",file,line,func,p); */
 	if (ret == NULL){
 		printf("%s:%d: in func %s: aStrdup error out of memory!\n", file, line, func);
 		exit(EXIT_FAILURE);
@@ -143,7 +145,7 @@ wchar_t* aWStrdup_(const wchar_t *p, const char *file, int line, const char *fun
 }
 void aFree_(void *p, const char *file, int line, const char *func)
 {
-	// ShowMessage("%s:%d: in func %s: aFree %p\n",file,line,func,p);
+	/* ShowMessage("%s:%d: in func %s: aFree %p\n",file,line,func,p); */
 	if (p)
 		FREE(p, file, line, func);
 
@@ -238,7 +240,7 @@ static unsigned short size2hash( unsigned int size )
 		return (unsigned short)(size - BLOCK_DATA_SIZE1 + BLOCK_ALIGNMENT2 - 1) / BLOCK_ALIGNMENT2
 				+ BLOCK_DATA_COUNT1;
 	} else {
-		return 0xffff;	// ブロック長を超える場合は hash にしない
+		return 0xffff;	/* ブロック長を超える場合は hash にしない */
 	}
 }
 
@@ -298,7 +300,7 @@ void* AdrenoMM_Alloc(unsigned int size, const char *file, int line, const char *
 	}
 
 	if( block->unit_unfill == 0xFFFF ) {
-		// free済み領域が残っていない
+		/* free済み領域が残っていない */
 		memmgr_assert(block->unit_used <  block->unit_count);
 		memmgr_assert(block->unit_used == block->unit_maxused);
 		head = block2unit(block, block->unit_maxused);
@@ -311,7 +313,7 @@ void* AdrenoMM_Alloc(unsigned int size, const char *file, int line, const char *
 	}
 
 	if( block->unit_unfill == 0xFFFF && block->unit_maxused >= block->unit_count) {
-		// ユニットを使い果たしたので、unfillリストから削除
+		/* ユニットを使い果たしたので、unfillリストから削除 */
 		if( block->unfill_prev == &block_head) {
 			hash_unfill[ size_hash ] = block->unfill_next;
 		} else {
@@ -351,7 +353,7 @@ void* AdrenoMM_Alloc(unsigned int size, const char *file, int line, const char *
 	head->size  = (unsigned short)size;
 	*(long*)((char*)head + sizeof(struct unit_head) - sizeof(long) + size) = 0xdeadbeaf;
 	return (char *)head + sizeof(struct unit_head) - sizeof(long);
-};
+}
 
 void* AdrenoMM_CAlloc(unsigned int num, unsigned int size, const char *file, int line, const char *func )
 {
@@ -372,10 +374,10 @@ void* AdrenoMM_Realloc(void *memblock, unsigned int size, const char *file, int 
 		old_size = ((struct unit_head_large *)((char *)memblock - sizeof(struct unit_head_large) + sizeof(long)))->size;
 	}
 	if(old_size > size) {
-		// サイズ縮小 -> そのまま返す（手抜き）
+		/* サイズ縮小 -> そのまま返す（手抜き） */
 		return memblock;
 	}  else {
-		// サイズ拡大
+		/* サイズ拡大 */
 		void *p = AdrenoMM_Alloc(size,file,line,func);
 		if(p != NULL) {
 			memcpy(p,memblock,old_size);
@@ -437,7 +439,7 @@ void AdrenoMM_Free(void *ptr, const char *file, int line, const char *func )
 			}
 			memmgr_usage_bytes -= head_large->size;
 #ifdef DEBUG_MEMMGR
-			// set freed memory to 0xfd
+			/* set freed memory to 0xfd */
 			memset(ptr, 0xfd, head_large->size);
 #endif
 			FREE(head_large,file,line,func);
@@ -465,7 +467,7 @@ void AdrenoMM_Free(void *ptr, const char *file, int line, const char *func )
 				block_free(block);
 			} else {
 				if( block->unfill_prev == NULL) {
-					// unfill リストに追加
+					/* unfill リストに追加 */
 					if( hash_unfill[ block->unit_hash ] ) {
 						hash_unfill[ block->unit_hash ]->unfill_prev = block;
 					}
@@ -508,7 +510,7 @@ static struct block* block_malloc(unsigned short hash)
 		/* ブロックを連結させる */
 		for(i=0;i<BLOCK_ALLOC;i++) {
 			if(i != 0) {
-				// p[0] はこれから使うのでリンクには加えない
+				/* p[0] はこれから使うのでリンクには加えない */
 				p[i].unfill_next = hash_unfill[0];
 				hash_unfill[0]   = &p[i];
 				p[i].unfill_prev = NULL;
@@ -520,7 +522,7 @@ static struct block* block_malloc(unsigned short hash)
 		}
 	}
 
-	// unfill に追加
+	/* unfill に追加 */
 	memmgr_assert(hash_unfill[ hash ] == NULL);
 	hash_unfill[ hash ] = p;
 	p->unfill_prev  = &block_head;
@@ -584,30 +586,30 @@ static void memmgr_log (char *buf)
 }
 #endif /* MEMORYMANAGER_LOG */
 
-/// Returns 1 if the memory location is active.
-/// Active means it is allocated and points to a usable part.
-///
-/// @param ptr Pointer to the memory
-/// @return 1 if the memory is active
+/*! Returns 1 if the memory location is active.
+ * Active means it is allocated and points to a usable part.
+ *
+ * @param ptr Pointer to the memory
+ * @return 1 if the memory is active */
 int memmgr_verify(void* ptr)
 {
 	struct block* block = block_first;
 	struct unit_head_large* large = unit_head_large_first;
 
 	if( ptr == NULL )
-		return 0;// never valid
+		return 0;/* never valid */
 
-	// search small blocks
+	/* search small blocks */
 	while( block )
 	{
 		if( (char*)ptr >= (char*)block && (char*)ptr < ((char*)block) + sizeof(struct block) )
-		{// found memory block
+		{/* found memory block */
 			if( block->unit_used && (char*)ptr >= block->data )
-			{// memory block is being used and ptr points to a sub-unit
+			{/* memory block is being used and ptr points to a sub-unit */
 				unsigned int i = (unsigned int)((char*)ptr - block->data)/block->unit_size;
 				struct unit_head* head = block2unit(block, i);
 				if( i < block->unit_maxused && head->block != NULL )
-				{// memory unit is allocated, check if ptr points to the usable part
+				{/* memory unit is allocated, check if ptr points to the usable part */
 					return ( (char*)ptr >= ((char*)head) + sizeof(struct unit_head) - sizeof(long)
 						&& (char*)ptr < ((char*)head) + sizeof(struct unit_head) - sizeof(long) + head->size );
 				}
@@ -617,11 +619,11 @@ int memmgr_verify(void* ptr)
 		block = block->block_next;
 	}
 
-	// search large blocks
+	/* search large blocks */
 	while( large )
 	{
 		if( (char*)ptr >= (char*)large && (char*)ptr < ((char*)large) + large->size )
-		{// found memory block, check if ptr points to the usable part
+		{/* found memory block, check if ptr points to the usable part */
 			return ( (char*)ptr >= ((char*)large) + sizeof(struct unit_head_large) - sizeof(long)
 				&& (char*)ptr < ((char*)large) + sizeof(struct unit_head_large) - sizeof(long) + large->size );
 		}
@@ -653,7 +655,7 @@ static void memmgr_final (void)
 						head->file, head->line, (unsigned long)head->size, ptr);
 					memmgr_log (buf);
 #endif /* MEMORYMANAGER_LOG */
-					// get block pointer and free it [celest]
+					/* get block pointer and free it [celest] */
 					AdrenoMM_Free(ptr, ALC_MARK);
 				}
 			}
@@ -702,15 +704,16 @@ static void memmgr_init (void)
  */
 
 
-/// Tests the memory for errors and memory leaks.
+/*! Tests the memory for errors and memory leaks. */
 void AdrenoMM_MemoryCheck()
 {
 	MEMORY_CHECK();
 }
 
 
-/// Returns 1 if a pointer is valid.
-/// The check is best-effort, 0 positives are possible.
+/*! Returns 1 if a pointer is valid.
+ *  The check is best-effort, 0 positives are possible.
+ */
 int AdrenoMM_VerifyPointer(void* ptr)
 {
 #ifdef USE_MEMORY_MANAGER
@@ -741,11 +744,11 @@ void AdrenoMM_Final()
 void AdrenoMM_Initialize()
 {
 #if defined(DMALLOC) && defined(CYGWIN)
-	// http://dmalloc.com/docs/latest/online/dmalloc_19.html
+	/* http://dmalloc.com/docs/latest/online/dmalloc_19.html */
 	dmalloc_debug_setup(getenv("DMALLOC_OPTIONS"));
 #endif
 #ifdef GCOLLECT
-	// don't garbage collect, only report inaccessible memory that was not deallocated
+	/* don't garbage collect, only report inaccessible memory that was not deallocated */
 	GC_find_leak = 1;
 	GC_INIT();
 #endif

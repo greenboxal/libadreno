@@ -37,10 +37,11 @@
 #include <Windows.h>
 #endif
 
-// 0 = VM
-// 1 = Memory Pool
-// 2 = Hashtable + Array
-#define TEST_TYPE 1
+/* 0 = VM
+ * 1 = Memory Pool
+ * 2 = Hashtable + Array
+ */
+#define TEST_TYPE 2
 
 long double GetTime()
 {
@@ -84,8 +85,8 @@ int main(int argc, char **argv)
 
 	AdrenoVM_LoadStdlib(&vm);
 
-// 0 = Read Binary
-// 1 = Compile
+/* 0 = Read Binary
+ * 1 = Compile */
 #define S_TYPE 0
 
 #if S_TYPE == 0

@@ -26,7 +26,7 @@
 typedef enum
 {
 	AF_SCRIPT,
-	AF_API,
+	AF_API
 } AdrenoFunctionType;
 
 struct adrenofunction
