@@ -23,18 +23,21 @@ AdrenoFS_GetFileLength( FILE* f, size_t* result )
 char *
 AdrenoFS_ReadWholeFile( FILE* f, size_t* len )
 {
+	size_t l, orig;
+	char* buf;
+	int ret;
+
 	*len = 0;
 
-	size_t l;
 	AdrenoFS_GetFileLength( f, &l );
 
-	size_t orig = ftell( f );
+	orig = ftell( f );
 	if( orig ) {
 		fseek( f, 0, SEEK_SET );
 	}
 
-	char* buf = AdrenoAlloc( l + 1 );
-	int ret = fread( buf, 1, l, f );
+	buf = AdrenoAlloc( l + 1 );
+	ret = fread( buf, 1, l, f );
 	fseek( f, orig, SEEK_SET );
 
 	if( -1 == ret ) {
@@ -63,12 +66,15 @@ AdrenoFS_WriteWholeFile( FILE* f, const char* buf, size_t len )
 char *
 AdrenoFS_LoadFile( const char* filename, size_t* len )
 {
-	FILE* f = fopen( filename, "rb" );
+	FILE* f;
+	char* buf;
+	
+	f = fopen( filename, "rb" );
 	if( !f ) {
 		return NULL;
 	}
 
-	char* buf = AdrenoFS_ReadWholeFile( f, len );
+	buf = AdrenoFS_ReadWholeFile( f, len );
 	
 	fclose( f );
 	return buf;
@@ -77,12 +83,15 @@ AdrenoFS_LoadFile( const char* filename, size_t* len )
 int
 AdrenoFS_SaveFile( const char* filename, const char* buf, size_t len )
 {
-	FILE* f = fopen( filename, "wb" );
+	FILE* f;
+	int ret;
+	
+	f = fopen( filename, "wb" );
 	if( !f ) {
 		return -1;
 	}
 
-	int ret = AdrenoFS_WriteWholeFile( f, buf, len );
+	ret = AdrenoFS_WriteWholeFile( f, buf, len );
 	
 	fclose( f );
 	return ret;
