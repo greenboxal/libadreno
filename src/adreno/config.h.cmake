@@ -17,7 +17,7 @@
 #ifndef ADRENOCONFIG_H
 #define ADRENOCONFIG_H
 
-// Memory
+/* Memory */
 #cmakedefine USE_MALLOC
 #cmakedefine USE_MEMORY_MANAGER
 
@@ -25,22 +25,22 @@
 #define MEMORYMANAGER_LOG 1
 #endif
 
-// Stack
+/* Stack */
 #define ADRENOSTACK_DEFAULT_STACK @ADRENOSTACK_DEFAULT_STACK@
 #define ADRENOSTACK_CAN_EXPAND @ADRENOSTACK_CAN_EXPAND@
 #define ADRENOSTACK_EXPANSION_FACTOR @ADRENOSTACK_EXPANSION_FACTOR@
 
-// Memory Pool
+/* Memory Pool */
 #cmakedefine ADRENOMP_USE_LINKED_LIST
 #cmakedefine ADRENOMP_PAGE_SIZE @ADRENOMP_PAGE_SIZE@
 
-// This will force the use of libadreno memory manager for allocate memory for the pool
+/* This will force the use of libadreno memory manager for allocate memory for the pool */
 #cmakedefine ADRENOMP_FORCE_MEMMGR_ALLOC
 
-// Bitarray
+/* Bitarray */
 #cmakedefine BITARRAY_USE_ANCHOR_OFFSET
 
-// Hashtable
+/* Hashtable */
 #cmakedefine ADRENOHT_DEFAULT_EXPANSION_FACTOR @ADRENOHT_DEFAULT_EXPANSION_FACTOR@
 
 #endif
