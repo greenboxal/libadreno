@@ -29,6 +29,7 @@
 #include <adreno/ail/ailc.h>
 
 #include <adreno/utils/array.h>
+#include <adreno/utils/filesystem.h>
 #include <adreno/utils/memorypool.h>
 #include <adreno/utils/hashtable.h>
 
@@ -39,61 +40,7 @@
 // 0 = VM
 // 1 = Memory Pool
 // 2 = Hashtable + Array
-#define TEST_TYPE 2
-
-char *LoadInputFile(char *FileName) 
-{
-	FILE *Fin;
-	char *Buf1;
-	struct stat statbuf;
-	size_t BytesRead;
-
-	/* Sanity check. */
-	if ((FileName == NULL) || (*FileName == '\0')) return(NULL);
-
-	/* Open the file. */
-	Fin = fopen(FileName,"rb");
-	if (Fin == NULL) 
-	{
-		fprintf(stdout,"Could not open input file: %s\n",FileName);
-		return(NULL);
-	}
-
-	/* Get the size of the file. */
-	if (fstat(fileno(Fin),&statbuf) != 0) 
-	{
-		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
-		fclose(Fin);
-		return(NULL);
-	}
-
-	/* Allocate memory for the input. */
-	Buf1 = (char *)AdrenoAlloc(statbuf.st_size + 1);
-	if ((Buf1 == NULL)) 
-	{
-		fprintf(stdout,"Not enough memory to load the file: %s\n",FileName);
-		fclose(Fin);
-		if (Buf1 != NULL) free(Buf1);
-		return(NULL);
-	}
-
-	/* Load the file into memory. */
-	BytesRead = fread(Buf1,1,statbuf.st_size,Fin);
-	Buf1[BytesRead] = '\0';
-
-	/* Close the file. */
-	fclose(Fin);
-
-	/* Exit if there was an error while reading the file. */
-	if (BytesRead != statbuf.st_size) 
-	{
-		fprintf(stdout,"Error while reading input file: %s\n",FileName);
-		free(Buf1);
-		return(NULL);
-	}
-
-	return Buf1;
-}
+#define TEST_TYPE 1
 
 long double GetTime()
 {
@@ -142,7 +89,9 @@ int main(int argc, char **argv)
 #define S_TYPE 0
 
 #if S_TYPE == 0
-	data = LoadInputFile("test.bin");
+	size_t ignored;
+
+	data = AdrenoFS_LoadFile( "test.bin", &ignored );
 	script = AdrenoScript_Load(data);
 	AdrenoFree(data);
 #elif S_TYPE == 1

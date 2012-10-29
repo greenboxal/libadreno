@@ -27,20 +27,20 @@ typedef struct
 	unsigned short Magic;
 	unsigned short Version;
 
-	unsigned int FunctionCount;
-	unsigned int StringCount;
+	size_t FunctionCount;
+	size_t StringCount;
 } AdrenoBinHeader;
 
 typedef struct
 {
-	unsigned int Size;
+	size_t Size;
 } AdrenoBinString;
 
 typedef struct
 {
-	unsigned int NameIndex;
-	unsigned int LocalsCount;
-	unsigned int BytecodeSize;
+	size_t NameIndex;
+	size_t LocalsCount;
+	size_t BytecodeSize;
 } AdrenoBinFunction;
 
 void AdrenoScript_Initialize(AdrenoScript *script)
@@ -51,9 +51,9 @@ void AdrenoScript_Initialize(AdrenoScript *script)
 	script->Functions.ExpansionFactor = 2;
 }
 
-char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size)
+char *AdrenoScript_Save(AdrenoScript *script, size_t *size)
 {
-	unsigned int i;
+	size_t i;
 	char *result;
 	AdrenoHashtableIterator *it;
 
@@ -107,7 +107,7 @@ AdrenoScript *AdrenoScript_Load(char *data)
 {
 #define TAKE_DATA_PTR(var, type) var = (type *)&data[position]; position += sizeof(type)
 
-	unsigned int i, position = 0;
+	size_t i, position = 0;
 	AdrenoBinHeader *header;
 
 	AdrenoScript *as = (AdrenoScript *)AdrenoAlloc(sizeof(AdrenoScript));
@@ -166,7 +166,7 @@ AdrenoScript *AdrenoScript_Load(char *data)
 
 void AdrenoScript_Free(AdrenoScript *script)
 {	
-	unsigned int i;
+	size_t i;
 	AdrenoHashtableIterator *it;
 	
 	for (it = AdrenoHashtable_CreateIterator(&script->Functions); it->CurrentNode; AdrenoHashtableIterator_Next(it))

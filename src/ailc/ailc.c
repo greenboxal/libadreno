@@ -14,96 +14,15 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <memory.h>
 #include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <adreno/vm/vm.h>
 #include <adreno/ail/ailc.h>
-
-// TODO: This could go in a helper class somewhere
-static int
-GetFileLen( FILE* f, size_t* out )
-{
-	size_t orig, len;
-
-	errno = 0;
-	orig = ftell( f );
-	len = ftell( f );
-	fseek( f, orig, SEEK_SET );
-
-	return errno ? 0 : 1;
-}
-
-char *LoadInputFile(char *FileName) 
-{
-	FILE *Fin;
-	char *Buf1;
-	size_t Length;
-	size_t BytesRead;
-
-	/* Sanity check. */
-	if ((FileName == NULL) || (*FileName == '\0')) return(NULL);
-
-	/* Open the file. */
-	Fin = fopen(FileName,"rb");
-	if (Fin == NULL) 
-	{
-		fprintf(stdout,"Could not open input file: %s\n",FileName);
-		return(NULL);
-	}
-
-	/* Get the size of the file. */
-	if ( !GetFileLen( Fin, &Length ) )
-	{
-		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
-		fclose(Fin);
-		return(NULL);
-	}
-
-	/* Allocate memory for the input. */
-	Buf1 = (char *)AdrenoAlloc(Length + 1);
-	if ((Buf1 == NULL)) 
-	{
-		fprintf(stdout,"Not enough memory to load the file: %s\n",FileName);
-		fclose(Fin);
-		if (Buf1 != NULL) free(Buf1);
-		return(NULL);
-	}
-
-	/* Load the file into memory. */
-	BytesRead = fread(Buf1,1,Length,Fin);
-	Buf1[BytesRead] = '\0';
-
-	/* Close the file. */
-	fclose(Fin);
-
-	/* Exit if there was an error while reading the file. */
-	if (BytesRead != Length) 
-	{
-		fprintf(stdout,"Error while reading input file: %s\n",FileName);
-		free(Buf1);
-		return(NULL);
-	}
-
-	return Buf1;
-}
-
-void WriteData(char *data, unsigned int size, char *to)
-{
-	FILE *fp = fopen(to, "wb");
-
-	if (!fp)
-	{
-		printf("Error opening output file!\n");
-		return;
-	}
-
-	fwrite(data, size, 1, fp);
-	fclose(fp);
-}
+#include <adreno/memory.h>
+#include <adreno/utils/filesystem.h>
+#include <adreno/vm/vm.h>
 
 void ShowUsage()
 {
@@ -164,19 +83,22 @@ int main(int argc, char *argv[])
 	{
 		AilCompiler c;
 		AdrenoScript *s;
-		unsigned int size;
-		char *data;
+		size_t size;
+		char *data = AdrenoFS_LoadFile( inFile, &size );
+		if( !data ) {
+			return 1;
+		}
 
 		AdrenoVM_StaticInit();
 
-		AilCompiler_Initialize(&c, LoadInputFile(inFile));
+		AilCompiler_Initialize(&c, data);
 		s = AilCompiler_Compile(&c);
 		AilCompiler_Free(&c);
 		AdrenoFree(c.Data);
 
 		data = AdrenoScript_Save(s, &size);
 
-		WriteData(data, size, outFile);
+		AdrenoFS_SaveFile( outFile, data, size );
 		AdrenoScript_Free(s);
 		AdrenoFree(data);
 

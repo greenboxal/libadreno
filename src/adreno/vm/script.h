@@ -21,6 +21,8 @@
 #error You should not include this file directly
 #endif
 
+#include <stddef.h>
+
 typedef enum
 {
 	AF_SCRIPT,
@@ -30,15 +32,15 @@ typedef enum
 struct adrenofunction
 {
 	AdrenoFunctionType Type;
-	unsigned int Index;
-	unsigned int NameIndex;
-	unsigned int LocalsCount;
+	size_t Index;
+	size_t NameIndex;
+	size_t LocalsCount;
 
 	AdrenoScript *Owner;
 
 	AdrenoGCFlags GCFlags;
 	unsigned char *Bytecode;
-	unsigned int BytecodeSize;
+	size_t BytecodeSize;
 
 	AdrenoAPIFunction APIFunction;
 };
@@ -57,7 +59,7 @@ extern "C"
 #endif
 
 	extern void AdrenoScript_Initialize(AdrenoScript *script);
-	extern char *AdrenoScript_Save(AdrenoScript *script, unsigned int *size);
+	extern char *AdrenoScript_Save(AdrenoScript *script, size_t *size);
 	extern AdrenoScript *AdrenoScript_Load(char *data);
 	extern void AdrenoScript_Free(AdrenoScript *script);
 
