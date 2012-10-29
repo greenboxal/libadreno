@@ -19,14 +19,14 @@
 #include <adreno/config.h>
 #include <adreno/memory.h>
 
-#include <stdlib.h>
-#include <memory.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static AdrenoMemoryPool *AHT_NodePool = NULL;
 static unsigned HT_UseCount = 0;
 
-static inline hash_t GetHash( AdrenoHashtable *hashtable, void *key )
+static hash_t GetHash( AdrenoHashtable *hashtable, void *key )
 {
 	return hashtable->Hash
 		? hashtable->Hash( key, hashtable->Len( key ))
