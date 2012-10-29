@@ -65,13 +65,14 @@ int AdrenoStack_Take(AdrenoStack *stack, AdrenoValue **value, int count, int can
 {
 	if( (size_t) count > stack->StackPointer )
 	{
+		int oldSize;
+
 		if( !canExpand )
 		{
 			return 0;
 		}
 
-		int oldSize = stack->StackSize;
-		
+		oldSize = stack->StackSize;
 		stack->StackSize += ((count + ADRENOSTACK_EXPANSION_FACTOR - 1) / ADRENOSTACK_EXPANSION_FACTOR) * ADRENOSTACK_EXPANSION_FACTOR;
 		stack->Stack = (AdrenoValue *)AdrenoRealloc(stack->Stack, sizeof(AdrenoValue) * stack->StackSize);
 		
