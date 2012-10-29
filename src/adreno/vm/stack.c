@@ -63,12 +63,13 @@ int AdrenoStack_Push(AdrenoStack *stack, AdrenoValue *value, int canExpand)
 
 int AdrenoStack_Take(AdrenoStack *stack, AdrenoValue **value, int count, int canExpand)
 {
-	if (stack->StackPointer - count < 0 && !canExpand)
+	if( (size_t) count > stack->StackPointer )
 	{
-		return 0;
-	}
-	else if (stack->StackPointer - count < 0 && canExpand)
-	{
+		if( !canExpand )
+		{
+			return 0;
+		}
+
 		int oldSize = stack->StackSize;
 		
 		stack->StackSize += ((count + ADRENOSTACK_EXPANSION_FACTOR - 1) / ADRENOSTACK_EXPANSION_FACTOR) * ADRENOSTACK_EXPANSION_FACTOR;

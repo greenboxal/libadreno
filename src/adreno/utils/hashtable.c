@@ -26,6 +26,13 @@
 static AdrenoMemoryPool *AHT_NodePool = NULL;
 static unsigned HT_UseCount = 0;
 
+static inline hash_t GetHash( AdrenoHashtable *hashtable, void *key )
+{
+	return hashtable->Hash
+		? hashtable->Hash( key, hashtable->Len( key ))
+		: (hash_t) (size_t) key;
+}
+
 AdrenoHashtableNode *AdrenoHashtable_Find(AdrenoHashtable *hashtable, unsigned int keyHash)
 {
 	AdrenoHashtableNode *next = hashtable->RootNode;
@@ -77,7 +84,8 @@ void AdrenoHashtable_Destroy(AdrenoHashtable *hashtable)
 
 void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value)
 {
-	unsigned int keyHash = hashtable->Hash ? hashtable->Hash(key, hashtable->Len(key)) : (unsigned int)key;
+	hash_t keyHash = GetHash( hashtable, key );
+
 	AdrenoHashtableNode *next = hashtable->RootNode;
 	AdrenoHashtableNode *ptr;
 
@@ -142,7 +150,7 @@ void AdrenoHashtable_Set(AdrenoHashtable *hashtable, void *key, void *value)
 
 int AdrenoHashtable_Get(AdrenoHashtable *hashtable, void *key, void **value)
 {
-	unsigned int keyHash = hashtable->Hash ? hashtable->Hash(key, hashtable->Len(key)) : (unsigned int)key;
+	hash_t keyHash = GetHash( hashtable, key );
 	AdrenoHashtableNode *ptr;
 
 	if ((ptr = AdrenoHashtable_Find(hashtable, keyHash)) != NULL)
@@ -239,7 +247,7 @@ void AdrenoHashtable_RemoveHashed(AdrenoHashtable *hashtable, unsigned int keyHa
 
 void AdrenoHashtable_Remove(AdrenoHashtable *hashtable, void *key)
 {
-	unsigned int keyHash = hashtable->Hash ? hashtable->Hash(key, hashtable->Len(key)) : (unsigned int)key;
+	hash_t keyHash = GetHash( hashtable, key );
 
 	AdrenoHashtable_RemoveHashed(hashtable, keyHash);
 }
@@ -292,29 +300,25 @@ void AdrenoHashtableIterator_Free(AdrenoHashtableIterator *it)
 	AdrenoFree(it);
 }
 
-unsigned int AdrenoHashtable_Hash_Fnv(void *key, unsigned int size)
+hash_t AdrenoHashtable_Hash_Fnv(void *key, size_t size)
 {
-	unsigned int hval = 0x811c9dc5;
+	hash_t hval = 0x811c9dc5;
 	unsigned char *bp = (unsigned char *)key;
 	unsigned char *be = bp + size;
 
 	while (bp < be)
 	{
-		hval ^= (unsigned int) * bp++;
+		hval ^= (hash_t) * bp++;
 		hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
 	}
 
-	return (int)hval;
+	return hval;
 }
 
-unsigned int AdrenoHashtable_Len_String(void *key)
+size_t AdrenoHashtable_Len_String(void *key)
 {
-	char *str = (char *)key;
-	int size = 0;
-
-	while (str[size++]) ;
-
-	return size;
+	// strlen() is better than counting as it will use SSE instructions on Core 2+
+	return strlen( (const char*) key );
 }
 
 unsigned int AdrenoHashtable_Len_WString(void *key)

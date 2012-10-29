@@ -18,16 +18,30 @@
 #include <string.h>
 #include <stdlib.h>
 #include <memory.h>
-#include <sys/stat.h>
+#include <errno.h>
 
 #include <adreno/vm/vm.h>
 #include <adreno/ail/ailc.h>
+
+// TODO: This could go in a helper class somewhere
+static int
+GetFileLen( FILE* f, size_t* out )
+{
+	size_t orig, len;
+
+	errno = 0;
+	orig = ftell( f );
+	len = ftell( f );
+	fseek( f, orig, SEEK_SET );
+
+	return errno ? 0 : 1;
+}
 
 char *LoadInputFile(char *FileName) 
 {
 	FILE *Fin;
 	char *Buf1;
-	struct stat statbuf;
+	size_t Length;
 	size_t BytesRead;
 
 	/* Sanity check. */
@@ -42,7 +56,7 @@ char *LoadInputFile(char *FileName)
 	}
 
 	/* Get the size of the file. */
-	if (fstat(fileno(Fin),&statbuf) != 0) 
+	if ( !GetFileLen( Fin, &Length ) )
 	{
 		fprintf(stdout,"Could not stat() the input file: %s\n",FileName);
 		fclose(Fin);
@@ -50,7 +64,7 @@ char *LoadInputFile(char *FileName)
 	}
 
 	/* Allocate memory for the input. */
-	Buf1 = (char *)AdrenoAlloc(statbuf.st_size + 1);
+	Buf1 = (char *)AdrenoAlloc(Length + 1);
 	if ((Buf1 == NULL)) 
 	{
 		fprintf(stdout,"Not enough memory to load the file: %s\n",FileName);
@@ -60,14 +74,14 @@ char *LoadInputFile(char *FileName)
 	}
 
 	/* Load the file into memory. */
-	BytesRead = fread(Buf1,1,statbuf.st_size,Fin);
+	BytesRead = fread(Buf1,1,Length,Fin);
 	Buf1[BytesRead] = '\0';
 
 	/* Close the file. */
 	fclose(Fin);
 
 	/* Exit if there was an error while reading the file. */
-	if (BytesRead != statbuf.st_size) 
+	if (BytesRead != Length) 
 	{
 		fprintf(stdout,"Error while reading input file: %s\n",FileName);
 		free(Buf1);
@@ -114,7 +128,7 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 	{
 		ShowUsage();
-		return;
+		return 1;
 	}
 
 	for (i = 1; i < argc; i++)
@@ -122,7 +136,7 @@ int main(int argc, char *argv[])
 		if (strcmp(argv[i], "-h") == 0)
 		{
 			ShowUsage();
-			return;
+			return 1;
 		}
 		else if (strcmp(argv[i], "-o") == 0)
 		{
@@ -131,7 +145,7 @@ int main(int argc, char *argv[])
 			if (i >= argc)
 			{
 				ShowUsage();
-				return;
+				return 1;
 			}
 
 			outFile = argv[i];
@@ -143,7 +157,7 @@ int main(int argc, char *argv[])
 		else
 		{
 			ShowUsage();
-			return;
+			return 1;
 		}
 	}
 

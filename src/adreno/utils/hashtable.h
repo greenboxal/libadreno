@@ -17,18 +17,23 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
+#include <stddef.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	typedef unsigned int (*AdrenoHashtable_HashFunction)(void *key, unsigned int size);
-	typedef unsigned int (*AdrenoHashtable_LenFunction)(void *key);
+	typedef uint32_t hash_t;
+
+	typedef hash_t (*AdrenoHashtable_HashFunction)(void *key, size_t size);
+	typedef size_t (*AdrenoHashtable_LenFunction)(void *key);
 
 	typedef struct keyvaluepair KeyValuePair;
 	struct keyvaluepair
 	{
-		unsigned int Key;
+		hash_t Key;
 		void *Value;
 	};
 
@@ -45,7 +50,7 @@ extern "C"
 	typedef struct
 	{
 		// Nodes
-		unsigned int NodeCount;
+		size_t NodeCount;
 		AdrenoHashtableNode *RootNode;
 
 		// Functions
@@ -53,8 +58,8 @@ extern "C"
 		AdrenoHashtable_LenFunction Len;
 
 		// Expansion settings
-		int FreeSlots;
-		int ExpansionFactor;
+		size_t FreeSlots;
+		size_t ExpansionFactor;
 	} AdrenoHashtable;
 
 	typedef struct
@@ -79,11 +84,11 @@ extern "C"
 	extern void AdrenoHashtable_Clear(AdrenoHashtable *hashtable);
 
 	// General hash functions
-	extern unsigned int AdrenoHashtable_Hash_Fnv(void *key, unsigned int size);
+	extern hash_t AdrenoHashtable_Hash_Fnv(void *key, size_t size);
 
 	// General len functions
-	extern unsigned int AdrenoHashtable_Len_String(void *key);
-	extern unsigned int AdrenoHashtable_Len_String(void *key);
+	extern size_t AdrenoHashtable_Len_String(void *key);
+	extern size_t AdrenoHashtable_Len_String(void *key);
 
 #ifdef __cplusplus
 }

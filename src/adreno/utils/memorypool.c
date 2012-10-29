@@ -237,7 +237,7 @@ void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr)
 
 void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp)
 {
-	size_t i = 0, freeIt = 0;
+	size_t i = 0;
 
 	if (--mp->DestroyLock > 0)
 		return;
@@ -254,7 +254,7 @@ void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp)
 	AdrenoBitArray_Free(&mp->FreeList);
 #endif
 
-	if (mp->Index >= 0 && mp->DestroyLock == 0)
+	if (mp->DestroyLock == 0)
 	{
 		MPools[mp->Index] = NULL;
 		MPoolsCount--;

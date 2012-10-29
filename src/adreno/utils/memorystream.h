@@ -17,11 +17,13 @@
 #ifndef ADRENOMS_H
 #define ADRENOMS_H
 
+#include <stddef.h>
+
 typedef struct
 {
 	unsigned char *buffer;
-	unsigned int bufferPosition, bufferSize, bufferMaxSize;
-	unsigned int expansionFactor;
+	size_t bufferPosition, bufferSize, bufferMaxSize;
+	size_t expansionFactor;
 } AdrenoMS;
 
 #ifdef __cplusplus
@@ -30,9 +32,9 @@ extern "C"
 #endif
 
 	extern void AdrenoMS_Open(AdrenoMS *ms);
-	extern int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size);
-	extern int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size);
-	extern int AdrenoMS_Seek(AdrenoMS *ms, unsigned int origin, unsigned int offset);
+	extern int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, size_t offset, size_t size);
+	extern int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, size_t offset, size_t size);
+	extern int AdrenoMS_Seek(AdrenoMS *ms, size_t origin, size_t offset);
 	extern unsigned char *AdrenoMS_Clone(AdrenoMS *ms);
 	extern void AdrenoMS_Close(AdrenoMS *ms);
 

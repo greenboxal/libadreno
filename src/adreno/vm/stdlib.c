@@ -135,6 +135,7 @@ static struct functionPair StdlibFunctions[] =
 {
 	APIFUNC(strtoint),
 	APIFUNC(print),
+	APIFUNC(inttostr),
 	{ NULL, NULL }
 };
 

@@ -17,6 +17,8 @@
 #include <adreno/utils/memorystream.h>
 #include <adreno/memory.h>
 
+#include <string.h>
+
 void AdrenoMS_Open(AdrenoMS *ms)
 {
 	ms->buffer = NULL;
@@ -26,7 +28,7 @@ void AdrenoMS_Open(AdrenoMS *ms)
 	ms->expansionFactor = 100;
 }
 
-int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size)
+int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, size_t offset, size_t size)
 {
 	if (ms->bufferPosition + size > ms->bufferSize)
 	{
@@ -45,7 +47,7 @@ int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, uns
 	return size;
 }
 
-int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size)
+int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, size_t offset, size_t size)
 {
 	int read = size;
 	
@@ -59,9 +61,9 @@ int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsi
 	return read;
 }
 
-int AdrenoMS_Seek(AdrenoMS *ms, unsigned int origin, unsigned int offset)
+int AdrenoMS_Seek(AdrenoMS *ms, size_t origin, size_t offset)
 {
-	unsigned int destOffset = 0;
+	size_t destOffset = 0;
 
 	if (origin == 0)
 		destOffset = offset;
@@ -70,7 +72,7 @@ int AdrenoMS_Seek(AdrenoMS *ms, unsigned int origin, unsigned int offset)
 	else if (origin == 2)
 		destOffset = ms->bufferSize + offset;
 
-	if (destOffset < 0 || destOffset >= ms->bufferSize)
+	if (destOffset >= ms->bufferSize)
 		return 0;
 
 	ms->bufferPosition = destOffset;
