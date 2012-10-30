@@ -52,6 +52,7 @@ add_library (adreno
     ${VM_HDRS}
 
 )
+cotire (adreno)
 
 source_group ("adreno" FILES ${BASE_SRCS} ${BASE_HDRS})
 source_group ("adreno\\ail" FILES ${AIL_SRCS} ${AIL_HDRS})

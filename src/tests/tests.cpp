@@ -22,7 +22,9 @@ int main()
 	int result = UnitTest::RunAllTests();
 
 	printf("\nRunAllTests returned %d.\n", result);
+#ifdef _DEBUG
 	getchar();
+#endif
 
 	return result;
 }

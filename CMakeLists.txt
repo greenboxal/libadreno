@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.6)
 project (Adreno)
 
+set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+include (cotire)
+
 # Set a default build type if none was specified
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message (STATUS "Setting build type to 'Debug' as none was specified.")
