@@ -67,7 +67,6 @@ namespace Adreno
 			AdrenoBitArray _FreeList;
 #endif
 
-			size_t _Index;
 			size_t _DestroyLock;
 		};
 	};
@@ -99,6 +98,91 @@ namespace Adreno
 
 	private:
 		Detail::MemoryPoolImpl *_Impl;
+	};
+	
+	template<typename _Ty>
+	class MemoryPoolAllocator
+	{
+	public:
+		typedef _Ty        value_type;
+		typedef size_t     size_type;
+		typedef ptrdiff_t  difference_type;
+ 
+		typedef _Ty*       pointer;
+		typedef const _Ty* const_pointer;
+ 
+		typedef _Ty&       reference;
+		typedef const _Ty& const_reference;
+
+		template <class U>
+		struct rebind
+		{
+			typedef MemoryPoolAllocator<U> other;
+		};
+
+		MemoryPoolAllocator()
+		{
+
+		}
+
+		MemoryPoolAllocator(const MemoryPoolAllocator<_Ty> &)
+		{
+
+		}
+		
+		template <class _Other>
+		MemoryPoolAllocator(const MemoryPoolAllocator<_Other> &)
+		{
+
+		}
+
+		~MemoryPoolAllocator()
+		{
+
+		}
+ 
+		pointer address(reference r) const
+		{
+			return &r;
+		}
+ 
+		const_pointer address(const_reference r) const
+		{
+			return &r;
+		}
+ 
+		pointer allocate(size_type n, const void * = 0)
+		{
+			if (n != 1)
+				throw std::exception("This allocator can only alloc one object per allocate call.");
+
+			return _Pool.Alloc();
+		}
+ 
+		void deallocate(pointer p, size_type)
+		{
+			_Pool.Free(p);
+		}
+ 
+		void construct(pointer p, const _Ty &val)
+		{
+			new (p) _Ty(val);
+		}
+ 
+		void destroy(pointer p)
+		{
+			p->~_Ty();
+		}
+ 
+		size_type max_size() const
+		{
+			return ULONG_MAX / sizeof(_Ty);
+		}
+
+	private:
+		void operator =(const MemoryPoolAllocator<_Ty> &);
+
+		MemoryPool<_Ty> _Pool;
 	};
 }
 

@@ -27,7 +27,7 @@ using namespace Adreno::Detail;
 static std::list<MemoryPoolImpl *> _MPools;
 
 
-#if defined(_WIN32) && !defined(ADRENOMP_FORCE_MEMMGR_ALLOC)
+#if defined(_WIN32)
 #include <Windows.h>
 
 void *AP_ReservePage(int count)
@@ -115,7 +115,6 @@ MemoryPoolImpl::MemoryPoolImpl(size_t objectSize, int expansionFactor)
 	_TotalCount = 0;
 	_TotalMaxCount = 0;
 
-	_Index = -1;
 	_DestroyLock = 1;
 
 #ifdef ADRENOMP_USE_LINKED_LIST
@@ -129,7 +128,7 @@ MemoryPoolImpl::MemoryPoolImpl(size_t objectSize, int expansionFactor)
 
 MemoryPoolImpl::~MemoryPoolImpl()
 {
-	for (int i = 0; i < _PageCount; i++)
+	for (size_t i = 0; i < _PageCount; i++)
 		AP_FreePage((void *)_Pages[i].Address, _ExpansionFactor);
 	
 	if (_Pages)

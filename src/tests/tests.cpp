@@ -14,32 +14,17 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <adreno/vm/object.h>
-
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <sys/stat.h>
 
-using namespace Adreno;
+#ifndef _WIN32
+#include <sys/time.h>
+#else
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 
-Object::Object()
-{
-	GCState(new GCObject(this));
-	GCState()->Reference(ReferenceType::Weak);
-}
-
-Object::~Object()
-{
-	GCState()->Dereference(ReferenceType::Weak);
-}
-
-bool Object::Finalize()
-{
-	Fields().clear();
-
-	return true;
-}
-
-Adreno::Reference<Object> Object::CreateFromValue(const Value &)
-{
-	return Reference<Object>(new Object());
-}
 
