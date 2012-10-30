@@ -22,49 +22,84 @@
 
 #include <stddef.h> // size_t
 
-typedef struct
+namespace Adreno
 {
-	char *Address;
+	namespace Detail
+	{
+		typedef struct
+		{
+			char *Address;
 #ifdef ADRENOMP_USE_LINKED_LIST
-	size_t UseCount;
+			size_t UseCount;
 #endif
-} AdrenoMemoryPoolPage;
+		} AdrenoMemoryPoolPage;
 
-typedef struct
-{
-	size_t PageSize;
-	size_t ObjectSize;
-	size_t ExpansionFactor;
+		class MemoryPoolImpl
+		{
+		public:
+			~MemoryPoolImpl();
 
-	size_t TotalCount;
-	size_t TotalMaxCount;
+			static MemoryPoolImpl *Find(size_t objectSize, int expansionFactor);
+
+			void Reference();
+			void Dereference();
+
+			void *Alloc();
+			void Free(void *obj);
+
+		private:
+			MemoryPoolImpl(size_t objectSize, int expansionFactor);
+			void Expand();
+
+			size_t _PageSize;
+			size_t _ObjectSize;
+			size_t _ExpansionFactor;
+
+			size_t _TotalCount;
+			size_t _TotalMaxCount;
 	
-	AdrenoMemoryPoolPage *Pages;
-	size_t PageCount;
+			AdrenoMemoryPoolPage *_Pages;
+			size_t _PageCount;
 
 #ifdef ADRENOMP_USE_LINKED_LIST
-	size_t *Reuse;
+			size_t *_Reuse;
 #else
-	AdrenoBitArray FreeList;
+			AdrenoBitArray _FreeList;
 #endif
 
-	size_t Index;
-	size_t DestroyLock;
-} AdrenoMemoryPool;
+			size_t _Index;
+			size_t _DestroyLock;
+		};
+	};
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-	
-	extern AdrenoMemoryPool *AdrenoMemoryPool_New(size_t objectSize, size_t expansionFactor);
-	extern void AdrenoMemoryPool_Initialize(AdrenoMemoryPool *mp, size_t objectSize, size_t expansionFactor);
-	extern void *AdrenoMemoryPool_Alloc(AdrenoMemoryPool *mp);
-	extern void AdrenoMemoryPool_Free(AdrenoMemoryPool *mp, void *ptr);
-	extern void AdrenoMemoryPool_Destroy(AdrenoMemoryPool *mp);
+	template<typename _Ty>
+	class MemoryPool
+	{
+	public:
+		MemoryPool(int expansionFactor = 1)
+		{
+			_Impl = Detail::MemoryPoolImpl::Find(sizeof(_Ty), expansionFactor);
+			_Impl->Reference();
+		}
 
-#ifdef __cplusplus
+		~MemoryPool()
+		{
+			_Impl->Dereference();
+		}
+
+		_Ty *Alloc()
+		{
+			return (_Ty *)_Impl->Alloc();
+		}
+
+		void Free(_Ty *obj)
+		{
+			_Impl->Free(obj);
+		}
+
+	private:
+		Detail::MemoryPoolImpl *_Impl;
+	};
 }
-#endif
 
 #endif

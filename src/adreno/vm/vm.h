@@ -17,8 +17,6 @@
 #ifndef ADRENOVM_H
 #define ADRENOVM_H
 
-#include <adreno/utils/array.h>
-#include <adreno/utils/hashtable.h>
 #include <adreno/utils/memorypool.h>
 
 typedef struct adrenovm AdrenoVM;

@@ -21,7 +21,9 @@
 #error You should not include this file directly
 #endif
 
-#include <wchar.h>
+#include <adreno/helpers.h>
+
+#include <unordered_map>
 
 enum adrenogcflags
 {
@@ -113,6 +115,254 @@ struct adrenovalue
 		AdrenoReturnInfo *ReturnInfo;
 	} Value;
 };
+
+namespace Adreno
+{
+	enum class ValueType
+	{
+		Null,
+		Number,
+		FloatingNumber,
+		Boolean,
+		String,
+		Object
+	};
+
+	enum class ReferenceType
+	{
+		Weak,
+		Strong
+	};
+
+	struct ReferenceCounter
+	{
+		size_t StrongRefs;
+		size_t WeakRefs;
+	};
+
+	class Object;
+	class Value
+	{
+	public:
+		union ValueUnion
+		{
+			size_t Number;
+			double FloatingNumber;
+			bool Boolean;
+			Object *Object;
+			struct
+			{
+				char *Data;
+				size_t Size;
+			} String;
+		};
+
+		Value()
+		{
+			Type(ValueType::Null);
+		}
+
+		Value(size_t value)
+		{
+			Type(ValueType::Number);
+			_Values.Number = value;
+		}
+
+		Value(double value)
+		{
+			Type(ValueType::FloatingNumber);
+			_Values.FloatingNumber = value;
+		}
+
+		Value(bool value)
+		{
+			Type(ValueType::Boolean);
+			_Values.Boolean = value;
+		}
+
+		Value(Object *object)
+		{
+			Type(ValueType::Object);
+
+			_Values.Object = object;
+			if (_Values.Object)
+				_Values.Object->Reference(ReferenceType::Strong);
+		}
+
+		Value(char *data, size_t size)
+		{
+			Type(ValueType::String);
+			_Values.String.Data = data;
+			_Values.String.Size = size;
+		}
+
+		~Value()
+		{
+			if (Type() == ValueType::Object && _Values.Object)
+				_Values.Object->Dereference(ReferenceType::Strong);
+		}
+
+		void SetNull()
+		{
+			Type(ValueType::Null);
+			DereferenceMe();
+		}
+
+		void SetValue(size_t value)
+		{
+			DereferenceMe();
+			Type(ValueType::Number);
+			_Values.Number = value;
+		}
+
+		void SetValue(double value)
+		{
+			DereferenceMe();
+			Type(ValueType::FloatingNumber);
+			_Values.FloatingNumber = value;
+		}
+
+		void SetValue(bool value)
+		{
+			DereferenceMe();
+			Type(ValueType::Boolean);
+			_Values.Boolean = value;
+		}
+
+		void SetValue(Object *object)
+		{
+			DereferenceMe();
+			Type(ValueType::Object);
+
+			_Values.Object = object;
+			if (_Values.Object)
+				_Values.Object->Reference(ReferenceType::Strong);
+		}
+
+		void SetValue(char *data, size_t size)
+		{
+			DereferenceMe();
+			Type(ValueType::String);
+			_Values.String.Data = data;
+			_Values.String.Size = size;
+		}
+
+		DEFPROP_RO_RC(public, ValueUnion, Values);
+		DEFPROP_RO_C(public, ValueType, Type);
+
+	private:
+		void DereferenceMe()
+		{
+			if (_Values.Object)
+				_Values.Object->Dereference(ReferenceType::Strong);
+		}
+	};
+
+	class Object;
+	template<typename _Ty = Object>
+	class Reference
+	{
+	public:
+		Reference()
+		{
+			Reset(nullptr);
+		}
+		
+		Reference(const Reference<_Ty> &other)
+		{
+			Reset(other.Value());
+		}
+
+		Reference(_Ty *pointer)
+		{
+			Reset(pointer);
+		}
+
+		~Reference()
+		{
+			if (Value() != nullptr)
+				Value()->Dereference(ReferenceType::Strong);
+		}
+
+		void Reset(_Ty *pointer)
+		{
+			if (Value() != nullptr)
+				Value()->Dereference(ReferenceType::Strong);
+
+			Value(pointer);
+
+			if (Value())
+				Value()->Reference(ReferenceType::Strong);
+		}
+
+		_Ty &operator *()
+		{
+			return *Value();
+		}
+
+		_Ty *opreator ->()
+		{
+			return Value();
+		}
+
+		DEFPROP_RO_P(public, _Ty, Value);
+	};
+
+	class Object
+	{
+	public:
+		typedef std::unordered_map<std::string, Reference<Object> > FieldMap;
+
+		Object();
+		virtual ~Object();
+
+		void Reference(ReferenceType type = ReferenceType::Strong);
+		void Dereference(ReferenceType type = ReferenceType::Strong);
+
+#define DummyOp(name) virtual Value name##Op() { return Value(nullptr); }
+#define DummyOp2(name) virtual Value name##Op(const Value &other) { return Value(nullptr); }
+
+		DummyOp2(Add)
+		DummyOp2(Sub)
+		DummyOp2(Mult)
+		DummyOp2(Div)
+		DummyOp2(Rem)
+		DummyOp(Neg)
+
+		DummyOp2(And)
+		DummyOp2(Or)
+		DummyOp2(Xor)
+		DummyOp(Not)
+		DummyOp2(LeftShift)
+		DummyOp2(RightShift)
+
+		DummyOp2(LogAnd)
+		DummyOp2(LogOr)
+		DummyOp2(LogNot)
+
+		DummyOp2(Equal)
+		DummyOp2(NotEqual)
+		DummyOp2(Greater)
+		DummyOp2(GreaterEq)
+		DummyOp2(Lesser)
+		DummyOp2(LesserEq)
+		
+#undef DummyOp2
+#undef DummyOp
+
+		static Adreno::Reference<Object> CreateFromValue(const Value &value);
+
+		DEFPROP_P_RO_R(public, FieldMap, Fields);
+		DEFPROP_P_RO_R(public, ReferenceCounter, References);
+	};
+
+	class StringObject : public Object
+	{
+	public:
+		DEFPROP_P_RO_P(public, char, Data);
+		DEFPROP_P_RO_C(public, size_t, Size);
+	};
+}
 
 #ifdef __cplusplus
 extern "C"

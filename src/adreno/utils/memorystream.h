@@ -17,27 +17,30 @@
 #ifndef ADRENOMS_H
 #define ADRENOMS_H
 
-typedef struct
+#include <stddef.h> // size_t
+
+namespace Adreno
 {
-	unsigned char *buffer;
-	unsigned int bufferPosition, bufferSize, bufferMaxSize;
-	unsigned int expansionFactor;
-} AdrenoMS;
+	class MemoryStream
+	{
+	public:
+		MemoryStream();
+		MemoryStream(const MemoryStream &ms);
+		~MemoryStream();
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+		size_t Write(void *buffer, size_t offset, size_t size);
+		size_t Read(void *buffer, size_t offset, size_t size);
+		bool Seek(unsigned int origin, size_t offset);
+		void Close();
 
-	extern void AdrenoMS_Open(AdrenoMS *ms);
-	extern int AdrenoMS_Write(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size);
-	extern int AdrenoMS_Read(AdrenoMS *ms, unsigned char *buffer, unsigned int offset, unsigned int size);
-	extern int AdrenoMS_Seek(AdrenoMS *ms, unsigned int origin, unsigned int offset);
-	extern unsigned char *AdrenoMS_Clone(AdrenoMS *ms);
-	extern void AdrenoMS_Close(AdrenoMS *ms);
+		void *Clone();
+		void SetExpansionFactor(size_t size);
 
-#ifdef __cplusplus
+	private:
+		unsigned char *_Buffer;
+		size_t _BufferPosition, _BufferSize, _BufferMaxSize;
+		size_t _ExpansionFactor;
+	};
 }
-#endif
 
 #endif

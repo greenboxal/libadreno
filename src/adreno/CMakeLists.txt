@@ -26,11 +26,11 @@ set (ADRENOHT_DEFAULT_EXPANSION_FACTOR 10 CACHE STRING "Hashtable expansion fact
 
 configure_file (${CMAKE_SOURCE_DIR}/src/adreno/config.h.cmake ${CMAKE_SOURCE_DIR}/src/adreno/config.h)
 
-file (GLOB BASE_SRCS *.c)
-file (GLOB AIL_SRCS ail/*.c)
-file (GLOB CRYPT_SRCS crypt/*.c)
-file (GLOB UTILS_SRCS utils/*.c)
-file (GLOB VM_SRCS vm/*.c)
+file (GLOB BASE_SRCS *.c *.cpp)
+file (GLOB AIL_SRCS ail/*.c ail/*.cpp)
+file (GLOB CRYPT_SRCS crypt/*.c crypt/*.cpp)
+file (GLOB UTILS_SRCS utils/*.c utils/*.cpp)
+file (GLOB VM_SRCS vm/*.c vm/*.cpp)
 
 file (GLOB BASE_HDRS *.h)
 file (GLOB AIL_HDRS ail/*.h)
@@ -53,7 +53,7 @@ add_library (adreno
 
 )
 
-source_group ("adreno" FILES ${BASE_HDRS})
+source_group ("adreno" FILES ${BASE_SRCS} ${BASE_HDRS})
 source_group ("adreno\\ail" FILES ${AIL_SRCS} ${AIL_HDRS})
 source_group ("adreno\\crypt" FILES ${CRYPT_SRCS} ${CRYPT_HDRS})
 source_group ("adreno\\utils" FILES ${UTILS_SRCS} ${UTILS_HDRS})
