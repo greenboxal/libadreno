@@ -15,16 +15,14 @@
 */
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <sys/stat.h>
+#include <UnitTest++.h>
 
-#ifndef _WIN32
-#include <sys/time.h>
-#else
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#endif
+int main()
+{
+	int result = UnitTest::RunAllTests();
 
+	printf("\nRunAllTests returned %d.\n", result);
+	getchar();
 
+	return result;
+}

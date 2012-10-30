@@ -29,6 +29,8 @@ if (CMAKE_BUILD_TYPE EQUAL Debug)
   add_definitions (-D_DEBUG)
 endif ()
 
-include_directories (${PROJECT_SOURCE_DIR}/src)
+add_subdirectory (3rdparty)
+
+include_directories (${PROJECT_SOURCE_DIR}/src 3rdparty/unittestpp)
 add_subdirectory (src)
 
