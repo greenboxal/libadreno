@@ -14,163 +14,105 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <adreno/vm/vm.h>
+#include <adreno/vm/value.h>
+#include <adreno/vm/object.h>
 
 #include <string.h>
 
-unsigned int AdrenoValue_ValueHash(AdrenoValue *value, unsigned int size)
-{
-	AdrenoValue *v = AdrenoValue_GetValue(value);
+using namespace Adreno;
 
-	if (value->Type == AT_STRING)
-		return AdrenoHashtable_Hash_Fnv(v->Value.String->Value, v->Value.String->Size);
-	
-	return v->Value.I4;
+Value::Value()
+{
+	Type(ValueType::Null);
 }
 
-unsigned int AdrenoValue_GetValueLen(AdrenoValue *value)
+Value::Value(size_t value)
 {
-	return 0;
+	Type(ValueType::Number);
+	_Values.Number = value;
 }
 
-AdrenoValue *AdrenoValue_GetValue(AdrenoValue *ref)
+Value::Value(double value)
 {
-	if (ref->Type == AT_REFERENCE)
-		return AdrenoValue_GetValue(ref->Value.Reference);
-
-	return ref;
+	Type(ValueType::FloatingNumber);
+	_Values.FloatingNumber = value;
 }
 
-void AdrenoValue_CreateReference(AdrenoValue *ref, AdrenoValue *value)
+Value::Value(bool value)
 {
-	value = AdrenoValue_GetValue(value);
-	value->ReferenceCounter++;
-
-	ref->Type = AT_REFERENCE;
-	ref->Value.Reference = value;
-	ref->ReferenceCounter = 1;
+	Type(ValueType::Boolean);
+	_Values.Boolean = value;
 }
 
-void AdrenoValue_Dereference(AdrenoValue *value)
+Value::Value(char *data, size_t size)
 {
-	if (value->Type == AT_REFERENCE)
-	{
-		AdrenoValue_Dereference(value->Value.Reference);
-	}
-	else
-	{
-		value->ReferenceCounter--;
-	}
-
-	if (value->ReferenceCounter == 0)
-		AdrenoValue_Free(value);
+	Type(ValueType::String);
+	_Values.String.Data = data;
+	_Values.String.Size = size;
 }
 
-int AdrenoValue_LoadNull(AdrenoValue *value)
+Value::Value(Object *object)
 {
-	value->Type = AT_NULL;
-	value->GCFlags = GC_NONE;
-	value->ReferenceCounter = 1;
-	value->Value.I4 = 0;
+	Type(ValueType::Object);
 
-	return 1;
+	_Values.Object = object;
+	if (_Values.Object)
+		_Values.Object->GCState()->Reference(ReferenceType::Strong);
 }
 
-int AdrenoValue_LoadInteger(AdrenoValue *value, unsigned int i4)
+Value::~Value()
 {
-	value->Type = AT_INTEGER;
-	value->GCFlags = GC_NONE;
-	value->ReferenceCounter = 1;
-	value->Value.I4 = i4;
-
-	return 1;
+	if (Type() == ValueType::Object && _Values.Object)
+		_Values.Object->GCState()->Dereference(ReferenceType::Strong);
 }
 
-int AdrenoValue_LoadString(AdrenoValue *value, char *string, unsigned int len, int copy)
+void Value::SetNull()
 {
-	AdrenoValue *rvalue;
-
-	rvalue = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
-	rvalue->Type = AT_STRING;
-	rvalue->GCFlags = (AdrenoGCFlags)(GC_FREE | GC_COLLECT);
-	rvalue->ReferenceCounter = 0;
-	rvalue->Value.String = (AdrenoString *)AdrenoAlloc(sizeof(AdrenoString));
-	rvalue->Value.String->Size = len;
-
-	if (copy == 1)
-	{
-		rvalue->Value.String->Value = (char *)AdrenoAlloc(len + 1);
-		rvalue->Value.String->Flags = SF_FREE;
-		memcpy(rvalue->Value.String->Value, string, rvalue->Value.String->Size);
-		rvalue->Value.String->Value[len] = 0;
-	}
-	else
-	{
-		rvalue->Value.String->Flags = copy == 2 ? SF_FREE : SF_NONE;
-		rvalue->Value.String->Value = string;
-	}
-	
-	AdrenoValue_CreateReference(value, rvalue);
-
-	return 1;
+	Type(ValueType::Null);
+	DereferenceMe();
 }
 
-int AdrenoValue_LoadArray(AdrenoValue *value)
+void Value::SetValue(size_t value)
 {
-	AdrenoValue *rvalue = (AdrenoValue *)AdrenoMemoryPool_Alloc(AdrenoVM_ValuePool);
-	rvalue->Type = AT_ARRAY;
-	rvalue->GCFlags = (AdrenoGCFlags)(GC_COLLECT | GC_FREE);
-	rvalue->ReferenceCounter = 0;
-	rvalue->Value.Array = (AdrenoVMArray *)AdrenoAlloc(sizeof(AdrenoVMArray));
-	rvalue->Value.Array->Type = AT_NULL;
-	AdrenoHashtable_Initialize(&rvalue->Value.Array->Array, (AdrenoHashtable_HashFunction)AdrenoValue_ValueHash, (AdrenoHashtable_LenFunction)AdrenoValue_GetValueLen);
-				
-	AdrenoValue_CreateReference(value, rvalue);
-
-	return 1;
+	DereferenceMe();
+	Type(ValueType::Number);
+	_Values.Number = value;
 }
 
-void AdrenoValue_Free(AdrenoValue *value)
+void Value::SetValue(double value)
 {
-	if (value->GCFlags & GC_COLLECT)
-	{
-		if (value->Type == AT_STRING)
-		{
-			if (value->Value.String->Flags & SF_FREE)
-			{
-				AdrenoFree(value->Value.String->Value);
-				AdrenoFree(value->Value.String);
-			}
-		}
-		else if (value->Type == AT_ARRAY)
-		{
-			AdrenoHashtableIterator *it;
-			
-			for (it = AdrenoHashtable_CreateIterator(&value->Value.Array->Array); it->CurrentNode; AdrenoHashtableIterator_Next(it))
-			{
-				AdrenoValue_Dereference((AdrenoValue *)it->CurrentNode->Value.Value);
-			}
-			AdrenoHashtableIterator_Free(it);
+	DereferenceMe();
+	Type(ValueType::FloatingNumber);
+	_Values.FloatingNumber = value;
+}
 
-			AdrenoHashtable_Destroy(&value->Value.Array->Array);
-			AdrenoFree(value->Value.Array);
-		}
-		else if (value->Type == AT_RETURNINFO)
-		{
-			AdrenoFree(value->Value.ReturnInfo);
-		}
+void Value::SetValue(bool value)
+{
+	DereferenceMe();
+	Type(ValueType::Boolean);
+	_Values.Boolean = value;
+}
 
-		value->Value.I4 = 0;
-	}
+void Value::SetValue(char *data, size_t size)
+{
+	DereferenceMe();
+	Type(ValueType::String);
+	_Values.String.Data = data;
+	_Values.String.Size = size;
+}
 
-	value->ReferenceCounter = 0;
+void Value::SetValue(Object *object)
+{
+	DereferenceMe();
+	Type(ValueType::Object);
 
-	if (value->GCFlags & GC_FREE)
-	{
-		AdrenoMemoryPool_Free(AdrenoVM_ValuePool, value);
-	}
-	else if (value->GCFlags & GC_FREE_NP)
-	{
-		AdrenoFree(value);
-	}
+	_Values.Object = object;
+	if (_Values.Object)
+		_Values.Object->GCState()->Reference(ReferenceType::Strong);
+}
+
+void Value::DereferenceMe()
+{
+	if (_Values.Object)
+		_Values.Object->GCState()->Dereference(ReferenceType::Strong);
 }
