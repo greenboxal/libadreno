@@ -19,12 +19,16 @@
 
 using namespace Adreno;
 
+std::queue<GC::FinalizerQueueEntry *> GC::_FinalizerQueue;
+MemoryPool<GC::FinalizerQueueEntry> GC::_FinalizerPool;
+
 void GC::AddToFinalizerQueue(GCObject *object)
 {
-	FinalizerQueueEntry *entry = new FinalizerQueueEntry();
+	FinalizerQueueEntry *entry = _FinalizerPool.Alloc();
 	entry->Object = object;
 	entry->Valid = true;
-	_FinalizeQueue.push(entry);
+	object->FinalizerEntry(entry);
+	_FinalizerQueue.push(entry);
 }
 
 void GC::SurpressFinalize(GCObject *object)
@@ -35,17 +39,24 @@ void GC::SurpressFinalize(GCObject *object)
 
 void GC::Collect()
 {
-	while (_FinalizeQueue.size() > 0)
+	while (_FinalizerQueue.size() > 0)
 	{
-		FinalizerQueueEntry *entry = _FinalizeQueue.front();
-		_FinalizeQueue.pop();
+		FinalizerQueueEntry *entry = _FinalizerQueue.front();
+		_FinalizerQueue.pop();
+
+		entry->Object->Reference(ReferenceType::Weak);
 
 		if (entry->Valid)
 		{
 			if (entry->Object->Value()->Finalize())
-				delete entry->Object;
+			{
+				delete entry->Object->Value();
+				entry->Object->State(GCObjectState::Collected);
+			}
 		}
 
-		delete entry;
+		entry->Object->Dereference(ReferenceType::Weak);
+
+		_FinalizerPool.Free(entry);
 	}
 }

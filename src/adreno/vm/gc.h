@@ -19,12 +19,13 @@
 
 #include <queue>
 #include <adreno/helpers.h>
+#include <adreno/utils/memorypool.h>
 
 namespace Adreno
 {
 	enum class GCObjectState
 	{
-		Live,
+		Alive,
 		Dead,
 		Collected,
 	};
@@ -50,7 +51,8 @@ namespace Adreno
 			bool Valid;
 		};
 
-		static std::queue<FinalizerQueueEntry *> _FinalizeQueue;
+		static std::queue<FinalizerQueueEntry *> _FinalizerQueue;
+		static MemoryPool<FinalizerQueueEntry> _FinalizerPool;
 
 		friend class GCObject;
 	};
@@ -62,7 +64,7 @@ namespace Adreno
 		GCObject(Object *owner)
 		{
 			Value(owner);
-			State(GCObjectState::Live);
+			State(GCObjectState::Alive);
 			FinalizerEntry(nullptr);
 
 			_Strong = 0;
@@ -76,7 +78,7 @@ namespace Adreno
 				if (_Strong == 0 && State() == GCObjectState::Dead)
 				{
 					GC::SurpressFinalize(this);
-					State(GCObjectState::Live);
+					State(GCObjectState::Alive);
 					FinalizerEntry(nullptr);
 				}
 
@@ -102,6 +104,16 @@ namespace Adreno
 			TryFinalize();
 		}
 
+		size_t Strong() const
+		{
+			return _Strong;
+		}
+
+		size_t Weak() const
+		{
+			return _Weak;
+		}
+
 		DEFPROP_RO_C(public, GCObjectState, State);
 		DEFPROP_RO_P(public, Object, Value);
 
@@ -110,7 +122,7 @@ namespace Adreno
 
 		void TryFinalize()
 		{
-			if (_Strong == 0)
+			if (_Strong == 0 && FinalizerEntry() == nullptr)
 			{
 				State(GCObjectState::Dead);
 				GC::AddToFinalizerQueue(this);
@@ -131,16 +143,18 @@ namespace Adreno
 	public:
 		Reference()
 		{
-			Reset(nullptr);
+			Value(nullptr);
 		}
 		
 		Reference(const Reference<_Ty> &other)
 		{
+			Value(nullptr);
 			Reset(other.Value());
 		}
 
 		Reference(_Ty *pointer)
 		{
+			Value(nullptr);
 			Reset(pointer);
 		}
 
@@ -195,49 +209,50 @@ namespace Adreno
 	public:
 		WeakReference()
 		{
-			Reset(nullptr);
+			_RefCounter = nullptr;
 		}
 		
 		WeakReference(const Reference<_Ty> &other)
 		{
+			_RefCounter = nullptr;
 			Reset(other.Value());
 		}
 		
 		WeakReference(const WeakReference<_Ty> &other)
 		{
+			_RefCounter = nullptr;
 			Reset(other.Value());
 		}
 		
 		WeakReference(_Ty *other)
 		{
+			_RefCounter = nullptr;
 			Reset(other);
 		}
 
 		~WeakReference()
 		{
 			if (_RefCounter != nullptr)
-				_RefCounter->DecWeak();
+				_RefCounter->Dereference(ReferenceType::Weak);
 		}
 
 		void Reset(_Ty *pointer)
 		{
 			if (_RefCounter != nullptr)
-				_RefCounter->DecWeak();
+				_RefCounter->Dereference(ReferenceType::Weak);
 
-			_Object = pointer;
-
-			if (_Object)
-				_RefCounter = _Object->GCState();
+			if (pointer)
+				_RefCounter = pointer->GCState();
 			else
 				_RefCounter = nullptr;
 
 			if (_RefCounter)
-				_RefCounter->IncWeak();
+				_RefCounter->Reference(ReferenceType::Weak);
 		}
 
 		bool IsGone() const
 		{
-			return _RefCounter->State() != GCObjectState::Collected;
+			return _RefCounter->State() == GCObjectState::Collected;
 		}
 
 		Reference<_Ty> Get() const

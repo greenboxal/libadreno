@@ -52,6 +52,7 @@ add_library (adreno
     ${VM_HDRS}
 
 )
+set_target_properties (adreno PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
 cotire (adreno)
 
 source_group ("adreno" FILES ${BASE_SRCS} ${BASE_HDRS})

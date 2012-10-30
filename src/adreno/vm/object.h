@@ -29,7 +29,7 @@ namespace Adreno
 	class Object
 	{
 	public:
-		typedef std::unordered_map<std::string, Reference<Object>, std::hash<std::string>, std::equal_to<std::string>,  MemoryPoolAllocator<std::pair<std::string, Reference<Object> > > > FieldMap;
+		typedef std::unordered_map<std::string, Reference<Object> > FieldMap;
 
 		Object();
 		virtual ~Object();
