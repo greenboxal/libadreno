@@ -26,7 +26,7 @@ Value::Value()
 	Type(ValueType::Null);
 }
 
-Value::Value(size_t value)
+Value::Value(std::int_fast32_t value)
 {
 	Type(ValueType::Number);
 	_Values.Number = value;
@@ -44,11 +44,11 @@ Value::Value(bool value)
 	_Values.Boolean = value;
 }
 
-Value::Value(char *data, size_t size)
+Value::Value(const String &string)
 {
 	Type(ValueType::String);
-	_Values.String.Data = data;
-	_Values.String.Size = size;
+	_Values.StringImpl = string._Impl;
+	_Values.StringImpl->IncRef();
 }
 
 Value::Value(Object *object)
@@ -62,8 +62,7 @@ Value::Value(Object *object)
 
 Value::~Value()
 {
-	if (Type() == ValueType::Object && _Values.Object)
-		_Values.Object->GCState()->Dereference(ReferenceType::Strong);
+	DereferenceMe();
 }
 
 void Value::SetNull()
@@ -72,7 +71,7 @@ void Value::SetNull()
 	DereferenceMe();
 }
 
-void Value::SetValue(size_t value)
+void Value::SetValue(std::int_fast32_t value)
 {
 	DereferenceMe();
 	Type(ValueType::Number);
@@ -93,12 +92,12 @@ void Value::SetValue(bool value)
 	_Values.Boolean = value;
 }
 
-void Value::SetValue(char *data, size_t size)
+void Value::SetValue(const String &string)
 {
 	DereferenceMe();
 	Type(ValueType::String);
-	_Values.String.Data = data;
-	_Values.String.Size = size;
+	_Values.StringImpl = string._Impl;
+	_Values.StringImpl->IncRef();
 }
 
 void Value::SetValue(Object *object)
@@ -113,6 +112,92 @@ void Value::SetValue(Object *object)
 
 void Value::DereferenceMe()
 {
-	if (_Values.Object)
+	if (Type() == ValueType::Object && _Values.Object)
 		_Values.Object->GCState()->Dereference(ReferenceType::Strong);
+	else if (Type() == ValueType::String && _Values.StringImpl)
+		_Values.StringImpl->DecRef();
+}
+
+std::int_fast32_t Value::AsNumber() const
+{
+	switch (Type())
+	{
+	case ValueType::Number: return _Values.Number;
+	case ValueType::FloatingNumber: return (std::int_fast32_t)_Values.FloatingNumber;
+	case ValueType::Boolean: return _Values.Boolean ? 1 : 0;
+	case ValueType::Object: return _Values.Object->AsNumber();
+	case ValueType::String:
+		{
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
+double Value::AsFloatingNumber() const
+{
+	switch (Type())
+	{
+	case ValueType::Number: return _Values.Number;
+	case ValueType::FloatingNumber: return _Values.FloatingNumber;
+	case ValueType::Boolean: return _Values.Boolean ? 1 : 0;
+	case ValueType::Object: return _Values.Object->AsFloatingNumber();
+	case ValueType::String:
+		{
+			return 0;
+		}
+	}
+
+	return 0;
+}
+
+bool Value::AsBoolean() const
+{
+	switch (Type())
+	{
+	case ValueType::Number: return _Values.Number != 0;
+	case ValueType::FloatingNumber: return _Values.FloatingNumber != 0;
+	case ValueType::Boolean: return _Values.Boolean;
+	case ValueType::Object: return _Values.Object->AsBoolean();
+	case ValueType::String: return _Values.StringImpl->Compare(String::Static("true")._Impl, StringCompare::CaseInsensitive);
+	}
+
+	return 0;
+}
+
+String Value::AsString() const
+{
+	switch (Type())
+	{
+	case ValueType::Number:
+		{
+			static char buffer[32];
+
+			sprintf(buffer, "%d", _Values.Number);
+
+			return buffer;
+		}
+	case ValueType::FloatingNumber:
+		{
+			static char buffer[32];
+
+			sprintf(buffer, "%f", _Values.FloatingNumber);
+
+			return buffer;
+		}
+	case ValueType::Boolean:
+		{
+			return _Values.Boolean ? String::Static("True") : String::Static("False");
+		}
+	case ValueType::Object: return _Values.Object->AsString();
+	case ValueType::String: return _Values.StringImpl;
+	}
+
+	return String::Static("undefined");
+}
+
+Reference<Object> Value::AsObject() const
+{
+	return Object::CreateFromValue(*this);
 }

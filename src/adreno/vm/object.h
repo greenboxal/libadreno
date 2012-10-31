@@ -19,6 +19,8 @@
 
 #include <string>
 #include <unordered_map>
+#include <functional>
+
 #include <adreno/helpers.h>
 #include <adreno/vm/gc.h>
 #include <adreno/vm/value.h>
@@ -26,51 +28,290 @@
 
 namespace Adreno
 {
+	class Arguments
+	{
+	public:
+		Arguments()
+		{
+
+		}
+
+		Arguments(const Value *, size_t )
+		{
+			
+		}
+	};
+
 	class Object
 	{
 	public:
-		typedef std::unordered_map<std::string, Reference<Object> > FieldMap;
+		typedef std::unordered_map<String, Value > FieldMap;
 
 		Object();
 		virtual ~Object();
 
 		virtual bool Finalize();
 
-#define DummyOp(name) virtual Value name##Op() { return Value(nullptr); }
-#define DummyOp2(name) virtual Value name##Op(const Value &) { return Value(nullptr); }
+		virtual Value AddOp(const Value &value);
+		virtual Value SubOp(const Value &value);
+		virtual Value MultOp(const Value &value);
+		virtual Value DivOp(const Value &value);
+		virtual Value RemOp(const Value &value);
+		virtual Value NegOp();
+		
+		virtual Value AndOp(const Value &value);
+		virtual Value OrOp(const Value &value);
+		virtual Value XorOp(const Value &value);
+		virtual Value NotOp();
+		virtual Value LeftShiftOp(const Value &value);
+		virtual Value RightShiftOp(const Value &value);
+		
+		virtual Value LogAndOp(const Value &value);
+		virtual Value LogOrOp(const Value &value);
+		virtual Value LogNotOp();
+		
+		virtual Value EqualOp(const Value &value);
+		virtual Value NotEqualOp(const Value &value);
+		virtual Value GreaterOp(const Value &value);
+		virtual Value GreaterEqOp(const Value &value);
+		virtual Value LesserOp(const Value &value);
+		virtual Value LesserEqOp(const Value &value);
+		
+		virtual std::int_fast32_t AsNumber() const
+		{
+			return 0;
+		}
 
-		DummyOp2(Add)
-		DummyOp2(Sub)
-		DummyOp2(Mult)
-		DummyOp2(Div)
-		DummyOp2(Rem)
-		DummyOp(Neg)
+		virtual double AsFloatingNumber() const
+		{
+			return 0;
+		}
 
-		DummyOp2(And)
-		DummyOp2(Or)
-		DummyOp2(Xor)
-		DummyOp(Not)
-		DummyOp2(LeftShift)
-		DummyOp2(RightShift)
+		virtual bool AsBoolean() const
+		{
+			return false;
+		}
 
-		DummyOp2(LogAnd)
-		DummyOp2(LogOr)
-		DummyOp2(LogNot)
+		virtual String AsString() const
+		{
+			return String::Static("[object]");
+		}
 
-		DummyOp2(Equal)
-		DummyOp2(NotEqual)
-		DummyOp2(Greater)
-		DummyOp2(GreaterEq)
-		DummyOp2(Lesser)
-		DummyOp2(LesserEq)
+		virtual Value Call(const Arguments &args);
 		
 #undef DummyOp2
 #undef DummyOp
 
-		static Adreno::Reference<Object> CreateFromValue(const Value &value);
+		Value GetField(String name);
+		void SetField(String name, const Value &value);
+
+		static Reference<Object> New();
+		static Reference<Object> CreateFromValue(const Value &value);
 
 		DEFPROP_P_RO_R(public, FieldMap, Fields);
 		DEFPROP_P_RO_P(public, GCObject, GCState);
+	};
+
+	class FunctionObject : public Object
+	{
+	public:
+		FunctionObject(std::function<Value (const Arguments &)> function)
+		{
+			_Function = function;
+		}
+
+		virtual Value Call(const Arguments &args)
+		{
+			return _Function(args);
+		}
+		
+		static Reference<FunctionObject> New(std::function<Value (const Arguments &)> function);
+
+	private:
+		std::function<Value (const Arguments &)> _Function;
+	};
+
+	class NumeralObject : public Object
+	{
+	public:
+		NumeralObject(std::int_fast32_t value)
+		{
+			_Value = value;
+		}
+
+		virtual std::int_fast32_t AsNumber() const
+		{
+			return _Value;
+		}
+
+		virtual double AsFloatingNumber() const
+		{
+			return _Value;
+		}
+
+		virtual bool AsBoolean() const
+		{
+			return _Value != 0;
+		}
+		 
+		virtual String AsString() const
+		{
+			static char buffer[32];
+
+			sprintf(buffer, "%d", _Value);
+
+			return buffer;
+		}
+
+#define BASE_OP(name, oper) virtual Value name##Op() { return Value((std::int_fast32_t)(oper _Value)); }
+#define BASE_OP2(name, oper) virtual Value name##Op(const Value &value) { return Value((std::int_fast32_t)(_Value oper value.AsNumber())); }
+#define BASE_OP2_BOOL(name, oper) virtual Value name##Op(const Value &value) { return Value((bool)(_Value oper value.AsNumber())); }
+
+		BASE_OP2(Add, +)
+		BASE_OP2(Sub, -)
+		BASE_OP2(Mult, *)
+		BASE_OP2(Div, /)
+		BASE_OP2(Rem, %)
+		BASE_OP(Neg, -)
+
+		BASE_OP2(And, &)
+		BASE_OP2(Or, |)
+		BASE_OP2(Xor, ^)
+		BASE_OP(Not, ~)
+		BASE_OP2(LeftShift, <<)
+		BASE_OP2(RightShift, >>)
+
+		BASE_OP2(LogAnd, &&)
+		BASE_OP2(LogOr, ||)
+		BASE_OP(LogNot, !)
+		
+		BASE_OP2_BOOL(Equal, ==)
+		BASE_OP2_BOOL(NotEqual, !=)
+		BASE_OP2_BOOL(Greater, >)
+		BASE_OP2_BOOL(GreaterEq, >=)
+		BASE_OP2_BOOL(Lesser, <)
+		BASE_OP2_BOOL(LesserEq, <=)
+		
+#undef BASE_OP2_BOOL
+#undef BASE_OP2
+#undef BASE_OP
+
+		static Reference<NumeralObject> New(std::int_fast32_t value);
+
+	private:
+		std::int_fast32_t _Value;
+	};
+
+	class FloatingNumeralObject : public Object
+	{
+	public:
+		FloatingNumeralObject(double value)
+		{
+			_Value = value;
+		}
+
+		virtual std::int_fast32_t AsNumber() const
+		{
+			return (std::int_fast32_t)_Value;
+		}
+
+		virtual double AsFloatingNumber() const
+		{
+			return _Value;
+		}
+
+		virtual bool AsBoolean() const
+		{
+			return _Value != 0;
+		}
+		 
+		virtual String AsString() const
+		{
+			static char buffer[32];
+
+			sprintf(buffer, "%d", _Value);
+
+			return buffer;
+		}
+
+#define BASE_OP(name, oper) virtual Value name##Op() { return Value((double)(oper _Value)); }
+#define BASE_OP2(name, oper) virtual Value name##Op(const Value &value) { return Value((double)(_Value oper value.AsFloatingNumber())); }
+#define BASE_OP2_BOOL(name, oper) virtual Value name##Op(const Value &value) { return Value((bool)(_Value oper value.AsFloatingNumber())); }
+
+		BASE_OP2(Add, +)
+		BASE_OP2(Sub, -)
+		BASE_OP2(Mult, *)
+		BASE_OP2(Div, /)
+		BASE_OP(Neg, -)
+
+		BASE_OP2(LogAnd, &&)
+		BASE_OP2(LogOr, ||)
+		BASE_OP(LogNot, !)
+
+		BASE_OP2_BOOL(Equal, ==)
+		BASE_OP2_BOOL(NotEqual, !=)
+		BASE_OP2_BOOL(Greater, >)
+		BASE_OP2_BOOL(GreaterEq, >=)
+		BASE_OP2_BOOL(Lesser, <)
+		BASE_OP2_BOOL(LesserEq, <=)
+		
+#undef BASE_OP2_BOOL
+#undef BASE_OP2
+#undef BASE_OP
+		
+		static Reference<FloatingNumeralObject> New(double value);
+
+	private:
+		double _Value;
+	};
+
+	class StringObject : public Object
+	{
+	public:
+		StringObject(const String &str)
+			: _Value(str)
+		{
+		}
+
+		virtual std::int_fast32_t StringObject::AsNumber() const
+		{
+			return atoi(_Value.Data());
+		}
+
+		virtual double StringObject::AsFloatingNumber() const
+		{
+			return atof(_Value.Data());
+		}
+
+		virtual bool StringObject::AsBoolean() const
+		{
+			return _Value.Compare(String::Static("true"), StringCompare::CaseInsensitive);
+		}
+
+		virtual String StringObject::AsString() const
+		{
+			return _Value;
+		}
+
+		virtual Value StringObject::AddOp(const Value &value)
+		{
+			return _Value.Append(value.AsString());
+		}
+
+		virtual Value StringObject::EqualOp(const Value &value)
+		{
+			return _Value.Compare(value.AsString());
+		}
+
+		virtual Value StringObject::NotEqualOp(const Value &value)
+		{
+			return !_Value.Compare(value.AsString());
+		}
+
+		static Reference<StringObject> New(const String &value);
+
+	private:
+		String _Value;
 	};
 }
 

@@ -17,9 +17,11 @@
 #ifndef ADRENOVALUE_H
 #define ADRENOVALUE_H
 
+#include <cstdint>
 #include <unordered_map>
 #include <adreno/helpers.h>
 #include <adreno/vm/gc.h>
+#include <adreno/vm/string.h>
 
 namespace Adreno
 {
@@ -37,38 +39,40 @@ namespace Adreno
 	class Value
 	{
 	public:
-		union ValueUnion
-		{
-			size_t Number;
-			double FloatingNumber;
-			bool Boolean;
-			Object *Object;
-			struct
-			{
-				char *Data;
-				size_t Size;
-			} String;
-		};
 
 		Value();
-		Value(size_t value);
+		Value(std::int_fast32_t value);
 		Value(double value);
 		Value(bool value);
-		Value(char *data, size_t size);
+		Value(const String &string);
 		Value(Object *object);
 		~Value();
 		
 		void SetNull();
-		void SetValue(size_t value);
+		void SetValue(std::int_fast32_t value);
 		void SetValue(double value);
 		void SetValue(bool value);
-		void SetValue(char *data, size_t size);
+		void SetValue(const String &value);
 		void SetValue(Object *object);
 
-		DEFPROP_RO_RC(public, ValueUnion, Values);
+		std::int_fast32_t AsNumber() const;
+		double AsFloatingNumber() const;
+		bool AsBoolean() const;
+		String AsString() const;
+		Reference<Object> AsObject() const;
+		
 		DEFPROP_RO_C(public, ValueType, Type);
 
 	private:
+		union
+		{
+			std::int_fast32_t Number;
+			double FloatingNumber;
+			bool Boolean;
+			Object *Object;
+			String::SharedImpl *StringImpl;
+		} _Values;
+
 		void DereferenceMe();
 	};
 }
