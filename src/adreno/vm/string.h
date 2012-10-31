@@ -54,6 +54,18 @@ namespace Adreno
 			_Impl->IncRef();
 		}
 
+		String(const char *str)
+		{
+			_Impl = SharedImpl::NewStatic(str, strlen(str));
+			_Impl->IncRef();
+		}
+
+		String(const char *str, size_t size)
+		{
+			_Impl = SharedImpl::NewStatic(str, size);
+			_Impl->IncRef();
+		}
+
 		String(char *str, size_t size)
 		{
 			_Impl = new SharedImpl(str, size);
@@ -97,18 +109,18 @@ namespace Adreno
 			return _Impl->InsensitiveHash();
 		}
 
-		String Append(String other) const
+		String Append(const String &other) const
 		{
 			return new SharedImpl(_Impl, other._Impl);
 		}
 
-		bool Compare(String other, StringCompare flags = StringCompare::CaseSensitive) const
+		bool Compare(const String &other, StringCompare flags = StringCompare::CaseSensitive) const
 		{
 			return _Impl->Compare(other._Impl, flags);
 		}
 
-		static String Static(char *str);
-		static String Static(char *str, size_t size);
+		static String Static(const char *str);
+		static String Static(const char *str, size_t size);
 
 	private:
 		class SharedImpl
@@ -125,7 +137,7 @@ namespace Adreno
 
 			bool Compare(String::SharedImpl *other, StringCompare flags) const;
 			
-			static SharedImpl *NewStatic(char *str, size_t size);
+			static SharedImpl *NewStatic(const char *str, size_t size);
 
 			DEFPROP_RO_P(public, char, Data);
 			DEFPROP_RO_C(public, size_t, Size);
@@ -133,9 +145,10 @@ namespace Adreno
 			DEFPROP_RO_C(public, size_t, InsensitiveHash);
 
 		private:
-			SharedImpl() { _HasHash = false; }
+			SharedImpl() { _HasHash = false; _ReferenceCount = 0; }
 
 			int _ReferenceCount;
+			bool _IsStatic;
 
 			bool _HasHash;
 			void MakeHashes();

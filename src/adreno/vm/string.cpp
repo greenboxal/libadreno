@@ -26,6 +26,7 @@ String::SharedImpl::SharedImpl(char *str)
 	memmove(Data(), str, Size());
 	Data()[Size()] = 0;
 	_ReferenceCount = 0;
+	_IsStatic = false;
 
 	MakeHashes();
 }
@@ -37,6 +38,7 @@ String::SharedImpl::SharedImpl(char *str, size_t size)
 	memmove(Data(), str, Size());
 	Data()[Size()] = 0;
 	_ReferenceCount = 0;
+	_IsStatic = false;
 
 	MakeHashes();
 }
@@ -48,6 +50,7 @@ String::SharedImpl::SharedImpl(const std::string &str)
 	memmove(Data(), str.c_str(), Size());
 	Data()[Size()] = 0;
 	_ReferenceCount = 0;
+	_IsStatic = false;
 
 	MakeHashes();
 }
@@ -60,13 +63,15 @@ String::SharedImpl::SharedImpl(SharedImpl *s1, SharedImpl *s2)
 	memmove(Data() + s1->Size(), s2->Data(), s2->Size());
 	Data()[Size()] = 0;
 	_ReferenceCount = 0;
+	_IsStatic = false;
 
 	MakeHashes();
 }
 
 String::SharedImpl::~SharedImpl()
 {
-	delete[] Data();
+	if (!_IsStatic)
+		delete[] Data();
 }
 
 void String::SharedImpl::IncRef()
@@ -90,23 +95,24 @@ bool String::SharedImpl::Compare(String::SharedImpl *other, StringCompare flags)
 		return InsensitiveHash() == other->InsensitiveHash();
 }
 
-String String::Static(char *str)
+String String::Static(const char *str)
 {
 	return SharedImpl::NewStatic(str, strlen(str));
 }
 
-String String::Static(char *str, size_t size)
+String String::Static(const char *str, size_t size)
 {
 	return SharedImpl::NewStatic(str, size);
 }
 
-String::SharedImpl *String::SharedImpl::NewStatic(char *str, size_t size)
+String::SharedImpl *String::SharedImpl::NewStatic(const char *str, size_t size)
 {
 	SharedImpl *impl = new SharedImpl();
 
-	impl->Data(str);
+	impl->Data((char *)str);
 	impl->Size(size);
 	impl->MakeHashes();
+	impl->_IsStatic = true;
 
 	return impl;
 }

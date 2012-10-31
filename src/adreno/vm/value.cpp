@@ -188,7 +188,7 @@ String Value::AsString() const
 		}
 	case ValueType::Boolean:
 		{
-			return _Values.Boolean ? String::Static("True") : String::Static("False");
+			return _Values.Boolean ? String::Static("true") : String::Static("false");
 		}
 	case ValueType::Object: return _Values.Object->AsString();
 	case ValueType::String: return _Values.StringImpl;
@@ -199,5 +199,8 @@ String Value::AsString() const
 
 Reference<Object> Value::AsObject() const
 {
-	return Object::CreateFromValue(*this);
+	if (Type() == ValueType::Object)
+		return _Values.Object;
+	else
+		return Object::CreateFromValue(*this);
 }

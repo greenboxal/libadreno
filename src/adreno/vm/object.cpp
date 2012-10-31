@@ -38,12 +38,7 @@ bool Object::Finalize()
 	return true;
 }
 
-Adreno::Reference<Object> Object::CreateFromValue(const Value &)
-{
-	return Reference<Object>(new Object());
-}
-
-Value Object::GetField(String name)
+Value Object::GetField(const String &name)
 {
 	FieldMap::iterator it = Fields().find(name);
 
@@ -53,7 +48,7 @@ Value Object::GetField(String name)
 	return it->second;
 }
 
-void Object::SetField(String name, const Value &value)
+void Object::SetField(const String &name, const Value &value)
 {
 	Fields()[name] = value;
 }
@@ -101,6 +96,26 @@ DEF_OP2(GreaterEq)
 DEF_OP2(Lesser)
 DEF_OP2(LesserEq)
 
+Value Object::Indexer(const Value &index)
+{
+	Value field = GetField("op_Indexer");
+
+	if (field.Type() != ValueType::Null)
+		return field.AsObject()->Call(Arguments(&index, 1));
+
+	return Value();
+}
+
+Value Object::Call(const Arguments &args)
+{
+	Value field = GetField("op_Call");
+
+	if (field.Type() != ValueType::Null)
+		return field.AsObject()->Call(args);
+
+	return Value();
+}
+
 #undef DEF_OP
 #undef DEF_OP2
 
@@ -124,7 +139,26 @@ Reference<FloatingNumeralObject> FloatingNumeralObject::New(double value)
 	return new FloatingNumeralObject(value);
 }
 
+Reference<BooleanObject> BooleanObject::New(bool value)
+{
+	return new BooleanObject(value);
+}
+
 Reference<StringObject> StringObject::New(const String &string)
 {
 	return new StringObject(string);
+}
+
+Adreno::Reference<Object> Object::CreateFromValue(const Value &value)
+{
+	switch (value.Type())
+	{
+	case ValueType::Number: return NumeralObject::New(value.AsNumber()).Value();
+	case ValueType::FloatingNumber: return FloatingNumeralObject::New(value.AsFloatingNumber()).Value();
+	case ValueType::Boolean: return BooleanObject::New(value.AsBoolean()).Value();
+	case ValueType::String: return StringObject::New(value.AsString()).Value();
+	case ValueType::Object: return value.AsObject().Value();
+	}
+
+	return Object::New();
 }

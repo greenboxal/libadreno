@@ -18,6 +18,7 @@
 #define ADRENOOBJECT_H
 
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <functional>
 
@@ -36,10 +37,37 @@ namespace Adreno
 
 		}
 
-		Arguments(const Value *, size_t )
+		Arguments(const Value &value)
+		{
+			_Args.push_back(value);
+		}
+
+		Arguments(const Value *values, size_t count)
+			: _Args(values, values + count)
 		{
 			
 		}
+
+		Arguments(const std::vector<Value> &vec)
+			: _Args(vec)
+		{
+		}
+
+		size_t Count() const
+		{
+			return _Args.size();
+		}
+
+		Value operator[](size_t index) const
+		{
+			if (index > _Args.size())
+				return Value();
+
+			return _Args[index];
+		}
+
+	private:
+		std::vector<Value> _Args;
 	};
 
 	class Object
@@ -76,6 +104,8 @@ namespace Adreno
 		virtual Value GreaterEqOp(const Value &value);
 		virtual Value LesserOp(const Value &value);
 		virtual Value LesserEqOp(const Value &value);
+
+		virtual Value Indexer(const Value &index);
 		
 		virtual std::int_fast32_t AsNumber() const
 		{
@@ -94,7 +124,7 @@ namespace Adreno
 
 		virtual String AsString() const
 		{
-			return String::Static("[object]");
+			return "[object]";
 		}
 
 		virtual Value Call(const Arguments &args);
@@ -102,8 +132,8 @@ namespace Adreno
 #undef DummyOp2
 #undef DummyOp
 
-		Value GetField(String name);
-		void SetField(String name, const Value &value);
+		Value GetField(const String &name);
+		void SetField(const String &name, const Value &value);
 
 		static Reference<Object> New();
 		static Reference<Object> CreateFromValue(const Value &value);
@@ -265,6 +295,50 @@ namespace Adreno
 		double _Value;
 	};
 
+	class BooleanObject : public Object
+	{
+	public:
+		BooleanObject(bool value)
+		{
+			_Value = value;
+		}
+
+		virtual std::int_fast32_t AsNumber() const
+		{
+			return _Value ? 1 : 0;
+		}
+
+		virtual double AsFloatingNumber() const
+		{
+			return _Value ? 1 : 0;
+		}
+
+		virtual bool AsBoolean() const
+		{
+			return _Value;
+		}
+
+		virtual String AsString() const
+		{
+			return _Value ? "true" : "false";
+		}
+
+		virtual Value EqualOp(const Value &value)
+		{
+			return _Value == value.AsBoolean();
+		}
+
+		virtual Value NotEqualOp(const Value &value)
+		{
+			return _Value != value.AsBoolean();
+		}
+
+		static Reference<BooleanObject> New(bool value);
+
+	private:
+		bool _Value;
+	};
+
 	class StringObject : public Object
 	{
 	public:
@@ -273,37 +347,37 @@ namespace Adreno
 		{
 		}
 
-		virtual std::int_fast32_t StringObject::AsNumber() const
+		virtual std::int_fast32_t AsNumber() const
 		{
 			return atoi(_Value.Data());
 		}
 
-		virtual double StringObject::AsFloatingNumber() const
+		virtual double AsFloatingNumber() const
 		{
 			return atof(_Value.Data());
 		}
 
-		virtual bool StringObject::AsBoolean() const
+		virtual bool AsBoolean() const
 		{
-			return _Value.Compare(String::Static("true"), StringCompare::CaseInsensitive);
+			return _Value.Compare("true", StringCompare::CaseInsensitive);
 		}
 
-		virtual String StringObject::AsString() const
+		virtual String AsString() const
 		{
 			return _Value;
 		}
 
-		virtual Value StringObject::AddOp(const Value &value)
+		virtual Value AddOp(const Value &value)
 		{
 			return _Value.Append(value.AsString());
 		}
 
-		virtual Value StringObject::EqualOp(const Value &value)
+		virtual Value EqualOp(const Value &value)
 		{
 			return _Value.Compare(value.AsString());
 		}
 
-		virtual Value StringObject::NotEqualOp(const Value &value)
+		virtual Value NotEqualOp(const Value &value)
 		{
 			return !_Value.Compare(value.AsString());
 		}

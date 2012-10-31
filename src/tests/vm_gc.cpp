@@ -18,24 +18,26 @@
 #include <adreno/vm/object.h>
 #include <string>
 
+using namespace Adreno;
+
 SUITE(GC)
 {
 	TEST(Reference)
 	{
-		Adreno::Object *obj = new Adreno::Object();
-		Adreno::GCObject *gcobj = obj->GCState();
+		Object *obj = new Object();
+		GCObject *gcobj = obj->GCState();
 		CHECK_EQUAL(1, gcobj->Weak());
 
 		{
-			Adreno::WeakReference<Adreno::Object> weak1(obj);
+			WeakReference<Object> weak1(obj);
 			CHECK_EQUAL(2, gcobj->Weak());
 
 			{
-				Adreno::Reference<Adreno::Object> ref1(obj);
+				Reference<Object> ref1(obj);
 				CHECK_EQUAL(1, gcobj->Strong());
 
 				{
-					Adreno::Reference<Adreno::Object> ref2(obj);
+					Reference<Object> ref2(obj);
 					CHECK_EQUAL(2, gcobj->Strong());
 				}
 
@@ -43,34 +45,34 @@ SUITE(GC)
 			}
 
 			{
-				Adreno::WeakReference<Adreno::Object> weak2(obj);
+				WeakReference<Object> weak2(obj);
 				CHECK_EQUAL(3, gcobj->Weak());
 			}
 			CHECK_EQUAL(2, gcobj->Weak());
 	
 			CHECK_EQUAL(0, gcobj->Strong());
-			CHECK(gcobj->State() == Adreno::GCObjectState::Dead);
+			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
 			{
-				Adreno::Reference<Adreno::Object> ref = weak1.Get();
+				Reference<Object> ref = weak1.Get();
 				CHECK_EQUAL(1, gcobj->Strong());
-				CHECK(gcobj->State() == Adreno::GCObjectState::Alive);
+				CHECK(gcobj->State() == GCObjectState::Alive);
 			}
 	
 			CHECK_EQUAL(0, gcobj->Strong());
-			CHECK(gcobj->State() == Adreno::GCObjectState::Dead);
+			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
-			Adreno::GC::Collect();
+			GC::Collect();
 	
 			CHECK_EQUAL(true, weak1.IsGone());
-			CHECK(gcobj->State() == Adreno::GCObjectState::Collected);
+			CHECK(gcobj->State() == GCObjectState::Collected);
 		}
 	}
 
 
-	class PersistentObject : public Adreno::Object
+	class PersistentObject : public Object
 	{
 	public:
 		PersistentObject()
@@ -88,7 +90,7 @@ SUITE(GC)
 			_PersistenceCounter++;
 
 			if (_PersistenceCounter > 4)
-				return Adreno::Object::Finalize();
+				return Object::Finalize();
 
 			return false;
 		}
@@ -99,20 +101,20 @@ SUITE(GC)
 
 	TEST(Persistency)
 	{
-		Adreno::Object *obj = new PersistentObject();
-		Adreno::GCObject *gcobj = obj->GCState();
+		Object *obj = new PersistentObject();
+		GCObject *gcobj = obj->GCState();
 		CHECK_EQUAL(1, gcobj->Weak());
 
 		{
-			Adreno::WeakReference<Adreno::Object> weak1(obj);
+			WeakReference<Object> weak1(obj);
 			CHECK_EQUAL(2, gcobj->Weak());
 
 			{
-				Adreno::Reference<Adreno::Object> ref1(obj);
+				Reference<Object> ref1(obj);
 				CHECK_EQUAL(1, gcobj->Strong());
 
 				{
-					Adreno::Reference<Adreno::Object> ref2(obj);
+					Reference<Object> ref2(obj);
 					CHECK_EQUAL(2, gcobj->Strong());
 				}
 
@@ -120,48 +122,48 @@ SUITE(GC)
 			}
 
 			{
-				Adreno::WeakReference<Adreno::Object> weak2(obj);
+				WeakReference<Object> weak2(obj);
 				CHECK_EQUAL(3, gcobj->Weak());
 			}
 			CHECK_EQUAL(2, gcobj->Weak());
 	
 			CHECK_EQUAL(0, gcobj->Strong());
-			CHECK(gcobj->State() == Adreno::GCObjectState::Dead);
+			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
 			{
-				Adreno::Reference<Adreno::Object> ref = weak1.Get();
+				Reference<Object> ref = weak1.Get();
 				CHECK_EQUAL(1, gcobj->Strong());
-				CHECK(gcobj->State() == Adreno::GCObjectState::Alive);
+				CHECK(gcobj->State() == GCObjectState::Alive);
 			}
 	
 			CHECK_EQUAL(0, gcobj->Strong());
-			CHECK(gcobj->State() == Adreno::GCObjectState::Dead);
+			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
 			for (int i = 0; i < 4; i++)
 			{
-				Adreno::GC::Collect();
+				GC::Collect();
 
 				CHECK_EQUAL(0, gcobj->Strong());
-				CHECK(gcobj->State() == Adreno::GCObjectState::Dead);
+				CHECK(gcobj->State() == GCObjectState::Dead);
 				CHECK_EQUAL(false, weak1.IsGone());
 
 				{
-					Adreno::Reference<Adreno::Object> ref = weak1.Get();
+					Reference<Object> ref = weak1.Get();
 					CHECK_EQUAL(1, gcobj->Strong());
-					CHECK(gcobj->State() == Adreno::GCObjectState::Alive);
+					CHECK(gcobj->State() == GCObjectState::Alive);
 				}
 	
 				CHECK_EQUAL(0, gcobj->Strong());
-				CHECK(gcobj->State() == Adreno::GCObjectState::Dead);
+				CHECK(gcobj->State() == GCObjectState::Dead);
 				CHECK_EQUAL(false, weak1.IsGone());
 			}
 			
-			Adreno::GC::Collect();
+			GC::Collect();
 	
 			CHECK_EQUAL(true, weak1.IsGone());
-			CHECK(gcobj->State() == Adreno::GCObjectState::Collected);
+			CHECK(gcobj->State() == GCObjectState::Collected);
 		}
 	}
 }
