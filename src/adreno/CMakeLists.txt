@@ -66,7 +66,7 @@ add_library (adreno
 
 )
 set_target_properties (adreno PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
-cotire (adreno)
+# cotire (adreno)
 
 source_group ("adreno" FILES ${BASE_SRCS} ${BASE_HDRS})
 source_group ("adreno\\ail" FILES ${AIL_SRCS} ${AIL_HDRS})
