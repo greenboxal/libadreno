@@ -25,15 +25,18 @@
 
 namespace Adreno
 {
-	enum class ValueType
+	namespace ValueType
 	{
-		Null,
-		Number,
-		FloatingNumber,
-		Boolean,
-		String,
-		Object
-	};
+		enum
+		{
+			Null,
+			Number,
+			FloatingNumber,
+			Boolean,
+			String,
+			Object
+		};
+	}
 
 	class Object;
 	class Value
@@ -61,7 +64,7 @@ namespace Adreno
 		String AsString() const;
 		Reference<Object> AsObject() const;
 		
-		DEFPROP_RO_C(public, ValueType, Type);
+		DEFPROP_RO_C(public, int, Type);
 
 	private:
 		union

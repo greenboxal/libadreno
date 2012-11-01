@@ -22,11 +22,14 @@
 
 namespace Adreno
 {
-	enum class StringCompare
+	namespace StringCompare
 	{
-		CaseSensitive,
-		CaseInsensitive
-	};
+		enum
+		{
+			CaseSensitive,
+			CaseInsensitive
+		};
+	}
 
 	class Value;
 	class String
@@ -44,7 +47,7 @@ namespace Adreno
 		{
 			bool operator()(const String &s1, const String &s2) const
 			{
-				return s1.Compare(s2, Adreno::StringCompare::CaseInsensitive);
+				return s1.Compare(s2, StringCompare::CaseInsensitive);
 			}
 		};
 
@@ -114,7 +117,7 @@ namespace Adreno
 			return new SharedImpl(_Impl, other._Impl);
 		}
 
-		bool Compare(const String &other, StringCompare flags = StringCompare::CaseSensitive) const
+		bool Compare(const String &other, int flags = StringCompare::CaseSensitive) const
 		{
 			return _Impl->Compare(other._Impl, flags);
 		}
@@ -137,7 +140,7 @@ namespace Adreno
 			void IncRef();
 			void DecRef();
 
-			bool Compare(String::SharedImpl *other, StringCompare flags) const;
+			bool Compare(String::SharedImpl *other, int flags) const;
 			
 			static SharedImpl *NewStatic(const char *str, size_t size);
 

@@ -98,7 +98,7 @@ void String::SharedImpl::DecRef()
 		delete this;
 }
 
-bool String::SharedImpl::Compare(String::SharedImpl *other, StringCompare flags) const
+bool String::SharedImpl::Compare(String::SharedImpl *other, int flags) const
 {
 	if (flags == StringCompare::CaseSensitive)
 		return Hash() == other->Hash();

@@ -69,7 +69,7 @@ GCObject::GCObject(Object *owner)
 	_Weak = 0;
 }
 
-void GCObject::Reference(ReferenceType type)
+void GCObject::Reference(int type)
 {
 	if (type == ReferenceType::Strong)
 	{
@@ -88,7 +88,7 @@ void GCObject::Reference(ReferenceType type)
 	}
 }
 
-void GCObject::Dereference(ReferenceType type)
+void GCObject::Dereference(int type)
 {
 	if (type == ReferenceType::Strong)
 	{

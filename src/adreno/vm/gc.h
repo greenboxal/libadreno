@@ -23,18 +23,24 @@
 
 namespace Adreno
 {
-	enum class GCObjectState
+	namespace GCObjectState
 	{
+		enum
+		{
 		Alive,
 		Dead,
 		Collected,
-	};
+		};
+	}
 
-	enum class ReferenceType
+	namespace ReferenceType
 	{
-		Weak,
-		Strong
-	};
+		enum
+		{
+			Weak,
+			Strong
+		};
+	}
 	
 	class GCObject;
 	class GarbageCollector
@@ -63,8 +69,8 @@ namespace Adreno
 	public:
 		GCObject(Object *owner);
 
-		void Reference(ReferenceType type = ReferenceType::Strong);
-		void Dereference(ReferenceType type = ReferenceType::Strong);
+		void Reference(int type = ReferenceType::Strong);
+		void Dereference(int type = ReferenceType::Strong);
 
 		size_t Strong() const
 		{
@@ -76,7 +82,7 @@ namespace Adreno
 			return _Weak;
 		}
 
-		DEFPROP_RO_C(public, GCObjectState, State);
+		DEFPROP_RO_C(public, int, State);
 		DEFPROP_RO_P(public, Object, Value);
 
 	private:
