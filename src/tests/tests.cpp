@@ -20,11 +20,10 @@
 int main()
 {
 	int result = UnitTest::RunAllTests();
-
-	printf("\nRunAllTests returned %d.\n", result);
-#ifdef _DEBUG
-	getchar();
-#endif
+	// Visual Studio only needs getchar() :D
+	#if defined( _DEBUG ) && defined( _MSC_VER )
+		getchar();
+	#endif
 
 	return result;
 }

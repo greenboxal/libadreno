@@ -7,6 +7,23 @@ include (cotire)
 include (CheckCXXSourceCompiles)
 include (CheckCSourceCompiles)
 
+# Look for flex & bison
+if (NOT FLEX_EXECUTABLE)
+  message (STATUS "Looking for flex")
+  find_program (FLEX_EXECUTABLE flex)
+  if (FLEX_EXECUTABLE)
+    message (STATUS "Looking for flex -- ${FLEX_EXECUTABLE}")
+  endif ()
+endif ()
+
+if (NOT BISON_EXECUTABLE)
+  message (STATUS "Looking for bison")
+  find_program (BISON_EXECUTABLE bison)
+  if (BISON_EXECUTABLE)
+    message (STATUS "Looking for bison -- ${BISON_EXECUTABLE}")
+  endif ()
+endif ()
+
 # Set a default build type if none was specified
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message (STATUS "Setting build type to 'Debug' as none was specified.")
