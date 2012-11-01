@@ -21,6 +21,7 @@
 #include <adreno/helpers.h>
 #include <string.h>
 #include <string>
+#include <cstdint>
 
 namespace Adreno
 {
@@ -52,6 +53,12 @@ namespace Adreno
 				return s1.Compare(s2, StringCompare::CaseInsensitive);
 			}
 		};
+
+		String()
+		{
+			_Impl = SharedImpl::NewStatic("", 0);
+			_Impl->IncRef();
+		}
 
 		String(char *str)
 		{
@@ -104,12 +111,12 @@ namespace Adreno
 			return _Impl->Size();
 		}
 
-		size_t Hash() const
+		std::uint32_t Hash() const
 		{
 			return _Impl->Hash();
 		}
 
-		size_t InsensitiveHash() const
+		std::uint32_t InsensitiveHash() const
 		{
 			return _Impl->InsensitiveHash();
 		}
@@ -126,7 +133,7 @@ namespace Adreno
 
 		static String Static(const char *str);
 		static String Static(const char *str, size_t size);
-		static String Sealed(size_t hash, size_t ihash);
+		static String Sealed(std::uint32_t hash, std::uint32_t ihash);
 		static String Convert(intptr_t value, int base = 10);
 		static String Convert(double value);
 
@@ -138,7 +145,7 @@ namespace Adreno
 			SharedImpl(char *str, size_t size);
 			SharedImpl(const std::string &str);
 			SharedImpl(SharedImpl *s1, SharedImpl *s2);
-			SharedImpl(size_t hash, size_t ihash);
+			SharedImpl(std::uint32_t hash, std::uint32_t ihash);
 			~SharedImpl();
 
 			void IncRef();
@@ -150,8 +157,8 @@ namespace Adreno
 
 			DEFPROP_RO_P(public, char, Data);
 			DEFPROP_RO_C(public, size_t, Size);
-			DEFPROP_RO_C(public, size_t, Hash);
-			DEFPROP_RO_C(public, size_t, InsensitiveHash);
+			DEFPROP_RO_C(public, std::uint32_t, Hash);
+			DEFPROP_RO_C(public, std::uint32_t, InsensitiveHash);
 
 		private:
 			SharedImpl() { _HasHash = false; _ReferenceCount = 0; }

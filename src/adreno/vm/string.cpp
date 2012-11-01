@@ -150,7 +150,7 @@ String::SharedImpl::SharedImpl(SharedImpl *s1, SharedImpl *s2)
 	MakeHashes();
 }
 
-String::SharedImpl::SharedImpl(size_t hash, size_t ihash)
+String::SharedImpl::SharedImpl(std::uint32_t hash, std::uint32_t ihash)
 {
 	Hash(hash);
 	InsensitiveHash(ihash);
@@ -203,7 +203,7 @@ String::SharedImpl *String::SharedImpl::NewStatic(const char *str, size_t size)
 void String::SharedImpl::MakeHashes()
 {
 	{
-		size_t hval = 0x811c9dc5;
+		std::uint32_t hval = 0x811c9dc5;
 		unsigned char *bp = (unsigned char *)Data();
 		unsigned char *be = bp + Size();
 
@@ -217,7 +217,7 @@ void String::SharedImpl::MakeHashes()
 	}
 
 	{
-		size_t hval = 0x811c9dc5;
+		std::uint32_t hval = 0x811c9dc5;
 		unsigned char *bp = (unsigned char *)Data();
 		unsigned char *be = bp + Size();
 

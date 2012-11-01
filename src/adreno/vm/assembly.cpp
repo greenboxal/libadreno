@@ -14,38 +14,40 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ADRENOMS_H
-#define ADRENOMS_H
+#include <adreno/vm/vm.h>
+#include <adreno/vm/assembly.h>
 
-#include <stddef.h> // size_t
+#include <assert.h>
 
-namespace Adreno
+using namespace Adreno;
+
+bool Assembly::Load(void *memory, size_t size)
 {
-	class MemoryStream
-	{
-	public:
-		MemoryStream();
-		MemoryStream(const MemoryStream &ms);
-		~MemoryStream();
-
-		size_t Write(void *buffer, size_t offset, size_t size);
-		size_t Read(void *buffer, size_t offset, size_t size);
-		bool Seek(unsigned int origin, size_t offset);
-		void Close();
-
-		size_t Tell()
-		{
-			return _BufferPosition;
-		}
-
-		void *Clone();
-		void SetExpansionFactor(size_t size);
-
-	private:
-		unsigned char *_Buffer;
-		size_t _BufferPosition, _BufferSize, _BufferMaxSize;
-		size_t _ExpansionFactor;
-	};
+	return false;
 }
 
-#endif
+void Class::ResolveParents()
+{
+	std::list<String>::iterator it;
+
+	if (_ParentsResolved)
+		return;
+
+	for (it = _Parents.begin(); it != _Parents.end(); it++)
+	{
+		Class *parent = VMContext::CurrentVM()->GetClass(*it);
+
+		assert(parent);
+		parent->ResolveParents();
+
+		FunctionMap &fmap = parent->_Functions;
+		FunctionMap::iterator it2;
+		for (it2 = fmap.begin(); it2 != fmap.end(); it2++)
+		{
+			if (GetFunction(it2->first) == nullptr)
+				SetFunction(it2->first, it2->second);
+		}
+	}
+
+	_ParentsResolved = true;
+}

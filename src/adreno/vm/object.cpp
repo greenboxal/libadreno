@@ -71,7 +71,10 @@ Value Object::name##Op() \
 { \
 	Value field = GetField("op_"#name); \
 	if (field.Type() != ValueType::Null) \
-		return field.AsObject()->Call(Arguments()); \
+	{\
+		Value tmp = this; \
+		return field.AsObject()->Call(Arguments(&tmp, 1)); \
+	} \
 	return Value(); \
 }
 
@@ -80,7 +83,12 @@ Value Object::name##Op(const Value &value) \
 { \
 	Value field = GetField("op_"#name); \
 	if (field.Type() != ValueType::Null) \
-		return field.AsObject()->Call(Arguments(&value, 1)); \
+	{\
+		std::vector<Value> args(2); \
+		args[0] = this; \
+		args[1] = value; \
+		return field.AsObject()->Call(args); \
+	} \
 	return Value(); \
 }
 

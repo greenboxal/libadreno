@@ -21,6 +21,7 @@
 #include <adreno/vm/gc.h>
 #include <adreno/vm/value.h>
 #include <adreno/vm/object.h>
+#include <adreno/vm/assembly.h>
 
 namespace Adreno
 {
@@ -38,7 +39,20 @@ namespace Adreno
 
 		void MakeCurrent();
 
-		ExecutionContext *CreateExecutionContext();
+		ExecutionContext *CreateExecutionContext(Assembly *assembly);
+		
+		const Object::FieldMap GetGlobals() const
+		{
+			return _Globals;
+		}
+
+		Class *GetClass(const String &name) const;
+		void SetClass(const String &name, Class *function);
+
+		const Assembly::ClassMap GetClasses() const
+		{
+			return _Classes;
+		}
 
 		Value GetGlobal(const String &name);
 		void SetGlobal(const String &name, const Value &value);
@@ -47,13 +61,32 @@ namespace Adreno
 
 	private:
 		Object::FieldMap _Globals;
+		Assembly::ClassMap _Classes;
 
 		static THREAD_LOCAL VMContext *_CurrentVM;
 	};
 
+	namespace ExecutionState
+	{
+		enum
+		{
+			Running,
+			Suspended,
+			Stopped
+		};
+	}
+
 	class ExecutionContext
 	{
 	public:
+		ExecutionContext();
+		~ExecutionContext();
+
+		void Run();
+
+		DEFPROP_RO_P(public, VMContext, Owner);
+		DEFPROP_RO_P(public, Assembly, Unit);
+		DEFPROP_RO_P(public, int, State);
 	};
 }
 
