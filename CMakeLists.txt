@@ -28,7 +28,7 @@ if (MSVC)
   add_definitions (/D_CRT_SECURE_NO_DEPRECATE)
   add_definitions (/D_CRT_NONSTDC_NO_DEPRECATE)
 elseif (CMAKE_COMPILER_IS_GNUCC)
-  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wall -Wextra -Wno-unused-parameter -g")
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -Wextra -Wno-unused-parameter -g -std=c++0x")
 endif ()
 
 if (CMAKE_BUILD_TYPE EQUAL Debug)

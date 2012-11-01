@@ -97,17 +97,17 @@ namespace Adreno
 			return _Impl->Data();
 		}
 
-		const size_t Size() const
+		size_t Size() const
 		{
 			return _Impl->Size();
 		}
 
-		const size_t Hash() const
+		size_t Hash() const
 		{
 			return _Impl->Hash();
 		}
 
-		const size_t InsensitiveHash() const
+		size_t InsensitiveHash() const
 		{
 			return _Impl->InsensitiveHash();
 		}

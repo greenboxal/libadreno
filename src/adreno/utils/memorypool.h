@@ -21,6 +21,7 @@
 #include <adreno/utils/bitarray.h>
 
 #include <stddef.h> // size_t
+#include <limits.h>
 
 namespace Adreno
 {

@@ -69,11 +69,11 @@ namespace Adreno
 	private:
 		union
 		{
-			std::int_fast32_t Number;
-			double FloatingNumber;
-			bool Boolean;
-			Object *Object;
-			String::SharedImpl *StringImpl;
+			std::int_fast32_t number;
+			double floatingNumber;
+			bool boolean;
+			Object *object;
+			String::SharedImpl *stringImpl;
 		} _Values;
 
 		void DereferenceMe();
