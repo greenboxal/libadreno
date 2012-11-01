@@ -4,6 +4,6 @@ file (GLOB BASE_SRCS *.c *.cpp)
 
 add_executable (tests ${BASE_SRCS})
 target_link_libraries (tests adreno UnitTest++)
-cotire (tests)
+# cotire (tests)
 
 source_group ("tests" FILES ${BASE_SRCS})
