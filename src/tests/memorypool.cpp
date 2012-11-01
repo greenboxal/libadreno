@@ -30,16 +30,12 @@ TEST(MemoryPoolTest)
 	Adreno::MemoryPool<TestStruct> mp;
 
 	TestStruct *t1 = mp.Alloc();
+	
+	CHECK(t1);
 
 	t1->Bar = 1337;
 	t1->Foo = 242424666;
 	t1->String = "test tes testes";
 
 	mp.Free(t1);
-
-	// t2 should be the same as t1
-	TestStruct *t2 = mp.Alloc();
-
-	CHECK_EQUAL(1337, t2->Bar);
-	CHECK_EQUAL(242424666, t2->Foo);
 }
