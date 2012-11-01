@@ -25,6 +25,10 @@
 
 #define DEFPROP_SELF_RO(access, type, name) \
 access: \
+	type &name()
+
+#define DEFPROP_SELF_RO_C(access, type, name) \
+access: \
 	const type &name()
 
 #define DEFPROP_SELF_RW(access, type, name) \
@@ -75,14 +79,14 @@ private: \
 
 #define DEFPROP_RO_RC(access, type, name) \
 access: \
-	const type &name() const { return _##name; } \
+	type &name() const { return _##name; } \
 private: \
 	void name(const type &value) {  _##name = value; } \
 	type _##name
 
 #define DEFPROP_RO_C(access, type, name) \
 access: \
-	const type name() const { return _##name; } \
+	type name() const { return _##name; } \
 private: \
 	void name(const type &value) {  _##name = value; } \
 	type _##name
@@ -121,7 +125,7 @@ private: \
 
 #define DEFPROP_P_RO_C(access, type, name) \
 access: \
-	const type name() const { return _##name; } \
+	type name() const { return _##name; } \
 protected: \
 	void name(const type &value) {  _##name = value; } \
 private: \
