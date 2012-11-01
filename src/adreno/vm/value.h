@@ -19,11 +19,6 @@
 
 #include <stddef.h>
 
-// TODO: Move somewhere
-#if defined( _MSC_VER ) && !defined( ssize_t )
-typedef SSIZE_T ssize_t;
-#endif
-
 #include <unordered_map>
 #include <adreno/helpers.h>
 #include <adreno/vm/gc.h>
@@ -50,7 +45,7 @@ namespace Adreno
 	public:
 
 		Value();
-		explicit Value(ssize_t value);
+		explicit Value(intptr_t value);
 		explicit Value(bool value);
 		Value(double value);
 		Value(const String &string); // not explicit for const char* conversion
@@ -58,13 +53,13 @@ namespace Adreno
 		~Value();
 		
 		void SetNull();
-		void SetValue(ssize_t value);
+		void SetValue(intptr_t value);
 		void SetValue(double value);
 		void SetValue(bool value);
 		void SetValue(const String &value);
 		void SetValue(Object *object);
 
-		ssize_t AsNumber() const;
+		intptr_t AsNumber() const;
 		double AsFloatingNumber() const;
 		bool AsBoolean() const;
 		String AsString() const;
@@ -75,7 +70,7 @@ namespace Adreno
 	private:
 		union
 		{
-			ssize_t number;
+			intptr_t number;
 			double floatingNumber;
 			bool boolean;
 			Object *object;

@@ -26,7 +26,7 @@ Value::Value()
 	Type(ValueType::Null);
 }
 
-Value::Value(std::int_fast32_t value)
+Value::Value(intptr_t value)
 {
 	Type(ValueType::Number);
 	_Values.number = value;
@@ -71,7 +71,7 @@ void Value::SetNull()
 	DereferenceMe();
 }
 
-void Value::SetValue(std::int_fast32_t value)
+void Value::SetValue(intptr_t value)
 {
 	DereferenceMe();
 	Type(ValueType::Number);
@@ -118,12 +118,12 @@ void Value::DereferenceMe()
 		_Values.stringImpl->DecRef();
 }
 
-std::int_fast32_t Value::AsNumber() const
+intptr_t Value::AsNumber() const
 {
 	switch (Type())
 	{
 	case ValueType::Number: return _Values.number;
-	case ValueType::FloatingNumber: return (std::int_fast32_t)_Values.floatingNumber;
+	case ValueType::FloatingNumber: return (intptr_t)_Values.floatingNumber;
 	case ValueType::Boolean: return _Values.boolean ? 1 : 0;
 	case ValueType::Object: return _Values.object->AsNumber();
 	case ValueType::String:

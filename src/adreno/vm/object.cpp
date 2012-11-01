@@ -142,7 +142,7 @@ Reference<FunctionObject> FunctionObject::New(std::function<Value (const Argumen
 	return new FunctionObject(function);
 }
 
-Reference<NumeralObject> NumeralObject::New(std::int_fast32_t value)
+Reference<NumeralObject> NumeralObject::New(intptr_t value)
 {
 	return new NumeralObject(value);
 }

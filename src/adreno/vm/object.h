@@ -108,7 +108,7 @@ namespace Adreno
 
 		virtual Value Indexer(const Value &index);
 		
-		virtual std::int_fast32_t AsNumber() const
+		virtual intptr_t AsNumber() const
 		{
 			return 0;
 		}
@@ -165,12 +165,12 @@ namespace Adreno
 	class NumeralObject : public Object
 	{
 	public:
-		NumeralObject(std::int_fast32_t value)
+		NumeralObject(intptr_t value)
 		{
 			_Value = value;
 		}
 
-		virtual std::int_fast32_t AsNumber() const
+		virtual intptr_t AsNumber() const
 		{
 			return _Value;
 		}
@@ -194,8 +194,8 @@ namespace Adreno
 			return buffer;
 		}
 
-#define BASE_OP(name, oper) virtual Value name##Op() { return Value((std::int_fast32_t)(oper _Value)); }
-#define BASE_OP2(name, oper) virtual Value name##Op(const Value &value) { return Value((std::int_fast32_t)(_Value oper value.AsNumber())); }
+#define BASE_OP(name, oper) virtual Value name##Op() { return Value((intptr_t)(oper _Value)); }
+#define BASE_OP2(name, oper) virtual Value name##Op(const Value &value) { return Value((intptr_t)(_Value oper value.AsNumber())); }
 #define BASE_OP2_BOOL(name, oper) virtual Value name##Op(const Value &value) { return Value((bool)(_Value oper value.AsNumber())); }
 
 		BASE_OP2(Add, +)
@@ -227,10 +227,10 @@ namespace Adreno
 #undef BASE_OP2
 #undef BASE_OP
 
-		static Reference<NumeralObject> New(std::int_fast32_t value);
+		static Reference<NumeralObject> New(intptr_t value);
 
 	private:
-		std::int_fast32_t _Value;
+		intptr_t _Value;
 	};
 
 	class FloatingNumeralObject : public Object
@@ -241,9 +241,9 @@ namespace Adreno
 			_Value = value;
 		}
 
-		virtual std::int_fast32_t AsNumber() const
+		virtual intptr_t AsNumber() const
 		{
-			return (std::int_fast32_t)_Value;
+			return (intptr_t)_Value;
 		}
 
 		virtual double AsFloatingNumber() const
@@ -304,7 +304,7 @@ namespace Adreno
 			_Value = value;
 		}
 
-		virtual std::int_fast32_t AsNumber() const
+		virtual intptr_t AsNumber() const
 		{
 			return _Value ? 1 : 0;
 		}
@@ -348,7 +348,7 @@ namespace Adreno
 		{
 		}
 
-		virtual std::int_fast32_t AsNumber() const
+		virtual intptr_t AsNumber() const
 		{
 			return atoi(_Value.Data());
 		}
