@@ -53,9 +53,7 @@ void AP_FreePage(void *addr, int count)
 #else
 void *AP_ReservePage(int count)
 {
-	int size = count * ADRENOMP_PAGE_SIZE;
-
-	return AdrenoAlloc(size);
+	return calloc( count, ADRENOMP_PAGE_SIZE );
 }
 
 void *AP_CommitPage(void *addr, int count)
@@ -65,7 +63,7 @@ void *AP_CommitPage(void *addr, int count)
 
 void AP_FreePage(void *addr, int count)
 {
-	AdrenoFree(addr);
+	free( addr );
 }
 #endif
 
