@@ -37,3 +37,34 @@ void VMContext::MakeCurrent()
 {
 	_CurrentVM = this;
 }
+
+Class *VMContext::GetClass(const String &name) const
+{
+	Assembly::ClassMap::const_iterator it = _Classes.find(name);
+
+	if (it == _Classes.end())
+		return nullptr;
+
+	return it->second;
+}
+
+void VMContext::SetClass(const String &name, Class *function)
+{
+	_Classes[name] = function;
+}
+
+Value VMContext::GetGlobal(const String &name)
+{
+	Object::FieldMap::iterator it = _Globals.find(name);
+
+	if (it == _Globals.end())
+		return Value();
+
+	return it->second;
+}
+
+void VMContext::SetGlobal(const String &name, const Value &value)
+{
+	_Globals[name] = value;
+}
+
