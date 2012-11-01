@@ -55,7 +55,7 @@ namespace Adreno
 		struct RelocationEntry
 		{
 			size_t IP;
-			Label *Label;
+			Label *label;
 		};
 
 		std::list<RelocationEntry> _Relocs;

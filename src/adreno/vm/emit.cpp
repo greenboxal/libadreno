@@ -14,6 +14,7 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <adreno/config.h>
 #include <adreno/vm/emit.h>
 #include <assert.h>
 
@@ -45,7 +46,7 @@ void FunctionEmitter::EmitOp(unsigned char op, Label *target, int prefix)
 
 	RelocationEntry re;
 	re.IP = Stream().Tell() + 2;
-	re.Label = target;
+	re.label = target;
 	_Relocs.push_back(re);
 
 	Stream().Write(buff, 0, sizeof(buff));
@@ -84,11 +85,11 @@ void FunctionEmitter::Finish()
 
 	for (it = _Relocs.begin(); it != _Relocs.end(); it++)
 	{
-		assert(it->Label);
-		assert(it->Label->_Owner == this);
-		assert(it->Label->_IP != 0xFFFFFFFF);
+		assert(it->label);
+		assert(it->label->_Owner == this);
+		assert(it->label->_IP != 0xFFFFFFFF);
 		
-		*((std::uint32_t *)(Bytecode() + it->IP)) = it->Label->_IP;
+		*((std::uint32_t *)(Bytecode() + it->IP)) = it->label->_IP;
 	}
 
 	_Relocs.clear();

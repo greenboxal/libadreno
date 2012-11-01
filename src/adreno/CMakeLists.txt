@@ -78,6 +78,11 @@ add_custom_command(
 )
 
 set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "ea/compiler-parser.output")
+
+if (MSVC)
+	add_definitions(-DYY_NO_UNISTD_H)
+endif ()
+
 ### End Adreno EA Parser ###
 
 add_library (adreno
