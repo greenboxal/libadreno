@@ -91,8 +91,14 @@ namespace Adreno
 		_Ty *Alloc()
 		{
 			_Ty *object = (_Ty *)_Impl->Alloc();
-
+			
+#ifdef _MSC_VER
+#pragma warning(disable:4345)
+#endif
 			new (object) _Ty();
+#ifdef _MSC_VER
+#pragma warning(default:4345)
+#endif
 
 			return object;
 		}
