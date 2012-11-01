@@ -66,22 +66,35 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 17 "ea/compiler-parser.y"
+#line 18 "ea/compiler-parser.y"
 
    int ival;
    char* sval;
 
+   EANode* node;
+   EABlock* block;
+   EAStatement* stmt;
+   EAExpression* expr;
+   EALabel* label;
+   EAMenu* menu;
+   EAMenuOptions* menu_opts;
+   EASwitchCases* switch_cases;
+   EASwitchCase* switch_case;
+   EAIfStatement* if_stmt;
+   std::vector<EAExpression*>* expr_list;
+
+
 
 
 /* Line 2068 of yacc.c  */
-#line 78 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.hpp"
+#line 91 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
-extern YYSTYPE yylval;
+
 
 #if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE
@@ -96,5 +109,5 @@ typedef struct YYLTYPE
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
 
-extern YYLTYPE yylloc;
+
 

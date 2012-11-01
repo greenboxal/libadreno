@@ -50,7 +50,7 @@
 #define YYSKELETON_NAME "yacc.c"
 
 /* Pure parsers.  */
-#define YYPURE 0
+#define YYPURE 1
 
 /* Push parsers.  */
 #define YYPUSH 0
@@ -61,27 +61,31 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 1
 
-
+/* Substitute the variable and function names.  */
+#define yyparse         EAParser_parse
+#define yylex           EAParser_lex
+#define yyerror         EAParser_error
+#define yylval          EAParser_lval
+#define yychar          EAParser_char
+#define yydebug         EAParser_debug
+#define yynerrs         EAParser_nerrs
+#define yylloc          EAParser_lloc
 
 /* Copy the first part of user declarations.  */
 
 /* Line 268 of yacc.c  */
-#line 4 "ea/compiler-parser.y"
+#line 9 "ea/compiler-parser.y"
 
    #include <stdio.h>
    #include <stdlib.h>
    #include <iostream>
+   #include <vector>
+   #include "adreno/ea/parser_context.h"
    using namespace std;
-
-   int yylex();
-   extern int yyparse();
-   extern void yyerror( const char* s );
-   extern FILE* yyin;
-   extern int yylineno;
 
 
 /* Line 268 of yacc.c  */
-#line 85 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
+#line 89 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -137,15 +141,28 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 17 "ea/compiler-parser.y"
+#line 18 "ea/compiler-parser.y"
 
    int ival;
    char* sval;
 
+   EANode* node;
+   EABlock* block;
+   EAStatement* stmt;
+   EAExpression* expr;
+   EALabel* label;
+   EAMenu* menu;
+   EAMenuOptions* menu_opts;
+   EASwitchCases* switch_cases;
+   EASwitchCase* switch_case;
+   EAIfStatement* if_stmt;
+   std::vector<EAExpression*>* expr_list;
+
+
 
 
 /* Line 293 of yacc.c  */
-#line 149 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
+#line 166 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -168,9 +185,20 @@ typedef struct YYLTYPE
 
 /* Copy the second part of user declarations.  */
 
+/* Line 343 of yacc.c  */
+#line 36 "ea/compiler-parser.y"
+
+   int EAParser_lex( YYSTYPE* lvalp, YYLTYPE* llocp, void* scanner );
+   void EAParser_error( YYLTYPE* locp, ParserContext* context, const char* err ) {
+      cerr << locp->first_line << ":" << err << endl;
+   }
+
+   #define scanner context->Scanner()
+
+
 
 /* Line 343 of yacc.c  */
-#line 174 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
+#line 202 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
 
 #ifdef short
 # undef short
@@ -485,13 +513,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    33,    33,    36,    37,    40,    41,    44,    45,    46,
-      47,    48,    49,    50,    51,    52,    55,    58,    61,    62,
-      65,    66,    67,    68,    69,    70,    73,    76,    77,    78,
-      79,    80,    81,    84,    85,    86,    87,    88,    91,    92,
-      95,    96,    97,   100,   101,   104,   107,   108,   111,   112,
-     115,   118,   121,   122,   125,   126,   129,   130,   133,   134,
-     137,   140
+       0,    69,    69,    72,    73,    76,    77,    80,    81,    82,
+      83,    84,    85,    86,    87,    88,    91,    94,    97,    98,
+     101,   102,   103,   104,   105,   106,   109,   112,   113,   114,
+     115,   116,   117,   120,   121,   122,   123,   124,   127,   128,
+     131,   132,   133,   136,   137,   140,   143,   144,   147,   148,
+     151,   154,   157,   158,   161,   162,   165,   166,   169,   170,
+     173,   176
 };
 #endif
 
@@ -747,7 +775,7 @@ do								\
     }								\
   else								\
     {								\
-      yyerror (YY_("syntax error: cannot back up")); \
+      yyerror (&yylloc, context, YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (YYID (0))
@@ -802,9 +830,9 @@ while (YYID (0))
 /* YYLEX -- calling `yylex' with the right arguments.  */
 
 #ifdef YYLEX_PARAM
-# define YYLEX yylex (YYLEX_PARAM)
+# define YYLEX yylex (&yylval, &yylloc, YYLEX_PARAM)
 #else
-# define YYLEX yylex ()
+# define YYLEX yylex (&yylval, &yylloc, scanner)
 #endif
 
 /* Enable debugging if requested.  */
@@ -827,7 +855,7 @@ do {									  \
     {									  \
       YYFPRINTF (stderr, "%s ", Title);					  \
       yy_symbol_print (stderr,						  \
-		  Type, Value, Location); \
+		  Type, Value, Location, context); \
       YYFPRINTF (stderr, "\n");						  \
     }									  \
 } while (YYID (0))
@@ -841,19 +869,21 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, ParserContext* context)
 #else
 static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
+yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, context)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     YYLTYPE const * const yylocationp;
+    ParserContext* context;
 #endif
 {
   if (!yyvaluep)
     return;
   YYUSE (yylocationp);
+  YYUSE (context);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
     YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
@@ -875,14 +905,15 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp, ParserContext* context)
 #else
 static void
-yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp)
+yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp, context)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
     YYLTYPE const * const yylocationp;
+    ParserContext* context;
 #endif
 {
   if (yytype < YYNTOKENS)
@@ -892,7 +923,7 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, yylocationp)
 
   YY_LOCATION_PRINT (yyoutput, *yylocationp);
   YYFPRINTF (yyoutput, ": ");
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp, context);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -935,13 +966,14 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule)
+yy_reduce_print (YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule, ParserContext* context)
 #else
 static void
-yy_reduce_print (yyvsp, yylsp, yyrule)
+yy_reduce_print (yyvsp, yylsp, yyrule, context)
     YYSTYPE *yyvsp;
     YYLTYPE *yylsp;
     int yyrule;
+    ParserContext* context;
 #endif
 {
   int yynrhs = yyr2[yyrule];
@@ -955,7 +987,7 @@ yy_reduce_print (yyvsp, yylsp, yyrule)
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       , &(yylsp[(yyi + 1) - (yynrhs)])		       );
+		       , &(yylsp[(yyi + 1) - (yynrhs)])		       , context);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -963,7 +995,7 @@ yy_reduce_print (yyvsp, yylsp, yyrule)
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, yylsp, Rule); \
+    yy_reduce_print (yyvsp, yylsp, Rule, context); \
 } while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1240,18 +1272,20 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, ParserContext* context)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep, yylocationp)
+yydestruct (yymsg, yytype, yyvaluep, yylocationp, context)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
     YYLTYPE *yylocationp;
+    ParserContext* context;
 #endif
 {
   YYUSE (yyvaluep);
   YYUSE (yylocationp);
+  YYUSE (context);
 
   if (!yymsg)
     yymsg = "Deleting";
@@ -1275,24 +1309,11 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (void);
+int yyparse (ParserContext* context);
 #else
 int yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
-
-
-/* The lookahead symbol.  */
-int yychar;
-
-/* The semantic value of the lookahead symbol.  */
-YYSTYPE yylval;
-
-/* Location data for the lookahead symbol.  */
-YYLTYPE yylloc;
-
-/* Number of syntax errors so far.  */
-int yynerrs;
 
 
 /*----------.
@@ -1313,14 +1334,26 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (void)
+yyparse (ParserContext* context)
 #else
 int
-yyparse ()
-
+yyparse (context)
+    ParserContext* context;
 #endif
 #endif
 {
+/* The lookahead symbol.  */
+int yychar;
+
+/* The semantic value of the lookahead symbol.  */
+YYSTYPE yylval;
+
+/* Location data for the lookahead symbol.  */
+YYLTYPE yylloc;
+
+    /* Number of syntax errors so far.  */
+    int yynerrs;
+
     int yystate;
     /* Number of tokens to shift before error messages enabled.  */
     int yyerrstatus;
@@ -1584,10 +1617,395 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
+        case 2:
 
 /* Line 1806 of yacc.c  */
-#line 1591 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
+#line 69 "ea/compiler-parser.y"
+    { (yyval.block) = (yyvsp[(1) - (1)].block); }
+    break;
+
+  case 3:
+
+/* Line 1806 of yacc.c  */
+#line 72 "ea/compiler-parser.y"
+    { (yyval.block) = (yyvsp[(2) - (3)].block); }
+    break;
+
+  case 4:
+
+/* Line 1806 of yacc.c  */
+#line 73 "ea/compiler-parser.y"
+    { (yyval.block) = new EABlock; (yyval.block)->Add( (yyvsp[(1) - (1)].node) ); }
+    break;
+
+  case 5:
+
+/* Line 1806 of yacc.c  */
+#line 76 "ea/compiler-parser.y"
+    { (yyval.block) = new EABlock; (yyval.block)->Add( (yyvsp[(1) - (1)].node) ); }
+    break;
+
+  case 6:
+
+/* Line 1806 of yacc.c  */
+#line 77 "ea/compiler-parser.y"
+    { (yyvsp[(1) - (2)].block)->Add( (yyvsp[(2) - (2)].node) ); }
+    break;
+
+  case 7:
+
+/* Line 1806 of yacc.c  */
+#line 80 "ea/compiler-parser.y"
+    {}
+    break;
+
+  case 8:
+
+/* Line 1806 of yacc.c  */
+#line 81 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (2)].stmt); }
+    break;
+
+  case 9:
+
+/* Line 1806 of yacc.c  */
+#line 82 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (2)].label); }
+    break;
+
+  case 10:
+
+/* Line 1806 of yacc.c  */
+#line 83 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].if_stmt); }
+    break;
+
+  case 11:
+
+/* Line 1806 of yacc.c  */
+#line 84 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (2)].menu); }
+    break;
+
+  case 12:
+
+/* Line 1806 of yacc.c  */
+#line 85 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].stmt); }
+    break;
+
+  case 13:
+
+/* Line 1806 of yacc.c  */
+#line 86 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].stmt); }
+    break;
+
+  case 14:
+
+/* Line 1806 of yacc.c  */
+#line 87 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].stmt); }
+    break;
+
+  case 15:
+
+/* Line 1806 of yacc.c  */
+#line 88 "ea/compiler-parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].stmt); }
+    break;
+
+  case 16:
+
+/* Line 1806 of yacc.c  */
+#line 91 "ea/compiler-parser.y"
+    { (yyval.stmt) = new EAExpressionStatement( (yyvsp[(1) - (1)].expr) ); }
+    break;
+
+  case 17:
+
+/* Line 1806 of yacc.c  */
+#line 94 "ea/compiler-parser.y"
+    { (yyval.label) = new EALabel( new EAString( (yyvsp[(1) - (1)].sval) ) ); }
+    break;
+
+  case 18:
+
+/* Line 1806 of yacc.c  */
+#line 97 "ea/compiler-parser.y"
+    { (yyval.expr_list) = new ExpressionList; (yyval.expr_list)->push_back( (yyvsp[(1) - (1)].expr) ); }
+    break;
+
+  case 19:
+
+/* Line 1806 of yacc.c  */
+#line 98 "ea/compiler-parser.y"
+    { (yyvsp[(1) - (3)].expr_list)->push_back( (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 25:
+
+/* Line 1806 of yacc.c  */
+#line 106 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAIdentifier( (yyvsp[(1) - (1)].sval) ); }
+    break;
+
+  case 26:
+
+/* Line 1806 of yacc.c  */
+#line 109 "ea/compiler-parser.y"
+    { (yyval.expr) = (yyvsp[(2) - (3)].expr); }
+    break;
+
+  case 27:
+
+/* Line 1806 of yacc.c  */
+#line 112 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAExprGT( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 28:
+
+/* Line 1806 of yacc.c  */
+#line 113 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAExprLT( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 29:
+
+/* Line 1806 of yacc.c  */
+#line 114 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAExprEQU( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 30:
+
+/* Line 1806 of yacc.c  */
+#line 115 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAExprNEQ( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 31:
+
+/* Line 1806 of yacc.c  */
+#line 116 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAExprAND( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 32:
+
+/* Line 1806 of yacc.c  */
+#line 117 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAExprOR( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 33:
+
+/* Line 1806 of yacc.c  */
+#line 120 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAOpADD( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 34:
+
+/* Line 1806 of yacc.c  */
+#line 121 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAOpSUB( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 35:
+
+/* Line 1806 of yacc.c  */
+#line 122 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAOpSUB( 0, (yyvsp[(2) - (2)].expr) ); }
+    break;
+
+  case 36:
+
+/* Line 1806 of yacc.c  */
+#line 123 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAOpMUL( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 37:
+
+/* Line 1806 of yacc.c  */
+#line 124 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAOpDIV( (yyvsp[(1) - (3)].expr), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 38:
+
+/* Line 1806 of yacc.c  */
+#line 127 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAString( (yyvsp[(1) - (1)].sval) ); }
+    break;
+
+  case 39:
+
+/* Line 1806 of yacc.c  */
+#line 128 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAInteger( (yyvsp[(1) - (1)].ival) ); }
+    break;
+
+  case 40:
+
+/* Line 1806 of yacc.c  */
+#line 131 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAFunctionCall( new EAIdentifier( (yyvsp[(1) - (3)].sval) ) ); }
+    break;
+
+  case 41:
+
+/* Line 1806 of yacc.c  */
+#line 132 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAFunctionCall( new EAIdentifier( (yyvsp[(1) - (4)].sval) ), (yyvsp[(3) - (4)].expr_list) ); }
+    break;
+
+  case 42:
+
+/* Line 1806 of yacc.c  */
+#line 133 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAFunctionCall( new EAIdentifier( (yyvsp[(1) - (2)].sval) ), (yyvsp[(2) - (2)].expr_list) ); }
+    break;
+
+  case 43:
+
+/* Line 1806 of yacc.c  */
+#line 136 "ea/compiler-parser.y"
+    { (yyval.if_stmt) = new EAIfStatement( (yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].block) ); }
+    break;
+
+  case 44:
+
+/* Line 1806 of yacc.c  */
+#line 137 "ea/compiler-parser.y"
+    { (yyvsp[(1) - (3)].if_stmt)->Else( (yyvsp[(3) - (3)].block) ); }
+    break;
+
+  case 45:
+
+/* Line 1806 of yacc.c  */
+#line 140 "ea/compiler-parser.y"
+    { (yyval.menu) = new EAMenu( (yyvsp[(2) - (2)].menu_opts) ); }
+    break;
+
+  case 46:
+
+/* Line 1806 of yacc.c  */
+#line 143 "ea/compiler-parser.y"
+    { (yyval.menu_opts) = new EAMenuOptions; (yyval.menu_opts)->Add( new EAString( (yyvsp[(1) - (3)].sval) ), (yyvsp[(3) - (3)].expr) ); }
+    break;
+
+  case 47:
+
+/* Line 1806 of yacc.c  */
+#line 144 "ea/compiler-parser.y"
+    { (yyvsp[(1) - (5)].menu_opts)->Add( new EAString( (yyvsp[(3) - (5)].sval) ), (yyvsp[(5) - (5)].expr) ); }
+    break;
+
+  case 48:
+
+/* Line 1806 of yacc.c  */
+#line 147 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAString( (yyvsp[(1) - (1)].sval) ); }
+    break;
+
+  case 49:
+
+/* Line 1806 of yacc.c  */
+#line 148 "ea/compiler-parser.y"
+    { (yyval.expr) = new EANull; }
+    break;
+
+  case 50:
+
+/* Line 1806 of yacc.c  */
+#line 151 "ea/compiler-parser.y"
+    { (yyval.stmt) = new EAForLoop( (yyvsp[(3) - (9)].stmt), (yyvsp[(5) - (9)].expr), (yyvsp[(7) - (9)].stmt), (yyvsp[(9) - (9)].block) ); }
+    break;
+
+  case 51:
+
+/* Line 1806 of yacc.c  */
+#line 154 "ea/compiler-parser.y"
+    { (yyval.stmt) = new EASwitch( (yyvsp[(3) - (7)].expr), (yyvsp[(6) - (7)].switch_cases) ); }
+    break;
+
+  case 52:
+
+/* Line 1806 of yacc.c  */
+#line 157 "ea/compiler-parser.y"
+    { (yyval.switch_cases) = new EASwitchCases; (yyval.switch_cases)->Add( (yyvsp[(1) - (1)].switch_case) ); }
+    break;
+
+  case 53:
+
+/* Line 1806 of yacc.c  */
+#line 158 "ea/compiler-parser.y"
+    { (yyvsp[(1) - (2)].switch_cases)->Add( (yyvsp[(2) - (2)].switch_case) ); }
+    break;
+
+  case 54:
+
+/* Line 1806 of yacc.c  */
+#line 161 "ea/compiler-parser.y"
+    { (yyval.switch_case) = new EASwitchCase( (yyvsp[(1) - (2)].expr_list), (yyvsp[(2) - (2)].block) ); }
+    break;
+
+  case 55:
+
+/* Line 1806 of yacc.c  */
+#line 162 "ea/compiler-parser.y"
+    { (yyval.switch_case) = new EASwitchCase( (yyvsp[(1) - (2)].expr_list), (yyvsp[(2) - (2)].block) ); }
+    break;
+
+  case 56:
+
+/* Line 1806 of yacc.c  */
+#line 165 "ea/compiler-parser.y"
+    { (yyval.expr_list) = new ExpressionList; (yyval.expr_list)->push_back( (yyvsp[(1) - (1)].expr) ); }
+    break;
+
+  case 57:
+
+/* Line 1806 of yacc.c  */
+#line 166 "ea/compiler-parser.y"
+    { (yyvsp[(1) - (2)].expr_list)->push_back( (yyvsp[(2) - (2)].expr) ); }
+    break;
+
+  case 58:
+
+/* Line 1806 of yacc.c  */
+#line 169 "ea/compiler-parser.y"
+    { (yyval.expr) = new EAInteger( (yyvsp[(2) - (3)].ival) ); }
+    break;
+
+  case 59:
+
+/* Line 1806 of yacc.c  */
+#line 170 "ea/compiler-parser.y"
+    { (yyval.expr) = new EANull; }
+    break;
+
+  case 60:
+
+/* Line 1806 of yacc.c  */
+#line 173 "ea/compiler-parser.y"
+    { (yyval.stmt) = new EAWhileLoop( (yyvsp[(3) - (5)].expr), (yyvsp[(5) - (5)].block) ); }
+    break;
+
+  case 61:
+
+/* Line 1806 of yacc.c  */
+#line 176 "ea/compiler-parser.y"
+    { (yyval.stmt) = new EADoWhileLoop( (yyvsp[(3) - (8)].block), (yyvsp[(7) - (8)].expr) ); }
+    break;
+
+
+
+/* Line 1806 of yacc.c  */
+#line 2009 "/home/aaron/dev/libadreno/src/adreno/ea/compiler-parser.tab.cpp"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1638,7 +2056,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (YY_("syntax error"));
+      yyerror (&yylloc, context, YY_("syntax error"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -1665,7 +2083,7 @@ yyerrlab:
                 yymsgp = yymsg;
               }
           }
-        yyerror (yymsgp);
+        yyerror (&yylloc, context, yymsgp);
         if (yysyntax_error_status == 2)
           goto yyexhaustedlab;
       }
@@ -1689,7 +2107,7 @@ yyerrlab:
       else
 	{
 	  yydestruct ("Error: discarding",
-		      yytoken, &yylval, &yylloc);
+		      yytoken, &yylval, &yylloc, context);
 	  yychar = YYEMPTY;
 	}
     }
@@ -1746,7 +2164,7 @@ yyerrlab1:
 
       yyerror_range[1] = *yylsp;
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp, yylsp);
+		  yystos[yystate], yyvsp, yylsp, context);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1786,7 +2204,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (YY_("memory exhausted"));
+  yyerror (&yylloc, context, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -1798,7 +2216,7 @@ yyreturn:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, &yylloc);
+                  yytoken, &yylval, &yylloc, context);
     }
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
@@ -1807,7 +2225,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp, yylsp);
+		  yystos[*yyssp], yyvsp, yylsp, context);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -1825,40 +2243,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 143 "ea/compiler-parser.y"
+#line 179 "ea/compiler-parser.y"
 
-
-void
-usage( const char* cmd )
-{
-   printf( "Usage: %s <filename>\n", cmd );
-   exit( -1 );
-}
-
-int
-main( int argc, char* argv[] )
-{
-   if( argc != 2 ) {
-      usage( argv[ 0 ] );
-   }
-
-   FILE* f = fopen( argv[ 1 ], "r" );
-   if( !f ) {
-      perror( "fopen" );
-      exit( -1 );
-   }
-
-   yyin = f;
-   do {
-      yyparse();
-   } while( !feof( yyin ) );
-
-   return 0;
-}
-
-void yyerror( const char* s ) {
-   printf( "autobot.bs:%d: %s\n", yylineno, s );
-   exit( -1 );
-}
 
 
