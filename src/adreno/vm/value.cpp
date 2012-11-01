@@ -172,29 +172,21 @@ String Value::AsString() const
 	{
 	case ValueType::Number:
 		{
-			static char buffer[32];
-
-			sprintf(buffer, "%d", _Values.number);
-
-			return buffer;
+			return String::Convert(_Values.number);
 		}
 	case ValueType::FloatingNumber:
 		{
-			static char buffer[32];
-
-			sprintf(buffer, "%f", _Values.floatingNumber);
-
-			return buffer;
+			return String::Convert(_Values.floatingNumber);
 		}
 	case ValueType::Boolean:
 		{
-			return _Values.boolean ? String::Static("true") : String::Static("false");
+			return _Values.boolean ? "true" : "false";
 		}
 	case ValueType::Object: return _Values.object->AsString();
 	case ValueType::String: return _Values.stringImpl;
 	}
 
-	return String::Static("undefined");
+	return "undefined";
 }
 
 Reference<Object> Value::AsObject() const

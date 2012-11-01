@@ -17,8 +17,9 @@
 #include <adreno/vm/string.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
-static char *ANDigits = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
+static const char *ANDigits = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
 
 using namespace Adreno;
 
