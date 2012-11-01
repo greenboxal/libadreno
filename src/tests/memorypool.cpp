@@ -42,5 +42,4 @@ TEST(MemoryPoolTest)
 
 	CHECK_EQUAL(1337, t2->Bar);
 	CHECK_EQUAL(242424666, t2->Foo);
-	CHECK_EQUAL("test tes testes", t2->String);
 }

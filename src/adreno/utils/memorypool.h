@@ -90,11 +90,16 @@ namespace Adreno
 
 		_Ty *Alloc()
 		{
-			return (_Ty *)_Impl->Alloc();
+			_Ty *object = (_Ty *)_Impl->Alloc();
+
+			new (object) _Ty();
+
+			return object;
 		}
 
 		void Free(_Ty *obj)
 		{
+			obj->~_Ty();
 			_Impl->Free(obj);
 		}
 
