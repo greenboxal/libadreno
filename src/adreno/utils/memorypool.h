@@ -20,6 +20,7 @@
 #include <adreno/config.h>
 #include <adreno/utils/bitarray.h>
 
+#include <exception>
 #include <stddef.h> // size_t
 #include <limits.h>
 

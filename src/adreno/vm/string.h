@@ -19,6 +19,8 @@
 
 #include <unordered_map>
 #include <adreno/helpers.h>
+#include <string.h>
+#include <string>
 
 namespace Adreno
 {
