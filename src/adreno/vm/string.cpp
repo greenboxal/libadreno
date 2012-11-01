@@ -18,7 +18,87 @@
 #include <string.h>
 #include <ctype.h>
 
+static char *ANDigits = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
+
 using namespace Adreno;
+
+String String::Static(const char *str)
+{
+	return SharedImpl::NewStatic(str, strlen(str));
+}
+
+String String::Static(const char *str, size_t size)
+{
+	return SharedImpl::NewStatic(str, size);
+}
+
+String String::Sealed(size_t hash, size_t ihash)
+{
+	return new SharedImpl(hash, ihash);
+}
+
+String String::Convert(intptr_t value, int base)
+{
+	intptr_t t;
+	char buffer[32];
+	char *p;
+
+	p = buffer;
+
+	if (base < 2 || base > 36)
+		base = 10;
+
+	if (value < 0)
+	{
+		*p++ = '-';
+		value = -value;
+	}
+
+	do
+	{
+		t = value;
+		value /= base;
+		*p++ = ANDigits[t + 35 - value * base];
+	} while (value);
+
+	*p++ = 0;
+
+	return buffer;
+}
+
+String String::Convert(double value)
+{
+	char buffer[80];
+	int m = log10(value);
+	int digit;
+
+	char *p = buffer;
+
+	if (value < 0)
+	{
+		*p++ = '-';
+		value = -value;
+	}
+
+	while (value > .000001)
+	{
+		float weight = pow(10.0, m);
+
+		digit = floor(value / weight);
+		value -= (digit * weight);
+
+		*p++ = '0' + digit;
+
+		if (m == 0)
+			*p++ = '.';
+
+		m--;
+	}
+
+	*p++ = 0;
+
+	return buffer;
+}
 
 String::SharedImpl::SharedImpl(char *str)
 {
@@ -105,21 +185,6 @@ bool String::SharedImpl::Compare(String::SharedImpl *other, int flags) const
 		return Hash() == other->Hash();
 	else
 		return InsensitiveHash() == other->InsensitiveHash();
-}
-
-String String::Static(const char *str)
-{
-	return SharedImpl::NewStatic(str, strlen(str));
-}
-
-String String::Static(const char *str, size_t size)
-{
-	return SharedImpl::NewStatic(str, size);
-}
-
-String String::Sealed(size_t hash, size_t ihash)
-{
-	return new SharedImpl(hash, ihash);
 }
 
 String::SharedImpl *String::SharedImpl::NewStatic(const char *str, size_t size)

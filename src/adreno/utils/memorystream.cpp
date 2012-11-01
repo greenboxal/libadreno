@@ -86,7 +86,7 @@ size_t MemoryStream::Read(void *buffer, size_t offset, size_t size)
 
 bool MemoryStream::Seek(unsigned int origin, size_t offset)
 {
-	unsigned int destOffset = 0;
+	size_t destOffset = 0;
 
 	if (origin == 0)
 		destOffset = offset;
@@ -95,7 +95,7 @@ bool MemoryStream::Seek(unsigned int origin, size_t offset)
 	else if (origin == 2)
 		destOffset = _BufferSize + offset;
 
-	if (destOffset < 0 || destOffset >= _BufferSize)
+	if (destOffset >= _BufferSize)
 		return false;
 
 	_BufferPosition = destOffset;

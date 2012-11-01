@@ -187,11 +187,7 @@ namespace Adreno
 		 
 		virtual String AsString() const
 		{
-			static char buffer[32];
-
-			sprintf(buffer, "%d", _Value);
-
-			return buffer;
+			return String::Convert(_Value);
 		}
 
 #define BASE_OP(name, oper) virtual Value name##Op() { return Value((intptr_t)(oper _Value)); }
@@ -258,11 +254,7 @@ namespace Adreno
 		 
 		virtual String AsString() const
 		{
-			static char buffer[32];
-
-			sprintf(buffer, "%d", _Value);
-
-			return buffer;
+			return String::Convert(_Value);
 		}
 
 #define BASE_OP(name, oper) virtual Value name##Op() { return Value((double)(oper _Value)); }

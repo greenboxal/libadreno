@@ -127,6 +127,8 @@ namespace Adreno
 		static String Static(const char *str);
 		static String Static(const char *str, size_t size);
 		static String Sealed(size_t hash, size_t ihash);
+		static String Convert(intptr_t value, int base = 10);
+		static String Convert(double value);
 
 	private:
 		class SharedImpl

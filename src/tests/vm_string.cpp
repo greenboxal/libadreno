@@ -23,6 +23,7 @@ using namespace Adreno;
 
 TEST(Strings)
 {
+	String::Convert(5677.493554);
 	String str1 = String::Static("test STRING 1");
 	String str2 = String::Static("test string 1");
 		
