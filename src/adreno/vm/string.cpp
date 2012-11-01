@@ -16,6 +16,7 @@
 
 #include <adreno/vm/string.h>
 #include <string.h>
+#include <ctype.h>
 
 using namespace Adreno;
 
