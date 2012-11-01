@@ -17,7 +17,13 @@
 #ifndef ADRENOVALUE_H
 #define ADRENOVALUE_H
 
-#include <cstdint>
+#include <stddef.h>
+
+// TODO: Move somewhere
+#if defined( _MSC_VER ) && !defined( ssize_t )
+typedef SSIZE_T ssize_t;
+#endif
+
 #include <unordered_map>
 #include <adreno/helpers.h>
 #include <adreno/vm/gc.h>
@@ -44,21 +50,21 @@ namespace Adreno
 	public:
 
 		Value();
-		Value(std::int_fast32_t value);
+		explicit Value(ssize_t value);
+		explicit Value(bool value);
 		Value(double value);
-		Value(bool value);
-		Value(const String &string);
+		Value(const String &string); // not explicit for const char* conversion
 		Value(Object *object);
 		~Value();
 		
 		void SetNull();
-		void SetValue(std::int_fast32_t value);
+		void SetValue(ssize_t value);
 		void SetValue(double value);
 		void SetValue(bool value);
 		void SetValue(const String &value);
 		void SetValue(Object *object);
 
-		std::int_fast32_t AsNumber() const;
+		ssize_t AsNumber() const;
 		double AsFloatingNumber() const;
 		bool AsBoolean() const;
 		String AsString() const;
@@ -69,7 +75,7 @@ namespace Adreno
 	private:
 		union
 		{
-			std::int_fast32_t number;
+			ssize_t number;
 			double floatingNumber;
 			bool boolean;
 			Object *object;
