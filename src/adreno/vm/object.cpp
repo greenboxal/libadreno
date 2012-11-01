@@ -31,10 +31,23 @@ Object::~Object()
 	GCState()->Dereference(ReferenceType::Weak);
 }
 
-bool Object::Finalize()
+void Object::Construct(const Arguments &args)
 {
-	Fields().clear();
+	Value field = GetField("__construct");
 
+	if (field.Type() != ValueType::Null)
+		field.AsObject()->Call(args);
+}
+
+bool Object::Destruct()
+{
+	Value field = GetField("__destruct");
+
+	if (field.Type() != ValueType::Null)
+		if (!field.AsObject()->Call().AsBoolean())
+			return false;
+
+	Fields().clear();
 	return true;
 }
 

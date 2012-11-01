@@ -1,6 +1,19 @@
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/Debug/libadreno)
 
 # Config file
+# Thread Local Storage
+check_cxx_source_compiles ("${CMAKE_SOURCE_DIR}/CMake/tests/thread_local.cpp" HAS_THREAD_LOCAL)
+
+if (HAS_THREAD_LOCAL)
+	set (THREAD_LOCAL thread_local)
+else ()
+	if (MSVC)
+		set (THREAD_LOCAL "__declspec(thread)")
+	elseif (CMAKE_COMPILER_IS_GNUCC)
+		set (THREAD_LOCAL "__thread")
+	endif ()
+endif ()
+
 # Memory
 option (USE_MALLOC "Use malloc" ON)
 option (USE_MEMORY_MANAGER "Use builtin memory manager" ON)

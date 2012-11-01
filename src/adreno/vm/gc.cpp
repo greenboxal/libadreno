@@ -14,15 +14,13 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <adreno/vm/vm.h>
 #include <adreno/vm/gc.h>
 #include <adreno/vm/object.h>
 
 using namespace Adreno;
 
-std::queue<GC::FinalizerQueueEntry *> GC::_FinalizerQueue;
-MemoryPool<GC::FinalizerQueueEntry> GC::_FinalizerPool;
-
-void GC::AddToFinalizerQueue(GCObject *object)
+void GarbageCollector::AddToFinalizerQueue(GCObject *object)
 {
 	FinalizerQueueEntry *entry = _FinalizerPool.Alloc();
 	entry->Object = object;
@@ -31,13 +29,13 @@ void GC::AddToFinalizerQueue(GCObject *object)
 	_FinalizerQueue.push(entry);
 }
 
-void GC::SurpressFinalize(GCObject *object)
+void GarbageCollector::SurpressFinalize(GCObject *object)
 {
 	if (object->FinalizerEntry() != nullptr)
 		object->FinalizerEntry()->Valid = false;
 }
 
-void GC::Collect()
+void GarbageCollector::Collect()
 {
 	while (_FinalizerQueue.size() > 0)
 	{
@@ -48,7 +46,7 @@ void GC::Collect()
 
 		if (entry->Valid)
 		{
-			if (entry->Object->Value()->Finalize())
+			if (entry->Object->Value()->Destruct())
 			{
 				delete entry->Object->Value();
 				entry->Object->State(GCObjectState::Collected);
@@ -59,4 +57,59 @@ void GC::Collect()
 
 		_FinalizerPool.Free(entry);
 	}
+}
+
+GCObject::GCObject(Object *owner)
+{
+	Value(owner);
+	State(GCObjectState::Alive);
+	FinalizerEntry(nullptr);
+
+	_Strong = 0;
+	_Weak = 0;
+}
+
+void GCObject::Reference(ReferenceType type)
+{
+	if (type == ReferenceType::Strong)
+	{
+		if (_Strong == 0 && State() == GCObjectState::Dead)
+		{
+			VMContext::CurrentVM()->GC()->SurpressFinalize(this);
+			State(GCObjectState::Alive);
+			FinalizerEntry(nullptr);
+		}
+
+		_Strong++;
+	}
+	else if (type == ReferenceType::Weak)
+	{
+		_Weak++;
+	}
+}
+
+void GCObject::Dereference(ReferenceType type)
+{
+	if (type == ReferenceType::Strong)
+	{
+		_Strong--;
+	}
+	else if (type == ReferenceType::Weak)
+	{
+		_Weak--;
+	}
+
+	TryFinalize();
+}
+
+void GCObject::TryFinalize()
+{
+	if (_Strong == 0 && FinalizerEntry() == nullptr)
+	{
+		State(GCObjectState::Dead);
+		VMContext::CurrentVM()->GC()->AddToFinalizerQueue(this);
+	}
+
+	if (_Strong == 0 && _Weak == 0)
+		delete this;
 }

@@ -14,24 +14,26 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <UnitTest++.h>
 #include <adreno/vm/vm.h>
-#include <adreno/vm/object.h>
-#include <string>
 
 using namespace Adreno;
 
-TEST(Objects)
+THREAD_LOCAL VMContext *VMContext::_CurrentVM;
+
+VMContext::VMContext()
 {
-	VMContext Context;
-	Context.MakeCurrent();
+	GC(new GarbageCollector());
+}
 
-	Reference<Object> obj1 = Object::New();
+VMContext::~VMContext()
+{
+	if (_CurrentVM == this)
+		_CurrentVM = nullptr;
 
-	obj1->SetField("op_Call", FunctionObject::New([&](const Arguments &args)
-	{
-		return args[0];
-	}).Value());
+	delete GC();
+}
 
-	CHECK_EQUAL(1337, obj1->Call(Arguments(1337)).AsNumber());
+void VMContext::MakeCurrent()
+{
+	_CurrentVM = this;
 }

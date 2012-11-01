@@ -68,6 +68,17 @@ String::SharedImpl::SharedImpl(SharedImpl *s1, SharedImpl *s2)
 	MakeHashes();
 }
 
+String::SharedImpl::SharedImpl(size_t hash, size_t ihash)
+{
+	Hash(hash);
+	InsensitiveHash(ihash);
+	Data(nullptr);
+	Size(0);
+
+	_ReferenceCount = 0;
+	_IsStatic = true;
+}
+
 String::SharedImpl::~SharedImpl()
 {
 	if (!_IsStatic)
@@ -103,6 +114,11 @@ String String::Static(const char *str)
 String String::Static(const char *str, size_t size)
 {
 	return SharedImpl::NewStatic(str, size);
+}
+
+String String::Sealed(size_t hash, size_t ihash)
+{
+	return new SharedImpl(hash, ihash);
 }
 
 String::SharedImpl *String::SharedImpl::NewStatic(const char *str, size_t size)

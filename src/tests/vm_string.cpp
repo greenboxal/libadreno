@@ -15,6 +15,7 @@
 */
 
 #include <UnitTest++.h>
+#include <adreno/vm/vm.h>
 #include <adreno/vm/string.h>
 #include <string>
 

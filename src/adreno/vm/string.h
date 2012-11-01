@@ -121,6 +121,7 @@ namespace Adreno
 
 		static String Static(const char *str);
 		static String Static(const char *str, size_t size);
+		static String Sealed(size_t hash, size_t ihash);
 
 	private:
 		class SharedImpl
@@ -130,6 +131,7 @@ namespace Adreno
 			SharedImpl(char *str, size_t size);
 			SharedImpl(const std::string &str);
 			SharedImpl(SharedImpl *s1, SharedImpl *s2);
+			SharedImpl(size_t hash, size_t ihash);
 			~SharedImpl();
 
 			void IncRef();
@@ -180,7 +182,7 @@ namespace std
 	template<>
 	struct equal_to<Adreno::String>
 	{
-		bool operator()(const Adreno::String &s1, const Adreno::String &s2)
+		bool operator()(const Adreno::String &s1, const Adreno::String &s2) const
 		{
 			return s1.Compare(s2, Adreno::StringCompare::CaseSensitive);
 		}

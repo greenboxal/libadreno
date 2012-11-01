@@ -37,12 +37,12 @@ namespace Adreno
 	};
 	
 	class GCObject;
-	class GC
+	class GarbageCollector
 	{
 	public:
-		static void AddToFinalizerQueue(GCObject *object);
-		static void SurpressFinalize(GCObject *object);
-		static void Collect();
+		void AddToFinalizerQueue(GCObject *object);
+		void SurpressFinalize(GCObject *object);
+		void Collect();
 
 	private:
 		struct FinalizerQueueEntry
@@ -51,8 +51,8 @@ namespace Adreno
 			bool Valid;
 		};
 
-		static std::queue<FinalizerQueueEntry *> _FinalizerQueue;
-		static MemoryPool<FinalizerQueueEntry> _FinalizerPool;
+		std::queue<FinalizerQueueEntry *> _FinalizerQueue;
+		MemoryPool<FinalizerQueueEntry> _FinalizerPool;
 
 		friend class GCObject;
 	};
@@ -61,48 +61,10 @@ namespace Adreno
 	class GCObject
 	{
 	public:
-		GCObject(Object *owner)
-		{
-			Value(owner);
-			State(GCObjectState::Alive);
-			FinalizerEntry(nullptr);
+		GCObject(Object *owner);
 
-			_Strong = 0;
-			_Weak = 0;
-		}
-
-		void Reference(ReferenceType type = ReferenceType::Strong)
-		{
-			if (type == ReferenceType::Strong)
-			{
-				if (_Strong == 0 && State() == GCObjectState::Dead)
-				{
-					GC::SurpressFinalize(this);
-					State(GCObjectState::Alive);
-					FinalizerEntry(nullptr);
-				}
-
-				_Strong++;
-			}
-			else if (type == ReferenceType::Weak)
-			{
-				_Weak++;
-			}
-		}
-
-		void Dereference(ReferenceType type = ReferenceType::Strong)
-		{
-			if (type == ReferenceType::Strong)
-			{
-				_Strong--;
-			}
-			else if (type == ReferenceType::Weak)
-			{
-				_Weak--;
-			}
-
-			TryFinalize();
-		}
+		void Reference(ReferenceType type = ReferenceType::Strong);
+		void Dereference(ReferenceType type = ReferenceType::Strong);
 
 		size_t Strong() const
 		{
@@ -118,23 +80,13 @@ namespace Adreno
 		DEFPROP_RO_P(public, Object, Value);
 
 	private:
-		DEFPROP_RO_P(private, GC::FinalizerQueueEntry, FinalizerEntry);
+		DEFPROP_RO_P(private, GarbageCollector::FinalizerQueueEntry, FinalizerEntry);
 
-		void TryFinalize()
-		{
-			if (_Strong == 0 && FinalizerEntry() == nullptr)
-			{
-				State(GCObjectState::Dead);
-				GC::AddToFinalizerQueue(this);
-			}
-
-			if (_Strong == 0 && _Weak == 0)
-				delete this;
-		}
+		void TryFinalize();
 
 		size_t _Weak, _Strong;
 		
-		friend class GC;
+		friend class GarbageCollector;
 	};
 
 	template<typename _Ty = Object>

@@ -4,6 +4,9 @@ project (Adreno)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 include (cotire)
 
+include (CheckCXXSourceCompiles)
+include (CheckCSourceCompiles)
+
 # Set a default build type if none was specified
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message (STATUS "Setting build type to 'Debug' as none was specified.")

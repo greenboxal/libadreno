@@ -73,12 +73,13 @@ namespace Adreno
 	class Object
 	{
 	public:
-		typedef std::unordered_map<String, Value > FieldMap;
+		typedef std::unordered_map<String, Value, String::InsensitiveHasher, String::InsensitiveComparer> FieldMap;
 
 		Object();
 		virtual ~Object();
 
-		virtual bool Finalize();
+		virtual void Construct(const Arguments &args = Arguments());
+		virtual bool Destruct();
 
 		virtual Value AddOp(const Value &value);
 		virtual Value SubOp(const Value &value);
@@ -127,7 +128,7 @@ namespace Adreno
 			return "[object]";
 		}
 
-		virtual Value Call(const Arguments &args);
+		virtual Value Call(const Arguments &args = Arguments());
 		
 #undef DummyOp2
 #undef DummyOp
@@ -150,7 +151,7 @@ namespace Adreno
 			_Function = function;
 		}
 
-		virtual Value Call(const Arguments &args)
+		virtual Value Call(const Arguments &args = Arguments())
 		{
 			return _Function(args);
 		}

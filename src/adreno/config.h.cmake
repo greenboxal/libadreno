@@ -17,6 +17,10 @@
 #ifndef ADRENOCONFIG_H
 #define ADRENOCONFIG_H
 
+// Thread Local Storage Compiler Support
+#cmakedefine HAS_THREAD_LOCAL
+#cmakedefine THREAD_LOCAL @THREAD_LOCAL@
+
 // Memory
 #cmakedefine USE_MALLOC
 #cmakedefine USE_MEMORY_MANAGER

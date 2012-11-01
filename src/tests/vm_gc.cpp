@@ -15,6 +15,7 @@
 */
 
 #include <UnitTest++.h>
+#include <adreno/vm/vm.h>
 #include <adreno/vm/object.h>
 #include <string>
 
@@ -24,6 +25,9 @@ SUITE(GC)
 {
 	TEST(Reference)
 	{
+		VMContext Context;
+		Context.MakeCurrent();
+
 		Object *obj = new Object();
 		GCObject *gcobj = obj->GCState();
 		CHECK_EQUAL(1, gcobj->Weak());
@@ -64,7 +68,7 @@ SUITE(GC)
 			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
-			GC::Collect();
+			Context.GC()->Collect();
 	
 			CHECK_EQUAL(true, weak1.IsGone());
 			CHECK(gcobj->State() == GCObjectState::Collected);
@@ -85,12 +89,12 @@ SUITE(GC)
 
 		}
 
-		virtual bool Finalize()
+		virtual bool Destruct()
 		{
 			_PersistenceCounter++;
 
 			if (_PersistenceCounter > 4)
-				return Object::Finalize();
+				return Object::Destruct();
 
 			return false;
 		}
@@ -101,6 +105,9 @@ SUITE(GC)
 
 	TEST(Persistency)
 	{
+		VMContext Context;
+		Context.MakeCurrent();
+
 		Object *obj = new PersistentObject();
 		GCObject *gcobj = obj->GCState();
 		CHECK_EQUAL(1, gcobj->Weak());
@@ -143,7 +150,7 @@ SUITE(GC)
 
 			for (int i = 0; i < 4; i++)
 			{
-				GC::Collect();
+				Context.GC()->Collect();
 
 				CHECK_EQUAL(0, gcobj->Strong());
 				CHECK(gcobj->State() == GCObjectState::Dead);
@@ -160,7 +167,7 @@ SUITE(GC)
 				CHECK_EQUAL(false, weak1.IsGone());
 			}
 			
-			GC::Collect();
+			Context.GC()->Collect();
 	
 			CHECK_EQUAL(true, weak1.IsGone());
 			CHECK(gcobj->State() == GCObjectState::Collected);

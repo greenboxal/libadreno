@@ -14,24 +14,47 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <UnitTest++.h>
-#include <adreno/vm/vm.h>
+#ifndef ADRENOVM_H
+#define ADRENOVM_H
+
+#include <adreno/helpers.h>
+#include <adreno/vm/gc.h>
+#include <adreno/vm/value.h>
 #include <adreno/vm/object.h>
-#include <string>
 
-using namespace Adreno;
-
-TEST(Objects)
+namespace Adreno
 {
-	VMContext Context;
-	Context.MakeCurrent();
-
-	Reference<Object> obj1 = Object::New();
-
-	obj1->SetField("op_Call", FunctionObject::New([&](const Arguments &args)
+	class ExecutionContext;
+	class VMContext
 	{
-		return args[0];
-	}).Value());
+	public:
+		static VMContext *CurrentVM()
+		{
+			return _CurrentVM;
+		}
 
-	CHECK_EQUAL(1337, obj1->Call(Arguments(1337)).AsNumber());
+		VMContext();
+		~VMContext();
+
+		void MakeCurrent();
+
+		ExecutionContext *CreateExecutionContext();
+
+		Value GetGlobal(const String &name);
+		void SetGlobal(const String &name, const Value &value);
+
+		DEFPROP_RO_P(public, GarbageCollector, GC);
+
+	private:
+		Object::FieldMap _Globals;
+
+		static THREAD_LOCAL VMContext *_CurrentVM;
+	};
+
+	class ExecutionContext
+	{
+	public:
+	};
 }
+
+#endif
