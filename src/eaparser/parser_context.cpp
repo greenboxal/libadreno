@@ -1,4 +1,4 @@
-#include "adreno/ea/parser_context.h"
+#include "eaparser/parser_context.h"
 
 using namespace std;
 

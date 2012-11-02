@@ -1,4 +1,4 @@
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/Debug/libadreno)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/libadreno)
 
 # Config file
 # Thread Local Storage
@@ -51,49 +51,18 @@ file (GLOB CRYPT_HDRS crypt/*.h)
 file (GLOB UTILS_HDRS utils/*.h)
 file (GLOB VM_HDRS vm/*.h)
 
-### Adreno EA Parser ###
-file (GLOB EA_SRCS ea/*.c ea/*.cpp)
-file (GLOB EA_HDRS ea/*.h)
-set (EA_SRCS ${EA_SRCS} ea/compiler-parser.tab.cpp ea/compiler-tokens.cpp)
-set (EA_HDRS ${EA_HDRS} ea/compiler-parser.tab.hpp)
-
-add_custom_command(
-	OUTPUT ea/compiler-parser.tab.cpp
-	COMMAND ${BISON_EXECUTABLE}
-	ARGS -v -d -o ${PROJECT_SOURCE_DIR}/src/adreno/ea/compiler-parser.tab.cpp ea/compiler-parser.y
-	DEPENDS ea/compiler-parser.y
-)
-
-add_custom_command(
-	OUTPUT ea/compiler-parser.tab.hpp
-	COMMAND ${CMAKE_COMMAND} -E touch ea/compiler-parser.tab.hpp
-	DEPENDS ea/compiler-parser.y
-)
-
-add_custom_command(
-	OUTPUT ea/compiler-tokens.cpp
-	COMMAND ${FLEX_EXECUTABLE} 
-	ARGS -o ${PROJECT_SOURCE_DIR}/src/adreno/ea/compiler-tokens.cpp ea/compiler-tokens.l
-	DEPENDS ea/compiler-tokens.l
-)
-
-set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "ea/compiler-parser.output")
-### End Adreno EA Parser ###
-
 add_library (adreno
     ${BASE_SRCS}
     ${AIL_SRCS}
     ${CRYPT_SRCS}
     ${UTILS_SRCS}
     ${VM_SRCS}
-    ${EA_SRCS}
 
     ${BASE_HDRS}
     ${AIL_HDRS}
     ${CRYPT_HDRS}
     ${UTILS_HDRS}
     ${VM_HDRS}
-    ${EA_HDRS}
 )
 set_target_properties (adreno PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE)
 # cotire (adreno)
@@ -103,4 +72,3 @@ source_group ("adreno\\ail" FILES ${AIL_SRCS} ${AIL_HDRS})
 source_group ("adreno\\crypt" FILES ${CRYPT_SRCS} ${CRYPT_HDRS})
 source_group ("adreno\\utils" FILES ${UTILS_SRCS} ${UTILS_HDRS})
 source_group ("adreno\\vm" FILES ${VM_SRCS} ${VM_HDRS})
-source_group ("adreno\\ea" FILES ${EA_SRCS} ${EA_HDRS})

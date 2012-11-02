@@ -1,5 +1,5 @@
-#include "adreno/ea/compiler.h"
-#include "adreno/ea/parser_context.h"
+#include "eaparser/compiler.h"
+#include "eaparser/parser_context.h"
 
 using namespace std;
 
