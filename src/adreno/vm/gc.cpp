@@ -46,10 +46,17 @@ void GarbageCollector::Collect()
 
 		if (entry->Valid)
 		{
+			int prev = entry->Object->State();
+			entry->Object->State(GCObjectState::Destructing);
+
 			if (entry->Object->Value()->Destruct())
 			{
 				delete entry->Object->Value();
 				entry->Object->State(GCObjectState::Collected);
+			}
+			else
+			{
+				entry->Object->State(prev);
 			}
 		}
 
@@ -104,7 +111,7 @@ void GCObject::Dereference(int type)
 
 void GCObject::TryFinalize()
 {
-	if (_Strong == 0 && FinalizerEntry() == nullptr)
+	if (_Strong == 0 && FinalizerEntry() == nullptr && State() == GCObjectState::Alive)
 	{
 		State(GCObjectState::Dead);
 		VMContext::CurrentVM()->GC()->AddToFinalizerQueue(this);

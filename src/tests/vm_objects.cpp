@@ -30,7 +30,7 @@ TEST(Objects)
 
 	obj1->SetField("op_Call", FunctionObject::New([&](const Arguments &args)
 	{
-		return args[0];
+		return args[1];
 	}).Value());
 
 	CHECK_EQUAL(1337, obj1->Call(Arguments(1337)).AsNumber());

@@ -29,6 +29,7 @@ namespace Adreno
 		{
 		Alive,
 		Dead,
+		Destructing,
 		Collected,
 		};
 	}
