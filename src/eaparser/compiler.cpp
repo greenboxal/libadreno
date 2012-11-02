@@ -7,5 +7,11 @@ bool
 AdrenoEACompiler::Compile( istream& in, ostream& out )
 {
 	ParserContext ctx( in );
-	return false;
+	if( !EAParser_parse( &ctx ) ) {
+		return false;
+	}
+
+	out << "HOORAY";
+
+	return true;
 }

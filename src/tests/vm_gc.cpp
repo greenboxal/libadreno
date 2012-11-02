@@ -30,41 +30,41 @@ SUITE(GC)
 
 		Object *obj = new Object();
 		GCObject *gcobj = obj->GCState();
-		CHECK_EQUAL(1, gcobj->Weak());
+		CHECK_EQUAL(1U, gcobj->Weak());
 
 		{
 			WeakReference<Object> weak1(obj);
-			CHECK_EQUAL(2, gcobj->Weak());
+			CHECK_EQUAL(2U, gcobj->Weak());
 
 			{
 				Reference<Object> ref1(obj);
-				CHECK_EQUAL(1, gcobj->Strong());
+				CHECK_EQUAL(1U, gcobj->Strong());
 
 				{
 					Reference<Object> ref2(obj);
-					CHECK_EQUAL(2, gcobj->Strong());
+					CHECK_EQUAL(2U, gcobj->Strong());
 				}
 
-				CHECK_EQUAL(1, gcobj->Strong());
+				CHECK_EQUAL(1U, gcobj->Strong());
 			}
 
 			{
 				WeakReference<Object> weak2(obj);
-				CHECK_EQUAL(3, gcobj->Weak());
+				CHECK_EQUAL(3U, gcobj->Weak());
 			}
-			CHECK_EQUAL(2, gcobj->Weak());
+			CHECK_EQUAL(2U, gcobj->Weak());
 	
-			CHECK_EQUAL(0, gcobj->Strong());
+			CHECK_EQUAL(0U, gcobj->Strong());
 			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
 			{
 				Reference<Object> ref = weak1.Get();
-				CHECK_EQUAL(1, gcobj->Strong());
+				CHECK_EQUAL(1U, gcobj->Strong());
 				CHECK(gcobj->State() == GCObjectState::Alive);
 			}
 	
-			CHECK_EQUAL(0, gcobj->Strong());
+			CHECK_EQUAL(0U, gcobj->Strong());
 			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
@@ -110,41 +110,41 @@ SUITE(GC)
 
 		Object *obj = new PersistentObject();
 		GCObject *gcobj = obj->GCState();
-		CHECK_EQUAL(1, gcobj->Weak());
+		CHECK_EQUAL(1U, gcobj->Weak());
 
 		{
 			WeakReference<Object> weak1(obj);
-			CHECK_EQUAL(2, gcobj->Weak());
+			CHECK_EQUAL(2U, gcobj->Weak());
 
 			{
 				Reference<Object> ref1(obj);
-				CHECK_EQUAL(1, gcobj->Strong());
+				CHECK_EQUAL(1U, gcobj->Strong());
 
 				{
 					Reference<Object> ref2(obj);
-					CHECK_EQUAL(2, gcobj->Strong());
+					CHECK_EQUAL(2U, gcobj->Strong());
 				}
 
-				CHECK_EQUAL(1, gcobj->Strong());
+				CHECK_EQUAL(1U, gcobj->Strong());
 			}
 
 			{
 				WeakReference<Object> weak2(obj);
-				CHECK_EQUAL(3, gcobj->Weak());
+				CHECK_EQUAL(3U, gcobj->Weak());
 			}
-			CHECK_EQUAL(2, gcobj->Weak());
+			CHECK_EQUAL(2U, gcobj->Weak());
 	
-			CHECK_EQUAL(0, gcobj->Strong());
+			CHECK_EQUAL(0U, gcobj->Strong());
 			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
 			{
 				Reference<Object> ref = weak1.Get();
-				CHECK_EQUAL(1, gcobj->Strong());
+				CHECK_EQUAL(1U, gcobj->Strong());
 				CHECK(gcobj->State() == GCObjectState::Alive);
 			}
 	
-			CHECK_EQUAL(0, gcobj->Strong());
+			CHECK_EQUAL(0U, gcobj->Strong());
 			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
@@ -152,17 +152,17 @@ SUITE(GC)
 			{
 				Context.GC()->Collect();
 
-				CHECK_EQUAL(0, gcobj->Strong());
+				CHECK_EQUAL(0U, gcobj->Strong());
 				CHECK(gcobj->State() == GCObjectState::Dead);
 				CHECK_EQUAL(false, weak1.IsGone());
 
 				{
 					Reference<Object> ref = weak1.Get();
-					CHECK_EQUAL(1, gcobj->Strong());
+					CHECK_EQUAL(1U, gcobj->Strong());
 					CHECK(gcobj->State() == GCObjectState::Alive);
 				}
 	
-				CHECK_EQUAL(0, gcobj->Strong());
+				CHECK_EQUAL(0U, gcobj->Strong());
 				CHECK(gcobj->State() == GCObjectState::Dead);
 				CHECK_EQUAL(false, weak1.IsGone());
 			}

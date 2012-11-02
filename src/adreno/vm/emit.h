@@ -17,6 +17,7 @@
 #ifndef ADRENOEMIT_H
 #define ADRENOEMIT_H
 
+#include <cstdint>
 #include <unordered_map>
 #include <adreno/helpers.h>
 #include <adreno/vm/vm.h>
@@ -55,7 +56,7 @@ namespace Adreno
 		struct RelocationEntry
 		{
 			size_t IP;
-			Label *Label;
+			Label *label;
 		};
 
 		std::list<RelocationEntry> _Relocs;

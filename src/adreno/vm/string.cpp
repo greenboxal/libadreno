@@ -33,7 +33,7 @@ String String::Static(const char *str, size_t size)
 	return SharedImpl::NewStatic(str, size);
 }
 
-String String::Sealed(size_t hash, size_t ihash)
+String String::Sealed(uint32_t hash, uint32_t ihash)
 {
 	return new SharedImpl(hash, ihash);
 }
@@ -150,7 +150,7 @@ String::SharedImpl::SharedImpl(SharedImpl *s1, SharedImpl *s2)
 	MakeHashes();
 }
 
-String::SharedImpl::SharedImpl(std::uint32_t hash, std::uint32_t ihash)
+String::SharedImpl::SharedImpl(uint32_t hash, uint32_t ihash)
 {
 	Hash(hash);
 	InsensitiveHash(ihash);
