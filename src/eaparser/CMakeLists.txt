@@ -6,8 +6,6 @@ file (GLOB EA_HDRS *.h)
 set (EA_SRCS ${EA_SRCS} ${PROJECT_SOURCE_DIR}/src/eaparser/compiler-parser.tab.cpp ${PROJECT_SOURCE_DIR}/src/eaparser/compiler-tokens.cpp)
 set (EA_HDRS ${EA_HDRS} ${PROJECT_SOURCE_DIR}/src/eaparser/compiler-parser.tab.hpp)
 
-add_custom_target (EAParser echo "Generating eAScript parser")
-
 add_custom_command(
 	OUTPUT ${PROJECT_SOURCE_DIR}/src/eaparser/compiler-tokens.cpp
 	COMMAND ${FLEX_EXECUTABLE} 
