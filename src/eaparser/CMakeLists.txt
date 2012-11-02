@@ -31,7 +31,7 @@ if (MSVC)
 endif ()
 
 add_library (eacompiler ${EA_SRCS} ${EA_HDRS})
-target_link_libraries (eacompiler)
+target_link_libraries (eacompiler adreno)
 # cotire (eacompiler)
 
 source_group ("eaparser" FILES ${EA_SRCS} ${EA_HDRS})
