@@ -1,8 +1,8 @@
 #include <UnitTest++.h>
 #include <fstream>
 
-/*
-#include "adreno/ea/compiler.h"
+
+#include "eaparser/compiler.h"
 
 using namespace std;
 
@@ -26,4 +26,3 @@ TEST( CompileSimpleFunctionCall )
 }
 
 }
-*/

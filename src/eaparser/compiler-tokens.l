@@ -4,6 +4,7 @@
 %option bison-locations
 %option noyywrap
 %option yylineno
+%option never-interactive
 
 %{
    #include "eaparser/parser_context.h"
