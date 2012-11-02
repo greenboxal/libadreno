@@ -36,15 +36,16 @@ void Object::Construct(const Arguments &args)
 	Value field = GetField("__construct");
 
 	if (field.Type() != ValueType::Null)
-		field.AsObject()->Call(args);
+		field.AsObject()->Call(Arguments(this, args));
 }
 
 bool Object::Destruct()
 {
 	Value field = GetField("__destruct");
+	Value tmp = this;
 
 	if (field.Type() != ValueType::Null)
-		if (!field.AsObject()->Call().AsBoolean())
+		if (!field.AsObject()->Call(Arguments(&tmp, 1)).AsBoolean())
 			return false;
 
 	Fields().clear();
@@ -84,17 +85,17 @@ Value Object::name##Op(const Value &value) \
 	Value field = GetField("op_"#name); \
 	if (field.Type() != ValueType::Null) \
 	{\
-		std::vector<Value> args(2); \
-		args[0] = this; \
-		args[1] = value; \
-		return field.AsObject()->Call(args); \
+		Value tmp[2]; \
+		tmp[0] = this; \
+		tmp[1] = value; \
+		return field.AsObject()->Call(Arguments(tmp, 2)); \
 	} \
 	return Value(); \
 }
 
 DEF_OP2(Add)
 DEF_OP2(Sub)
-DEF_OP2(Mult)
+DEF_OP2(Mul)
 DEF_OP2(Div)
 DEF_OP2(Rem)
 DEF_OP(Neg)
@@ -117,14 +118,31 @@ DEF_OP2(GreaterEq)
 DEF_OP2(Lesser)
 DEF_OP2(LesserEq)
 
-Value Object::Indexer(const Value &index)
+Value Object::Ldelem(const Value &index)
 {
-	Value field = GetField("op_Indexer");
+	Value field = GetField("op_Ldelem");
+
+	Value tmp[2];
+	tmp[0] = this;
+	tmp[1] = index;
 
 	if (field.Type() != ValueType::Null)
-		return field.AsObject()->Call(Arguments(&index, 1));
+		return field.AsObject()->Call(Arguments(tmp, 2));
 
 	return Value();
+}
+
+void Object::Stelem(const Value &index, const Value &value)
+{
+	Value field = GetField("op_Stelem");
+	
+	Value tmp[3];
+	tmp[0] = this;
+	tmp[1] = index;
+	tmp[2] = value;
+
+	if (field.Type() != ValueType::Null)
+		field.AsObject()->Call(Arguments(tmp, 3));
 }
 
 Value Object::Call(const Arguments &args)
@@ -132,13 +150,13 @@ Value Object::Call(const Arguments &args)
 	Value field = GetField("op_Call");
 
 	if (field.Type() != ValueType::Null)
-		return field.AsObject()->Call(args);
+		return field.AsObject()->Call(Arguments(this, args));
 
 	return Value();
 }
 
-#undef DEF_OP
 #undef DEF_OP2
+#undef DEF_OP
 
 Reference<Object> Object::New()
 {

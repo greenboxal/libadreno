@@ -44,9 +44,9 @@ namespace Adreno
 		}
 
 		void EmitOp(unsigned char op, unsigned char prefix = 0);
-		void EmitOp(unsigned char op, Label *target, int prefix = 0);
-		void EmitOp(unsigned char op, std::uint32_t p1, int prefix = 0);
-		void EmitOp(unsigned char op, std::uint32_t p1, std::uint32_t p2, int prefix = 0);
+		void EmitOp(unsigned char op, Label *target, unsigned char prefix = 0);
+		void EmitOp(unsigned char op, std::uint32_t p1, unsigned char prefix = 0);
+		void EmitOp(unsigned char op, double p1, unsigned char prefix = 0);
 
 		void Finish();
 

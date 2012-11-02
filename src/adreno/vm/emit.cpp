@@ -29,50 +29,124 @@ Label *FunctionEmitter::CreateLabel()
 void FunctionEmitter::EmitOp(unsigned char op, unsigned char prefix)
 {
 	char buff[2];
+	int extra = 0;
 
-	buff[0] = prefix;
-	buff[1] = op;
+	if ((op & Opcode::Mask) == 0)
+		return;
 
-	Stream().Write(buff, 0, sizeof(buff));
+	if (prefix == Prefix::Extra)
+		prefix = 0;
+
+	if (prefix && (prefix & Prefix::Mask) == 0)
+	{
+		op |= Prefix::Extra;
+		extra = 1;
+	}
+	else if (prefix)
+	{
+		op |= prefix;
+	}
+
+	buff[0] = op;
+	if (extra == 1)
+		buff[1] = prefix;
+
+	Stream().Write(buff, 0, 1 + extra);
 }
 
-void FunctionEmitter::EmitOp(unsigned char op, Label *target, int prefix)
+void FunctionEmitter::EmitOp(unsigned char op, Label *target, unsigned char prefix)
 {
 	char buff[6];
+	int extra = 0;
 
-	buff[0] = prefix;
-	buff[1] = op;
-	*((std::uint32_t *)&buff[2]) = 0;
+	if ((op & Opcode::Mask) == 0)
+		return;
+
+	if (prefix == Prefix::Extra)
+		prefix = 0;
+
+	if (prefix && (prefix & Prefix::Mask) == 0)
+	{
+		op |= Prefix::Extra;
+		extra = 1;
+	}
+	else if (prefix)
+	{
+		op |= prefix;
+	}
+
+	buff[0] = op;
+	if (extra == 1)
+		buff[1] = prefix;
+
+	*((std::uint32_t *)&buff[1 + extra]) = 0;
 
 	RelocationEntry re;
-	re.IP = Stream().Tell() + 2;
+	re.IP = Stream().Tell() + 1 + extra;
 	re.label = target;
 	_Relocs.push_back(re);
 
-	Stream().Write(buff, 0, sizeof(buff));
+	Stream().Write(buff, 0, 5 + extra);
 }
 
-void FunctionEmitter::EmitOp(unsigned char op, std::uint32_t p1, int prefix)
+void FunctionEmitter::EmitOp(unsigned char op, std::uint32_t p1, unsigned char prefix)
 {
-	char buff[6];
+	char buff[2 + sizeof(std::uint32_t)];
+	int extra = 0;
 
-	buff[0] = prefix;
-	buff[1] = op;
-	*((std::uint32_t *)&buff[2]) = p1;
+	if ((op & Opcode::Mask) == 0)
+		return;
 
-	Stream().Write(buff, 0, sizeof(buff));
+	if (prefix == Prefix::Extra)
+		prefix = 0;
+
+	if (prefix && (prefix & Prefix::Mask) == 0)
+	{
+		op |= Prefix::Extra;
+		extra = 1;
+	}
+	else if (prefix)
+	{
+		op |= prefix;
+	}
+
+	buff[0] = op;
+	if (extra == 1)
+		buff[1] = prefix;
+
+	*((std::uint32_t *)&buff[1 + extra]) = p1;
+
+	Stream().Write(buff, 0, 1 + sizeof(std::uint32_t) + extra);
 }
 
-void FunctionEmitter::EmitOp(unsigned char op, std::uint32_t p1, std::uint32_t p2, int prefix)
+void FunctionEmitter::EmitOp(unsigned char op, double p1, unsigned char prefix)
 {
-	char buff[10];
+	char buff[2 + sizeof(double)];
+	int extra = 0;
 
-	buff[0] = prefix;
-	buff[1] = op;
-	*((std::uint32_t *)&buff[2]) = p1;
-	*((std::uint32_t *)&buff[6]) = p2;
+	if ((op & Opcode::Mask) == 0)
+		return;
 
-	Stream().Write(buff, 0, sizeof(buff));
+	if (prefix == Prefix::Extra)
+		prefix = 0;
+
+	if (prefix && (prefix & Prefix::Mask) == 0)
+	{
+		op |= Prefix::Extra;
+		extra = 1;
+	}
+	else if (prefix)
+	{
+		op |= prefix;
+	}
+
+	buff[0] = op;
+	if (extra == 1)
+		buff[1] = prefix;
+
+	*((std::uint32_t *)&buff[1 + extra]) = p1;
+
+	Stream().Write(buff, 0, 1 + sizeof(double) + extra);
 }
 
 void FunctionEmitter::Finish()

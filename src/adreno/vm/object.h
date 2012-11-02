@@ -53,6 +53,12 @@ namespace Adreno
 		{
 		}
 
+		Arguments(const Value &first, const Arguments &other)
+		{
+			_Args.push_back(first);
+			_Args.insert(_Args.end(), other._Args.begin(), other._Args.end());
+		}
+
 		size_t Count() const
 		{
 			return _Args.size();
@@ -83,7 +89,7 @@ namespace Adreno
 
 		virtual Value AddOp(const Value &value);
 		virtual Value SubOp(const Value &value);
-		virtual Value MultOp(const Value &value);
+		virtual Value MulOp(const Value &value);
 		virtual Value DivOp(const Value &value);
 		virtual Value RemOp(const Value &value);
 		virtual Value NegOp();
@@ -106,7 +112,8 @@ namespace Adreno
 		virtual Value LesserOp(const Value &value);
 		virtual Value LesserEqOp(const Value &value);
 
-		virtual Value Indexer(const Value &index);
+		virtual Value Ldelem(const Value &index);
+		virtual void Stelem(const Value &index, const Value &value);
 		
 		virtual intptr_t AsNumber() const
 		{
@@ -196,7 +203,7 @@ namespace Adreno
 
 		BASE_OP2(Add, +)
 		BASE_OP2(Sub, -)
-		BASE_OP2(Mult, *)
+		BASE_OP2(Mul, *)
 		BASE_OP2(Div, /)
 		BASE_OP2(Rem, %)
 		BASE_OP(Neg, -)
@@ -263,7 +270,7 @@ namespace Adreno
 
 		BASE_OP2(Add, +)
 		BASE_OP2(Sub, -)
-		BASE_OP2(Mult, *)
+		BASE_OP2(Mul, *)
 		BASE_OP2(Div, /)
 		BASE_OP(Neg, -)
 

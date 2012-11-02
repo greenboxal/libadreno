@@ -25,6 +25,140 @@
 
 namespace Adreno
 {
+	namespace Prefix
+	{
+		enum Prefixes : unsigned char
+		{
+			// 
+			None = 0x00,
+
+			// ref : Not implemented yet, placeholder
+			Reference = 0x40,
+
+			// Internal Use Only
+			Extra = 0x80,
+
+			// Prefixes outside this mask encode the op byte with Extra prefix and the real prefix is saved in the second byte
+			Mask = 0xC0,
+		};
+	}
+
+	namespace Opcode
+	{
+		enum Opcodes : unsigned char
+		{
+			// nop
+			Nop,
+
+			// pop, pop.s
+			Pop,
+			Pop_S,
+			
+			// ldnull
+			// ldnum <4byte : signed int>
+			// ldnum.m1
+			// ldnum.0
+			// ldnum.1
+			// ldfloat <8bytes : double>
+			// ldstr <4bytes : str sensitive hash>
+			// ldhash <4bytes : str insensitive hash>
+			// ldcls
+			Ldnull,
+			Ldnum,
+			Ldnum_M1,
+			Ldnum_0,
+			Ldnum_1,
+			Ldfloat,
+			Ldstr,
+			Ldhash,
+			Ldcls,
+
+			// ldarg.0
+			// ldarg.1
+			// ldarg.2
+			// ldarg.3
+			// ldarg.s <4bytes : index>
+			// ldargs <4bytes : starting index>
+			Ldarg_0,
+			Ldarg_1,
+			Ldarg_2,
+			Ldarg_3,
+			Ldarg_S,
+			Ldargs,
+
+			// ldloc.0
+			// ldloc.1
+			// ldloc.2
+			// ldloc.3
+			// ldloc.s <4bytes : index>
+			Ldloc_0,
+			Ldloc_1,
+			Ldloc_2,
+			Ldloc_3,
+			Ldloc_S,
+
+			// stloc.0
+			// stloc.1
+			// stloc.2
+			// stloc.3
+			// stloc.s <4bytes : index>
+			Stloc_0,
+			Stloc_1,
+			Stloc_2,
+			Stloc_3,
+			Stloc_S,
+
+			// new <4bytes : arg count>
+			New,
+
+			// add, sub, mul, div, rem, neg
+			Add,
+			Sub,
+			Mul,
+			Div,
+			Rem,
+			Neg,
+
+			// and, or, xor, not, shr, shl
+			And,
+			Or,
+			Xor,
+			Not,
+			Shr,
+			Shl,
+
+			// land, lor, lnot
+			LAnd,
+			LOr,
+			LNot,
+
+			// eq, neq, gt, ge, lt, le
+			Equal,
+			NotEqual,
+			Greater,
+			GreaterEq,
+			Lesser,
+			LesserEq,
+
+			// call <4bytes : arg count>
+			Call,
+
+			// ret
+			Return,
+			
+			// jmp <4bytes : offset>
+			Jump,
+
+			// brtrue <4bytes : offseT>
+			Brtrue,
+
+			// brfalse <4bytes : offseT>
+			Brfalse,
+
+			Mask = 0x3F,
+		};
+	}
+
 	class ExecutionContext;
 	class VMContext
 	{
