@@ -49,4 +49,84 @@ SUITE(VMExecution)
 		delete ec;
 		delete ab;
 	}
+
+	TEST(ExternFuncCall)
+	{
+		VMContext context;
+		context.MakeCurrent();
+
+		String check = "check";
+		String check_equal = "check_equal";
+		String add_five = "add_five";
+
+		context.SetGlobal(check, FunctionObject::New([&](const Arguments &args) -> Value
+		{
+			CHECK_EQUAL(1, args.Count());
+			CHECK(args[0].AsBoolean());
+			return Value();
+		}).Value());
+
+		context.SetGlobal(check_equal, FunctionObject::New([&](const Arguments &args) -> Value
+		{
+			CHECK_EQUAL(2, args.Count());
+			CHECK(args[0].AsObject()->EqualOp(args[1]).AsBoolean());
+			return Value();
+		}).Value());
+		
+		context.SetGlobal(add_five, FunctionObject::New([&](const Arguments &args) -> Value
+		{
+			CHECK_EQUAL(1, args.Count());
+			return Value(args[0].AsNumber() + 5);
+		}).Value());
+
+		AssemblyBuilder *ab = new AssemblyBuilder();
+	
+		// def main(arg1)
+		FunctionEmitter *fe = new FunctionEmitter("main");
+		fe->SetLocalCount(0);
+		fe->SetStackSize(32);
+		
+		// check true
+		fe->EmitOp(Opcode::Ldtrue);
+		fe->EmitOp2(Opcode::Ldglob, check.Hash());
+		fe->EmitOp2(Opcode::Call, 1);
+		fe->EmitOp(Opcode::Pop);
+		
+		// check_equal arg1, 5 + 5
+		fe->EmitOp2(Opcode::Ldnum, 5);
+		fe->EmitOp2(Opcode::Ldnum, 5);
+		fe->EmitOp(Opcode::Add);
+		
+		fe->EmitOp(Opcode::Ldarg_0);
+		fe->EmitOp2(Opcode::Ldglob, check_equal.Hash());
+		fe->EmitOp2(Opcode::Call, 2);
+		fe->EmitOp(Opcode::Pop);
+
+		// check_equal arg1, add_five(5)
+		fe->EmitOp2(Opcode::Ldnum, 5);
+		fe->EmitOp2(Opcode::Ldglob, add_five.Hash());
+		fe->EmitOp2(Opcode::Call, 1);
+
+		fe->EmitOp(Opcode::Ldarg_0);
+		fe->EmitOp2(Opcode::Ldglob, check_equal.Hash());
+		fe->EmitOp2(Opcode::Call, 2);
+		fe->EmitOp(Opcode::Pop);
+
+		// return
+		fe->EmitOp(Opcode::Ldnull);
+		fe->EmitOp(Opcode::Return);
+
+		// end
+		fe->Finish();
+
+		ab->SetFunction(fe);
+
+		ExecutionContext *ec = context.CreateExecutionContext(ab);
+	
+		Value ret;
+		ec->Run("main", Arguments(Value((intptr_t)10)), ret);
+	
+		delete ec;
+		delete ab;
+	}
 }

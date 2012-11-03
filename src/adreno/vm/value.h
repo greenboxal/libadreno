@@ -50,6 +50,7 @@ namespace Adreno
 		Value(double value);
 		Value(const String &string); // not explicit for const char* conversion
 		Value(Object *object);
+
 		~Value();
 		
 		void SetNull();

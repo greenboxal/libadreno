@@ -246,12 +246,12 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 			{
 				ReadInt(intVal);
 				std::vector<Value> callargs(intVal);
-				
-				for (size_t i = 0; i < intVal; i++)
-					Check(1, _Stack->Pop(callargs[i]));
 
 				// For now just ignore the object type
 				Check(1, _Stack->Pop(1));
+				
+				for (size_t i = 0; i < intVal; i++)
+					Check(1, _Stack->Pop(callargs[i]));
 
 				Reference<Object> obj = Object::New();
 				obj->Construct(callargs);
@@ -306,10 +306,11 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 				ReadInt(intVal);
 				std::vector<Value> callargs(intVal);
 				
+				Check(1, _Stack->Pop(value));
+
 				for (size_t i = 0; i < intVal; i++)
 					Check(1, _Stack->Pop(callargs[i]));
 
-				Check(1, _Stack->Pop(value));
 				Check(1, _Stack->Push(value.AsObject()->Call(callargs)));
 			}
 			break;
