@@ -44,7 +44,7 @@ SUITE(VMExecution)
 		Value ret;
 		ec->Run("main", Arguments(), ret);
 
-		CHECK(1337, ret.AsNumber());
+		CHECK_EQUAL(1337, ret.AsNumber());
 	
 		delete ec;
 		delete ab;

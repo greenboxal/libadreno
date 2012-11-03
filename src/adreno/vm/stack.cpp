@@ -89,7 +89,7 @@ bool Stack::Pop(Value &value)
 	if (_Pointer == 0)
 		return false;
 
-	value = _Stack[_Pointer];
+	value = _Stack[--_Pointer];
 	_Stack[_Pointer].~Value();
 
 	return true;
