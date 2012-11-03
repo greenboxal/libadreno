@@ -27,7 +27,7 @@
 namespace Adreno
 {
 	struct Label;
-	class FunctionEmitter : BytecodeFunction
+	class FunctionEmitter : public BytecodeFunction
 	{
 	public:
 		FunctionEmitter(const String &name)
@@ -43,10 +43,15 @@ namespace Adreno
 			LocalCount(count);
 		}
 
+		void SetStackSize(size_t size)
+		{
+			StackSize(size);
+		}
+
 		void EmitOp(unsigned char op, unsigned char prefix = 0);
-		void EmitOp(unsigned char op, Label *target, unsigned char prefix = 0);
-		void EmitOp(unsigned char op, std::uint32_t p1, unsigned char prefix = 0);
-		void EmitOp(unsigned char op, double p1, unsigned char prefix = 0);
+		void EmitOp2(unsigned char op, Label *target, unsigned char prefix = 0);
+		void EmitOp2(unsigned char op, std::uint32_t p1, unsigned char prefix = 0);
+		void EmitDOp2(unsigned char op, double p1, unsigned char prefix = 0);
 
 		void Finish();
 
@@ -90,20 +95,15 @@ namespace Adreno
 		friend class FunctionEmitter;
 	};
 
-	class AssemblyBuilder : Assembly
+	class AssemblyBuilder : public Assembly
 	{
 	public:
-		typedef std::unordered_map<std::uint32_t, String> StringMap;
-
 		void AddToStringPool(const String &str)
 		{
 			_Strings[str.Hash()] = str;
 		}
 
 		void *Save(size_t *size);
-
-	private:
-		StringMap _Strings;
 	};
 }
 

@@ -39,6 +39,7 @@ namespace Adreno
 		DEFPROP_RO_P(public, unsigned char, Bytecode);
 		DEFPROP_RO_C(public, size_t, BytecodeSize);
 		DEFPROP_RO_C(public, size_t, LocalCount);
+		DEFPROP_RO_C(public, size_t, StackSize);
 
 	private:
 		BytecodeFunction(const String &name)
@@ -47,6 +48,7 @@ namespace Adreno
 			BytecodeSize(0);
 			Bytecode(nullptr);
 			LocalCount(0);
+			StackSize(0);
 		}
 
 		BytecodeFunction(const String &name, unsigned char *bytecode, unsigned int bytecodeSize, int localcount)
@@ -112,9 +114,9 @@ namespace Adreno
 			return it->second;
 		}
 
-		void SetFunction(const String &name, BytecodeFunction *function)
+		void SetFunction(BytecodeFunction *function)
 		{
-			_Functions[name] = function;
+			_Functions[function->Name()] = function;
 		}
 		
 		void ResolveParents();
@@ -163,9 +165,9 @@ namespace Adreno
 			return it->second;
 		}
 
-		void SetClass(const String &name, Class *function)
+		void SetClass(Class *cls)
 		{
-			_Classes[name] = function;
+			_Classes[cls->Name()] = cls;
 		}
 
 		BytecodeFunction *GetFunction(const String &name) const
@@ -178,18 +180,29 @@ namespace Adreno
 			return it->second;
 		}
 
-		void SetFunction(const String &name, BytecodeFunction *function)
+		void SetFunction(BytecodeFunction *function)
 		{
-			_Functions[name] = function;
+			_Functions[function->Name()] = function;
 		}
 
 		bool Load(void *memory, size_t size);
 
+		String GetString(std::uint32_t hash)
+		{
+			std::unordered_map<std::uint32_t, String>::iterator it = _Strings.find(hash);
+
+			if (it == _Strings.end())
+				return String::Sealed(0, 0);
+
+			return it->second;
+		}
+
 	private:
 		ClassMap _Classes;
 		Class::FunctionMap _Functions;
+		std::unordered_map<std::uint32_t, String> _Strings;
 
-		friend class AssemblyFactory;
+		friend class AssemblyBuilder;
 	};
 }
 

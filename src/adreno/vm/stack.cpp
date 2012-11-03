@@ -27,11 +27,16 @@ void InitValues(Value *value, size_t count)
 		new (&value[i]) Value();
 }
 
-Stack::Stack()
+Stack::Stack(size_t stackSize)
 {
-	_Stack = (Value *)malloc(sizeof(Value) * ADRENOSTACK_DEFAULT_STACK);
 	_Pointer = 0;
-	_Size = ADRENOSTACK_DEFAULT_STACK;
+	_Size = stackSize;
+
+	if (stackSize > 0)
+		_Stack = (Value *)malloc(sizeof(Value) * stackSize);
+	else
+		_Stack = nullptr;
+
 	InitValues(_Stack, _Size);
 }
 
@@ -84,8 +89,9 @@ bool Stack::Pop(Value &value)
 	if (_Pointer == 0)
 		return false;
 
-	value = _Stack[--_Pointer];
-	_Stack[--_Pointer].~Value();
+	value = _Stack[_Pointer];
+	_Stack[_Pointer].~Value();
+
 	return true;
 }
 

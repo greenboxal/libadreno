@@ -15,23 +15,38 @@
 */
 
 #include <UnitTest++.h>
+#include <adreno/config.h>
 #include <adreno/vm/vm.h>
-#include <adreno/vm/object.h>
-#include <string>
+#include <adreno/vm/emit.h>
 
 using namespace Adreno;
 
-TEST(Objects)
+SUITE(VMExecution)
 {
-	VMContext Context;
-	Context.MakeCurrent();
-
-	Reference<Object> obj1 = Object::New();
-
-	obj1->SetField("op_Call", FunctionObject::New([&](const Arguments &args)
+	TEST(SimpleReturn)
 	{
-		return args[1];
-	}).Value());
+		VMContext context;
+		context.MakeCurrent();
 
-	CHECK_EQUAL(1337, obj1->Call(Arguments(Value(1337))).AsNumber());
+		AssemblyBuilder *ab = new AssemblyBuilder();
+	
+		FunctionEmitter *fe = new FunctionEmitter("main");
+		fe->SetLocalCount(0);
+		fe->SetStackSize(32);
+		fe->EmitOp2(Opcode::Ldnum, 1337);
+		fe->EmitOp(Opcode::Return);
+		fe->Finish();
+
+		ab->SetFunction(fe);
+
+		ExecutionContext *ec = context.CreateExecutionContext(ab);
+	
+		Value ret;
+		ec->Run("main", Arguments(), ret);
+
+		CHECK(1337, ret.AsNumber());
+	
+		delete ec;
+		delete ab;
+	}
 }

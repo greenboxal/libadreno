@@ -112,8 +112,8 @@ void *MemoryStream::Clone()
 {
 	void *tmp;
 
-	if (_Buffer)
-		return NULL;
+	if (_Buffer == nullptr)
+		return nullptr;
 
 	tmp = malloc(_BufferSize);
 	memcpy(tmp, _Buffer, _BufferSize);

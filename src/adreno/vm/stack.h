@@ -19,6 +19,7 @@
 
 #include <stack>
 #include <adreno/helpers.h>
+#include <adreno/config.h>
 #include <adreno/vm/gc.h>
 #include <adreno/vm/value.h>
 #include <adreno/vm/object.h>
@@ -28,7 +29,7 @@ namespace Adreno
 	class Stack
 	{
 	public:
-		Stack();
+		Stack(size_t stackSize = ADRENOSTACK_DEFAULT_STACK);
 		~Stack();
 
 		bool Push(const Value &value);

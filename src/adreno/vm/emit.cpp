@@ -54,7 +54,7 @@ void FunctionEmitter::EmitOp(unsigned char op, unsigned char prefix)
 	Stream().Write(buff, 0, 1 + extra);
 }
 
-void FunctionEmitter::EmitOp(unsigned char op, Label *target, unsigned char prefix)
+void FunctionEmitter::EmitOp2(unsigned char op, Label *target, unsigned char prefix)
 {
 	char buff[6];
 	int extra = 0;
@@ -89,7 +89,7 @@ void FunctionEmitter::EmitOp(unsigned char op, Label *target, unsigned char pref
 	Stream().Write(buff, 0, 5 + extra);
 }
 
-void FunctionEmitter::EmitOp(unsigned char op, std::uint32_t p1, unsigned char prefix)
+void FunctionEmitter::EmitOp2(unsigned char op, std::uint32_t p1, unsigned char prefix)
 {
 	char buff[2 + sizeof(std::uint32_t)];
 	int extra = 0;
@@ -119,7 +119,7 @@ void FunctionEmitter::EmitOp(unsigned char op, std::uint32_t p1, unsigned char p
 	Stream().Write(buff, 0, 1 + sizeof(std::uint32_t) + extra);
 }
 
-void FunctionEmitter::EmitOp(unsigned char op, double p1, unsigned char prefix)
+void FunctionEmitter::EmitDOp2(unsigned char op, double p1, unsigned char prefix)
 {
 	char buff[2 + sizeof(double)];
 	int extra = 0;
@@ -144,7 +144,7 @@ void FunctionEmitter::EmitOp(unsigned char op, double p1, unsigned char prefix)
 	if (extra == 1)
 		buff[1] = prefix;
 
-	*((std::uint32_t *)&buff[1 + extra]) = p1;
+	*((double *)&buff[1 + extra]) = p1;
 
 	Stream().Write(buff, 0, 1 + sizeof(double) + extra);
 }
@@ -170,7 +170,7 @@ void FunctionEmitter::Finish()
 	_Labels.clear();
 }
 
-void *AssemblyBuilder::Save(size_t *size)
+void *AssemblyBuilder::Save(size_t *)
 {
 	return nullptr;
 }

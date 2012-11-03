@@ -20,6 +20,7 @@
 #include <adreno/helpers.h>
 #include <adreno/vm/gc.h>
 #include <adreno/vm/value.h>
+#include <adreno/vm/stack.h>
 #include <adreno/vm/object.h>
 #include <adreno/vm/assembly.h>
 
@@ -71,7 +72,10 @@ namespace Adreno
 			Ldfloat,
 			Ldstr,
 			Ldhash,
+			Ldglob,
 			Ldcls,
+			Ldtrue,
+			Ldfalse,
 
 			// ldarg.0
 			// ldarg.1
@@ -124,13 +128,13 @@ namespace Adreno
 			Or,
 			Xor,
 			Not,
-			Shr,
-			Shl,
+			RightShift,
+			LeftShift,
 
 			// land, lor, lnot
-			LAnd,
-			LOr,
-			LNot,
+			LogAnd,
+			LogOr,
+			LogNot,
 
 			// eq, neq, gt, ge, lt, le
 			Equal,
@@ -213,14 +217,20 @@ namespace Adreno
 	class ExecutionContext
 	{
 	public:
-		ExecutionContext();
+		ExecutionContext(VMContext *owner, Assembly *unit);
 		~ExecutionContext();
 
-		void Run();
+		bool Run(const String &name, const Arguments &args, Value &retValue);
 
 		DEFPROP_RO_P(public, VMContext, Owner);
 		DEFPROP_RO_P(public, Assembly, Unit);
-		DEFPROP_RO_P(public, int, State);
+		DEFPROP_RO_C(public, int, State);
+		DEFPROP_RO_C(public, int, Error);
+
+	private:
+		size_t _IP;
+		Stack *_Stack;
+		std::vector<Value> _Locals;
 	};
 }
 

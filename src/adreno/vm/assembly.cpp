@@ -21,7 +21,7 @@
 
 using namespace Adreno;
 
-bool Assembly::Load(void *memory, size_t size)
+bool Assembly::Load(void *, size_t)
 {
 	return false;
 }
@@ -45,7 +45,7 @@ void Class::ResolveParents()
 		for (it2 = fmap.begin(); it2 != fmap.end(); it2++)
 		{
 			if (GetFunction(it2->first) == nullptr)
-				SetFunction(it2->first, it2->second);
+				SetFunction(it2->second);
 		}
 	}
 

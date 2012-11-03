@@ -46,7 +46,7 @@ namespace Adreno
 
 		Value();
 		explicit Value(intptr_t value);
-		explicit Value(bool value);
+		Value(bool value);
 		Value(double value);
 		Value(const String &string); // not explicit for const char* conversion
 		Value(Object *object);
