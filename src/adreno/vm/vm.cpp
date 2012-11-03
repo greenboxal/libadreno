@@ -154,13 +154,13 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 			Check(1, _Stack->Push(Value((intptr_t)intVal)));
 			break;
 		case Opcode::Ldnum_M1:
-			Check(1, _Stack->Push(Value(-1)));
+			Check(1, _Stack->Push(Value((intptr_t)-1)));
 			break;
 		case Opcode::Ldnum_0:
-			Check(1, _Stack->Push(Value(0)));
+			Check(1, _Stack->Push(Value((intptr_t)0)));
 			break;
 		case Opcode::Ldnum_1:
-			Check(1, _Stack->Push(Value(1)));
+			Check(1, _Stack->Push(Value((intptr_t)1)));
 			break;
 		case Opcode::Ldfloat:
 			ReadDouble(floatVal);
