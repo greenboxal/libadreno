@@ -51,6 +51,34 @@ file (GLOB CRYPT_HDRS crypt/*.h)
 file (GLOB UTILS_HDRS utils/*.h)
 file (GLOB VM_HDRS vm/*.h)
 
+# AIL Lexer/Parser
+set (AIL_SRCS ${AIL_SRCS} ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.tab.cpp ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-tokens.cpp)
+set (AIL_HDRS ${AIL_HDRS} ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.tab.hpp)
+
+add_custom_command(
+	OUTPUT ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-tokens.cpp
+	COMMAND ${FLEX_EXECUTABLE} 
+	ARGS -o ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-tokens.cpp ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-tokens.l
+	MAIN_DEPENDENCY ail/ail-tokens.l
+)
+
+add_custom_command(
+	OUTPUT ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.tab.cpp
+	COMMAND ${BISON_EXECUTABLE}
+	ARGS -v -d -o ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.tab.cpp ${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.y
+	MAIN_DEPENDENCY ail/ail-parser.y
+)
+
+set_source_files_properties (${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-tokens.cpp GENERATED)
+set_source_files_properties (${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.tab.cpp GENERATED)
+set_source_files_properties (${PROJECT_SOURCE_DIR}/src/adreno/ail/ail-parser.tab.hpp GENERATED)
+
+set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "ail-parser.output")
+
+if (MSVC)
+	add_definitions(/DYY_NO_UNISTD_H)
+endif ()
+
 add_library (adreno
     ${BASE_SRCS}
     ${AIL_SRCS}

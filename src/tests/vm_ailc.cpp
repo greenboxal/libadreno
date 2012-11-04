@@ -14,27 +14,32 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AILP_H
-#define AILP_H
+#include <UnitTest++.h>
+#include <adreno/config.h>
+#include <adreno/ail/ail.h>
 
-#include <adreno/vm/vm.h>
-#include <adreno/vm/emit.h>
-#include <adreno/ail/ailc.h>
+using namespace Adreno;
 
-#ifdef __cplusplus
-extern "C"
+extern int AILC_debug;
+
+TEST(AIL)
 {
-#endif
-	
-	extern void ail_setup_buffer(char *s);
-	extern void ail_free_buffer();
-	extern int ail_lex(); 
-	extern int ail_parse(void *context); 
-	extern void ail_error(const char* s);
-	extern char *ail_parse_string(char *s);
+	VMContext context;
+	context.MakeCurrent();
 
-#ifdef __cplusplus
+	std::stringstream ss;
+#define x(s) ss.write(s"\n", strlen(s"\n"))
+	x("def main");
+	x("{");
+	x("\tldarg.0");
+	x("\tldnum 2");
+	x("\tmul");
+	x("\tret");
+	x("}");
+#undef x
+
+	AilParserContext apc(ss);
+
+	AILC_debug = 1;
+	int result = AILC_parse(&apc);
 }
-#endif
-
-#endif
