@@ -15,7 +15,6 @@
 */
 
 #include <adreno/utils/memorypool.h>
-#include <adreno/memory.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -50,10 +49,12 @@ void AP_FreePage(void *addr, int count)
 	
 	VirtualAlloc(addr, size, MEM_FREE, PAGE_READWRITE);
 }
+#elif defined(_LINUX)
+
 #else
 void *AP_ReservePage(int count)
 {
-	return calloc( count, ADRENOMP_PAGE_SIZE );
+	return calloc(count, ADRENOMP_PAGE_SIZE);
 }
 
 void *AP_CommitPage(void *addr, int count)
@@ -63,7 +64,7 @@ void *AP_CommitPage(void *addr, int count)
 
 void AP_FreePage(void *addr, int count)
 {
-	free( addr );
+	free(addr);
 }
 #endif
 
@@ -130,7 +131,7 @@ MemoryPoolImpl::~MemoryPoolImpl()
 		AP_FreePage((void *)_Pages[i].Address, _ExpansionFactor);
 	
 	if (_Pages)
-		AdrenoFree(_Pages);
+		free(_Pages);
 
 #ifndef ADRENOMP_USE_LINKED_LIST
 	AdrenoBitArray_Free(&_FreeList);
@@ -166,7 +167,7 @@ void MemoryPoolImpl::Expand()
 	int nIdx = _PageCount;
 
 	_PageCount++;
-	_Pages = (AdrenoMemoryPoolPage *)AdrenoRealloc(_Pages, _PageCount * sizeof(AdrenoMemoryPoolPage));
+	_Pages = (AdrenoMemoryPoolPage *)realloc(_Pages, _PageCount * sizeof(AdrenoMemoryPoolPage));
 		
 	_Pages[nIdx].Address = (char *)AP_ReservePage(_ExpansionFactor);
 

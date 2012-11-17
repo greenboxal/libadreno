@@ -140,6 +140,7 @@ namespace Adreno
 #undef DummyOp2
 #undef DummyOp
 
+		bool HasField(const String &name);
 		Value GetField(const String &name);
 		void SetField(const String &name, const Value &value);
 

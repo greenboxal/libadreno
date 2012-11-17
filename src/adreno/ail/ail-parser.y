@@ -39,7 +39,7 @@ namespace Adreno
 		static void EndFunction(AilParserContext *me)
 		{
 			me->_CurrentFunction->Finish();
-			me->_Assembly->SetFunction(me->_CurrentFunction);
+			me->_Assembly.AddFunction(me->_CurrentFunction);
 			me->_CurrentFunction = nullptr;
 			me->_Labels.clear();
 		}
@@ -85,13 +85,13 @@ namespace Adreno
 
 		static void AddString(AilParserContext *me, const String &str)
 		{
-			me->_Assembly->AddToStringPool(str);
+			me->_Assembly.AddToStringPool(str);
 		}
 
 		static void AddDebugString(AilParserContext *me, const String &str)
 		{
 			if (me->_DebugInfo)
-				me->_Assembly->AddToStringPool(str);
+				me->_Assembly.AddToStringPool(str);
 		}
 	};
 }
@@ -131,12 +131,12 @@ void AILC_error(YYLTYPE *locp, AilParserContext *context, const char *err)
 %token <dval> T_FLOAT
 %token <sval> T_IDENTIFIER T_STRING
 
-%token T_DEF
+%token T_DEF T_END T_CLASS
 
 %token T_NOP
 %token T_POP T_POP_S
 %token T_LDNULL T_LDNUM T_LDNUM_M1 T_LDNUM_0 T_LDNUM_1 T_LDFLOAT T_LDSTR T_LDHASH T_LDGLOB T_LDCLS T_LDTRUE T_LDFALSE
-%token T_LDARG_0 T_LDARG_1 T_LDARG_2 T_LDARG_3 T_LDARG_S
+%token T_LDARG_0 T_LDARG_1 T_LDARG_2 T_LDARG_3 T_LDARG_S T_LDARGS
 %token T_LDLOC_0 T_LDLOC_1 T_LDLOC_2 T_LDLOC_3 T_LDLOC_S
 %token T_STLOC_0 T_STLOC_1 T_STLOC_2 T_STLOC_3 T_STLOC_S
 %token T_NEW
@@ -157,10 +157,10 @@ functions	:
 			| functions function
 			;
 
-function	: fstart statements '}'										{ APC_EndFunction(); }
+function	: fstart statements T_END							{ APC_EndFunction(); }
 			;
 
-fstart		: T_DEF T_IDENTIFIER '{'									{ APC_StartFunction($2); free($2); }
+fstart		: T_DEF T_IDENTIFIER								{ APC_StartFunction($2); free($2); }
 			;
 
 statements	: 
@@ -189,7 +189,6 @@ opcode		: T_NOP												{ APC_EmitOp(Opcode::Nop); }
 			| T_LDSTR T_STRING									{ String str($2); APC_EmitOp2(Opcode::Ldstr, str.Hash()); APC_AddString(str); free($2); }
 			| T_LDHASH T_STRING									{ String str($2); APC_EmitOp2(Opcode::Ldstr, str.Hash()); APC_AddDebugString(str); free($2); }
 			| T_LDGLOB											{ APC_EmitOp(Opcode::Ldglob); }
-			| T_LDCLS											{ APC_EmitOp(Opcode::Ldcls); }
 			| T_LDTRUE											{ APC_EmitOp(Opcode::Ldtrue); }
 			| T_LDFALSE											{ APC_EmitOp(Opcode::Ldfalse); }
 			

@@ -15,9 +15,9 @@
 */
 
 #include <adreno/utils/bitarray.h>
-#include <adreno/memory.h>
 
 #include <memory.h>
+#include <stdlib.h>
 
 #define BAINDEX(b) (b / 32)
 #define BAOFFSET(b) (b % 32)
@@ -25,7 +25,7 @@
 void AdrenoBitArray_Initialize(AdrenoBitArray *ba, unsigned int initialSize)
 {
 	ba->DataCount = 0;
-	ba->Data = NULL;
+	ba->Data = nullptr;
 	ba->AnchorIndex = 0;
 #ifdef BITARRAY_USE_ANCHOR_OFFSET
 	ba->AnchorOffset = 0;
@@ -145,7 +145,7 @@ void AdrenoBitArray_Resize(AdrenoBitArray *ba, unsigned int newSize)
 	newCount = newSize / 32;
 
 	ba->DataCount = newCount;
-	ba->Data = (unsigned int *)AdrenoRealloc(ba->Data, ba->DataCount * sizeof(unsigned int));
+	ba->Data = (unsigned int *)realloc(ba->Data, ba->DataCount * sizeof(unsigned int));
 
 	if (newCount > oldCount)
 		memset(&ba->Data[oldCount], 0, (newCount - oldCount) * sizeof(unsigned int));
@@ -154,10 +154,10 @@ void AdrenoBitArray_Resize(AdrenoBitArray *ba, unsigned int newSize)
 void AdrenoBitArray_Free(AdrenoBitArray *ba)
 {
 	if (ba->Data)
-		AdrenoFree(ba->Data);
+		free(ba->Data);
 	
 	ba->DataCount = 0;
-	ba->Data = NULL;
+	ba->Data = nullptr;
 	ba->AnchorIndex = 0;
 #ifdef BITARRAY_USE_ANCHOR_OFFSET
 	ba->AnchorOffset = 0;

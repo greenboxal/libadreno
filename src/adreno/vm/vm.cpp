@@ -18,92 +18,36 @@
 
 using namespace Adreno;
 
-THREAD_LOCAL VMContext *VMContext::_CurrentVM;
+THREAD_LOCAL Context *Context::_Current;
 
-VMContext::VMContext()
+Context::Context()
 {
 	GC(new GarbageCollector());
+	State(ExecutionState::Stopped);
+	Error(0);
 }
 
-VMContext::~VMContext()
+Context::~Context()
 {
-	if (_CurrentVM == this)
-		_CurrentVM = nullptr;
+	if (_Current == this)
+		_Current = nullptr;
 
 	delete GC();
 }
 
-void VMContext::MakeCurrent()
+bool Context::Run(const Reference<Function> &function, const Arguments &args, Value &retValue)
 {
-	_CurrentVM = this;
-}
-
-Class *VMContext::GetClass(const String &name) const
-{
-	Assembly::ClassMap::const_iterator it = _Classes.find(name);
-
-	if (it == _Classes.end())
-		return nullptr;
-
-	return it->second;
-}
-
-void VMContext::SetClass(const String &name, Class *function)
-{
-	_Classes[name] = function;
-}
-
-Value VMContext::GetGlobal(const String &name)
-{
-	Object::FieldMap::iterator it = _Globals.find(name);
-
-	if (it == _Globals.end())
-		return Value();
-
-	return it->second;
-}
-
-void VMContext::SetGlobal(const String &name, const Value &value)
-{
-	_Globals[name] = value;
-}
-
-ExecutionContext *VMContext::CreateExecutionContext(Assembly *assembly)
-{
-	return new ExecutionContext(this, assembly);
-}
-
-ExecutionContext::ExecutionContext(VMContext *owner, Assembly *unit)
-{
-	Owner(owner);
-	Unit(unit);
-	State(ExecutionState::Stopped);
-}
-
-ExecutionContext::~ExecutionContext()
-{
-
-}
-
-bool ExecutionContext::Run(const String &name, const Arguments &args, Value &retValue)
-{
-	BytecodeFunction *fn = Unit()->GetFunction(name);
-
-	if (fn == nullptr)
-		return false;
-	
+	MakeCurrent();
 	Error(0);
 
 	if (State() == ExecutionState::Stopped)
 	{
-		_IP = 0;
-		_Stack = new Stack(fn->StackSize());
-		_Locals.resize(fn->LocalCount());
+		_CurrentFrame = new CallFrame(function, args);
 	}
 	else if (State() == ExecutionState::Running)
 	{
-		Error(1);
-		return false;
+		_CallStack.push(_CurrentFrame);
+		_CurrentFrame = new CallFrame(function, args);
 	}
 
 	Opcode::Opcodes op;
@@ -115,12 +59,12 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 	State(ExecutionState::Running);
 	while (State() == ExecutionState::Running)
 	{
-#define HasBytes(count) { if (_IP + (count) > fn->BytecodeSize()) { Error(1); State(ExecutionState::Stopped); break; } }
-#define ReadChar(var) { HasBytes(sizeof(unsigned char)); var = fn->Bytecode()[_IP]; _IP += sizeof(unsigned char); }
-#define ReadOP(var) { HasBytes(sizeof(unsigned char)); var = (Opcode::Opcodes)fn->Bytecode()[_IP]; _IP += sizeof(unsigned char); }
-#define ReadPrefix(var) { HasBytes(sizeof(unsigned char)); var = (Prefix::Prefixes)fn->Bytecode()[_IP]; _IP += sizeof(unsigned char); }
-#define ReadInt(var) { HasBytes(sizeof(std::uint32_t)); var = *((std::uint32_t *)&fn->Bytecode()[_IP]); _IP += sizeof(std::uint32_t); }
-#define ReadDouble(var) { HasBytes(sizeof(double)); var = *((double *)&fn->Bytecode()[_IP]); _IP += sizeof(double); }
+#define HasBytes(count) { if (_CurrentFrame->IP + (count) > _CurrentFrame->F->BytecodeSize()) { Error(1); State(ExecutionState::Stopped); break; } }
+#define ReadChar(var) { HasBytes(sizeof(unsigned char)); var = _CurrentFrame->F->Bytecode()[_CurrentFrame->IP]; _CurrentFrame->IP += sizeof(unsigned char); }
+#define ReadOP(var) { HasBytes(sizeof(unsigned char)); var = (Opcode::Opcodes)_CurrentFrame->F->Bytecode()[_CurrentFrame->IP]; _CurrentFrame->IP += sizeof(unsigned char); }
+#define ReadPrefix(var) { HasBytes(sizeof(unsigned char)); var = (Prefix::Prefixes)_CurrentFrame->F->Bytecode()[_CurrentFrame->IP]; _CurrentFrame->IP += sizeof(unsigned char); }
+#define ReadInt(var) { HasBytes(sizeof(std::uint32_t)); var = *((std::uint32_t *)&_CurrentFrame->F->Bytecode()[_CurrentFrame->IP]); _CurrentFrame->IP += sizeof(std::uint32_t); }
+#define ReadDouble(var) { HasBytes(sizeof(double)); var = *((double *)&_CurrentFrame->F->Bytecode()[_CurrentFrame->IP]); _CurrentFrame->IP += sizeof(double); }
 #define Check(err, inst) { if (!(inst)) { Error(err); State(ExecutionState::Stopped); break; } }
 
 		ReadOP(op);
@@ -138,61 +82,64 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 
 			// Stack
 		case Opcode::Pop:
-			Check(1, _Stack->Pop(1))
+			Check(1, _CurrentFrame->S.Pop(1))
 			break;
 		case Opcode::Pop_S:
 			ReadInt(intVal);
-			Check(1, _Stack->Pop(intVal))
+			Check(1, _CurrentFrame->S.Pop(intVal))
 			break;
 
 			// Value Loading
 		case Opcode::Ldnull:
-			Check(1, _Stack->Push(Value()));
+			Check(1, _CurrentFrame->S.Push(Value()));
 			break;
 		case Opcode::Ldnum:
 			ReadInt(intVal);
-			Check(1, _Stack->Push(Value((intptr_t)intVal)));
+			Check(1, _CurrentFrame->S.Push(Value((intptr_t)intVal)));
 			break;
 		case Opcode::Ldnum_M1:
-			Check(1, _Stack->Push(Value((intptr_t)-1)));
+			Check(1, _CurrentFrame->S.Push(Value((intptr_t)-1)));
 			break;
 		case Opcode::Ldnum_0:
-			Check(1, _Stack->Push(Value((intptr_t)0)));
+			Check(1, _CurrentFrame->S.Push(Value((intptr_t)0)));
 			break;
 		case Opcode::Ldnum_1:
-			Check(1, _Stack->Push(Value((intptr_t)1)));
+			Check(1, _CurrentFrame->S.Push(Value((intptr_t)1)));
 			break;
 		case Opcode::Ldfloat:
 			ReadDouble(floatVal);
-			Check(1, _Stack->Push(floatVal));
+			Check(1, _CurrentFrame->S.Push(floatVal));
 			break;
 		case Opcode::Ldstr:
 			{
 				ReadInt(intVal);
 
-				String str = Unit()->GetString(intVal);
+				String str = _CurrentFrame->F->Owner()->GetString(intVal);
 				Check(1, str.Data() != nullptr);
 
-				Check(1, _Stack->Push(str));
+				Check(1, _CurrentFrame->S.Push(str));
 			}
 			break;
 		case Opcode::Ldhash:
 			ReadInt(intVal);
-			Check(1, _Stack->Push(String::Sealed(intVal, intVal)));
+			Check(1, _CurrentFrame->S.Push(String::Sealed(intVal, intVal)));
 			break;
 		case Opcode::Ldglob:
-			ReadInt(intVal);
-			Check(1, _Stack->Push(_Owner->GetGlobal(String::Sealed(intVal, intVal))));
-			break;
-		case Opcode::Ldcls:
-			ReadInt(intVal);
-			Check(1, false);
+			{
+				Check(1, _CurrentFrame->S.Pop(value));
+				String name = value.AsString();
+				if (_CurrentFrame->F->Owner()->HasField(name))
+					value = _CurrentFrame->F->Owner()->GetField(name);
+				else
+					value = GetGlobal(name);
+				Check(1, _CurrentFrame->S.Push(value));
+			}
 			break;
 		case Opcode::Ldtrue:
-			Check(1, _Stack->Push(true));
+			Check(1, _CurrentFrame->S.Push(true));
 			break;
 		case Opcode::Ldfalse:
-			Check(1, _Stack->Push(true));
+			Check(1, _CurrentFrame->S.Push(true));
 			break;
 
 			// Arguments
@@ -202,12 +149,12 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 		case Opcode::Ldarg_3:
 			intVal = op - Opcode::Ldarg_0;
 			Check(1, intVal < args.Count());
-			Check(1, _Stack->Push(args[intVal]));
+			Check(1, _CurrentFrame->S.Push(args[intVal]));
 			break;
 		case Opcode::Ldarg_S:
 			ReadInt(intVal);
 			Check(1, intVal < args.Count());
-			Check(1, _Stack->Push(args[intVal]));
+			Check(1, _CurrentFrame->S.Push(args[intVal]));
 			break;
 
 			// Locals
@@ -216,13 +163,13 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 		case Opcode::Ldloc_2:
 		case Opcode::Ldloc_3:
 			intVal = op - Opcode::Ldloc_0;
-			Check(1, intVal < _Locals.size());
-			_Stack->Push(_Locals[intVal]);
+			Check(1, intVal < _CurrentFrame->L.size());
+			_CurrentFrame->S.Push(_CurrentFrame->L[intVal]);
 			break;
 		case Opcode::Ldloc_S:
 			ReadInt(intVal);
-			Check(1, intVal < _Locals.size());
-			Check(1, _Stack->Push(_Locals[intVal]));
+			Check(1, intVal < _CurrentFrame->L.size());
+			Check(1, _CurrentFrame->S.Push(_CurrentFrame->L[intVal]));
 			break;
 
 		case Opcode::Stloc_0:
@@ -230,15 +177,15 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 		case Opcode::Stloc_2:
 		case Opcode::Stloc_3:
 			intVal = op - Opcode::Stloc_0;
-			Check(1, intVal < _Locals.size());
-			Check(1, _Stack->Pop(value));
-			_Locals[intVal] = value;
+			Check(1, intVal < _CurrentFrame->L.size());
+			Check(1, _CurrentFrame->S.Pop(value));
+			_CurrentFrame->L[intVal] = value;
 			break;
 		case Opcode::Stloc_S:
 			ReadInt(intVal);
-			Check(1, intVal < _Locals.size());
-			Check(1, _Stack->Pop(value));
-			_Locals[intVal] = value;
+			Check(1, intVal < _CurrentFrame->L.size());
+			Check(1, _CurrentFrame->S.Pop(value));
+			_CurrentFrame->L[intVal] = value;
 			break;
 
 			// New
@@ -248,29 +195,29 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 				std::vector<Value> callargs(intVal);
 
 				// For now just ignore the object type
-				Check(1, _Stack->Pop(1));
+				Check(1, _CurrentFrame->S.Pop(1));
 				
 				for (size_t i = 0; i < intVal; i++)
-					Check(1, _Stack->Pop(callargs[i]));
+					Check(1, _CurrentFrame->S.Pop(callargs[i]));
 
 				Reference<Object> obj = Object::New();
 				obj->Construct(callargs);
 
-				Check(1, _Stack->Push(obj.Value()));
+				Check(1, _CurrentFrame->S.Push(obj.Value()));
 			}
 			break;
 
 			// Math
 #define MathOp(name) \
 		case Opcode::name: \
-			Check(1, _Stack->Pop(value)); \
-			Check(1, _Stack->Push(value.AsObject()->name##Op())); \
+			Check(1, _CurrentFrame->S.Pop(value)); \
+			Check(1, _CurrentFrame->S.Push(value.AsObject()->name##Op())); \
 			break;
 #define MathOp2(name) \
 		case Opcode::name: \
-			Check(1, _Stack->Pop(value2)); \
-			Check(1, _Stack->Pop(value)); \
-			Check(1, _Stack->Push(value.AsObject()->name##Op(value2))); \
+			Check(1, _CurrentFrame->S.Pop(value2)); \
+			Check(1, _CurrentFrame->S.Pop(value)); \
+			Check(1, _CurrentFrame->S.Push(value.AsObject()->name##Op(value2))); \
 			break;
 
 			MathOp2(Add)
@@ -306,38 +253,38 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 				ReadInt(intVal);
 				std::vector<Value> callargs(intVal);
 				
-				Check(1, _Stack->Pop(value));
+				Check(1, _CurrentFrame->S.Pop(value));
 
 				for (size_t i = 0; i < intVal; i++)
-					Check(1, _Stack->Pop(callargs[i]));
+					Check(1, _CurrentFrame->S.Pop(callargs[i]));
 
-				Check(1, _Stack->Push(value.AsObject()->Call(callargs)));
+				Check(1, _CurrentFrame->S.Push(value.AsObject()->Call(callargs)));
 			}
 			break;
 		case Opcode::Return:
-			Check(1, _Stack->Pop(retValue));
+			Check(1, _CurrentFrame->S.Pop(retValue));
 			State(ExecutionState::Stopped);
 			break;
 
 			// Jumps
 		case Opcode::Jump:
 			ReadInt(intVal);
-			Check(1, intVal < fn->BytecodeSize());
-			_IP = intVal;
+			Check(1, intVal < _CurrentFrame->F->BytecodeSize());
+			_CurrentFrame->IP = intVal;
 			break;
 		case Opcode::Brtrue:
 			ReadInt(intVal);
-			Check(1, intVal < fn->BytecodeSize());
-			Check(1, _Stack->Pop(value));
+			Check(1, intVal < _CurrentFrame->F->BytecodeSize());
+			Check(1, _CurrentFrame->S.Pop(value));
 			if (value.AsBoolean() == true)
-				_IP = intVal;
+				_CurrentFrame->IP = intVal;
 			break;
 		case Opcode::Brfalse:
 			ReadInt(intVal);
-			Check(1, intVal < fn->BytecodeSize());
-			Check(1, _Stack->Pop(value));
+			Check(1, intVal < _CurrentFrame->F->BytecodeSize());
+			Check(1, _CurrentFrame->S.Pop(value));
 			if (value.AsBoolean() == false)
-				_IP = intVal;
+				_CurrentFrame->IP = intVal;
 			break;
 		}
 
@@ -347,10 +294,21 @@ bool ExecutionContext::Run(const String &name, const Arguments &args, Value &ret
 #undef Read1Byte
 	}
 
-	if (State() == ExecutionState::Stopped)
+	if (Error() == 0)
 	{
-		_Locals.clear();
-		delete _Stack;
+		delete _CurrentFrame;
+		_CurrentFrame = nullptr;
+
+		if (_CallStack.size() > 0)
+		{
+			State(ExecutionState::Running);
+			_CurrentFrame = _CallStack.top();
+			_CallStack.pop();
+		}
+		else
+		{
+			State(ExecutionState::Stopped);
+		}
 	}
 
 	return true;

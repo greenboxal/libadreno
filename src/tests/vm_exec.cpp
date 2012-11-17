@@ -25,70 +25,63 @@ SUITE(VMExecution)
 {
 	TEST(SimpleReturn)
 	{
-		VMContext context;
-		context.MakeCurrent();
+		Context ctx;
+		ctx.MakeCurrent();
 
-		AssemblyBuilder *ab = new AssemblyBuilder();
-	
 		FunctionEmitter *fe = new FunctionEmitter("main");
-		fe->SetLocalCount(0);
-		fe->SetStackSize(32);
+		fe->LocalCount(0);
+		fe->StackSize(32);
 		fe->EmitOp2(Opcode::Ldnum, 1337);
 		fe->EmitOp(Opcode::Return);
-		fe->Finish();
-
-		ab->SetFunction(fe);
-
-		ExecutionContext *ec = context.CreateExecutionContext(ab);
+		
+		AssemblyBuilder ab;
+		ab.AddFunction(fe);
+		Reference<Assembly> assembly = ab.ToAssembly();
 	
 		Value ret;
-		ec->Run("main", Arguments(), ret);
+		ctx.Run(assembly->GetFunction("main"), Arguments(), ret);
 
 		CHECK_EQUAL(1337, ret.AsNumber());
-	
-		delete ec;
-		delete ab;
 	}
 
 	TEST(ExternFuncCall)
 	{
-		VMContext context;
-		context.MakeCurrent();
+		Context ctx;
+		ctx.MakeCurrent();
 
 		String check = "check";
 		String check_equal = "check_equal";
 		String add_five = "add_five";
 
-		context.SetGlobal(check, FunctionObject::New([&](const Arguments &args) -> Value
+		ctx.SetGlobal(check, FunctionObject::New([&](const Arguments &args) -> Value
 		{
 			CHECK_EQUAL(1, args.Count());
 			CHECK(args[0].AsBoolean());
 			return Value();
 		}).Value());
 
-		context.SetGlobal(check_equal, FunctionObject::New([&](const Arguments &args) -> Value
+		ctx.SetGlobal(check_equal, FunctionObject::New([&](const Arguments &args) -> Value
 		{
 			CHECK_EQUAL(2, args.Count());
 			CHECK(args[0].AsObject()->EqualOp(args[1]).AsBoolean());
 			return Value();
 		}).Value());
 		
-		context.SetGlobal(add_five, FunctionObject::New([&](const Arguments &args) -> Value
+		ctx.SetGlobal(add_five, FunctionObject::New([&](const Arguments &args) -> Value
 		{
 			CHECK_EQUAL(1, args.Count());
 			return Value(args[0].AsNumber() + 5);
 		}).Value());
-
-		AssemblyBuilder *ab = new AssemblyBuilder();
 	
 		// def main(arg1)
 		FunctionEmitter *fe = new FunctionEmitter("main");
-		fe->SetLocalCount(0);
-		fe->SetStackSize(32);
+		fe->LocalCount(0);
+		fe->StackSize(32);
 		
 		// check true
 		fe->EmitOp(Opcode::Ldtrue);
-		fe->EmitOp2(Opcode::Ldglob, check.Hash());
+		fe->EmitOp2(Opcode::Ldhash, check.Hash());
+		fe->EmitOp(Opcode::Ldglob);
 		fe->EmitOp2(Opcode::Call, 1);
 		fe->EmitOp(Opcode::Pop);
 		
@@ -98,35 +91,78 @@ SUITE(VMExecution)
 		fe->EmitOp(Opcode::Add);
 		
 		fe->EmitOp(Opcode::Ldarg_0);
-		fe->EmitOp2(Opcode::Ldglob, check_equal.Hash());
+		fe->EmitOp2(Opcode::Ldhash, check_equal.Hash());
+		fe->EmitOp(Opcode::Ldglob);
 		fe->EmitOp2(Opcode::Call, 2);
 		fe->EmitOp(Opcode::Pop);
 
 		// check_equal arg1, add_five(5)
 		fe->EmitOp2(Opcode::Ldnum, 5);
-		fe->EmitOp2(Opcode::Ldglob, add_five.Hash());
+		fe->EmitOp2(Opcode::Ldhash, add_five.Hash());
+		fe->EmitOp(Opcode::Ldglob);
 		fe->EmitOp2(Opcode::Call, 1);
 
 		fe->EmitOp(Opcode::Ldarg_0);
-		fe->EmitOp2(Opcode::Ldglob, check_equal.Hash());
+		fe->EmitOp2(Opcode::Ldhash, check_equal.Hash());
+		fe->EmitOp(Opcode::Ldglob);
 		fe->EmitOp2(Opcode::Call, 2);
 		fe->EmitOp(Opcode::Pop);
 
 		// return
 		fe->EmitOp(Opcode::Ldnull);
 		fe->EmitOp(Opcode::Return);
-
-		// end
-		fe->Finish();
-
-		ab->SetFunction(fe);
-
-		ExecutionContext *ec = context.CreateExecutionContext(ab);
+		
+		AssemblyBuilder ab;
+		ab.AddFunction(fe);
+		Reference<Assembly> assembly = ab.ToAssembly();
 	
 		Value ret;
-		ec->Run("main", Arguments(Value((intptr_t)10)), ret);
+		ctx.Run(assembly->GetFunction("main"), Arguments(Value((intptr_t)10)), ret);
+	}
+
+	TEST(InternalFunctionCall)
+	{
+		Context ctx;
+		ctx.MakeCurrent();
+
+		String check_equal = "check_equal";
+		String test = "test";
+
+		ctx.SetGlobal(check_equal, FunctionObject::New([&](const Arguments &args) -> Value
+		{
+			CHECK_EQUAL(2, args.Count());
+			CHECK(args[0].AsObject()->EqualOp(args[1]).AsBoolean());
+			return Value();
+		}).Value());
+
+		FunctionEmitter *feTest = new FunctionEmitter(test);
+		feTest->LocalCount(0);
+		feTest->StackSize(32);
+		feTest->EmitOp2(Opcode::Ldnum, 100);
+		feTest->EmitOp(Opcode::Ldarg_0);
+		feTest->EmitOp(Opcode::Mul);
+		feTest->EmitOp(Opcode::Return);
+
+		FunctionEmitter *feMain = new FunctionEmitter("main");
+		feMain->LocalCount(0);
+		feMain->StackSize(32);
+		feMain->EmitOp2(Opcode::Ldnum, 5);
+		feMain->EmitOp2(Opcode::Ldhash, test.Hash());
+		feMain->EmitOp(Opcode::Ldglob);
+		feMain->EmitOp2(Opcode::Call, 1);
+		feMain->EmitOp2(Opcode::Ldnum, 500);
+		feMain->EmitOp2(Opcode::Ldhash, check_equal.Hash());
+		feMain->EmitOp(Opcode::Ldglob);
+		feMain->EmitOp2(Opcode::Call, 2);
+		feMain->EmitOp(Opcode::Pop);
+		feMain->EmitOp(Opcode::Return);
+
+		AssemblyBuilder ab;
+		ab.AddFunction(feTest);
+		ab.AddFunction(feMain);
+		Reference<Assembly> assembly = ab.ToAssembly();
 	
-		delete ec;
-		delete ab;
+		Value ret;
+		ctx.Run(assembly->GetFunction("main"), Arguments(), ret);
 	}
 }

@@ -23,8 +23,8 @@ using namespace Adreno;
 
 TEST(Objects)
 {
-	VMContext Context;
-	Context.MakeCurrent();
+	Context ctx;
+	ctx.MakeCurrent();
 
 	Reference<Object> obj1 = Object::New();
 

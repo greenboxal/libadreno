@@ -27,26 +27,17 @@
 namespace Adreno
 {
 	struct Label;
-	class FunctionEmitter : public BytecodeFunction
+	class FunctionEmitter
 	{
 	public:
 		FunctionEmitter(const String &name)
-			: BytecodeFunction(name)
+			: _Name(name)
 		{
-
+			StackSize(0);
+			LocalCount(0);
 		}
 
 		Label *CreateLabel();
-
-		void SetLocalCount(size_t count)
-		{
-			LocalCount(count);
-		}
-
-		void SetStackSize(size_t size)
-		{
-			StackSize(size);
-		}
 
 		void EmitOp(unsigned char op, unsigned char prefix = 0);
 		void EmitOp2(unsigned char op, Label *target, unsigned char prefix = 0);
@@ -56,8 +47,12 @@ namespace Adreno
 		void Finish();
 
 		DEFPROP_RO_R(public, MemoryStream, Stream);
+		DEFPROP_RW(public, size_t, StackSize);
+		DEFPROP_RW(public, size_t, LocalCount);
 
 	private:
+		String _Name;
+
 		struct RelocationEntry
 		{
 			size_t IP;
@@ -66,6 +61,8 @@ namespace Adreno
 
 		std::list<RelocationEntry> _Relocs;
 		std::list<Label> _Labels;
+
+		friend class AssemblyBuilder;
 	};
 
 	struct Label
@@ -95,15 +92,32 @@ namespace Adreno
 		friend class FunctionEmitter;
 	};
 
-	class AssemblyBuilder : public Assembly
+	class AssemblyBuilder
 	{
 	public:
+		~AssemblyBuilder()
+		{
+			std::unordered_map<String, FunctionEmitter *>::iterator it;
+			for (it = _Functions.begin(); it != _Functions.end(); it++)
+				delete it->second;
+		}
+
 		void AddToStringPool(const String &str)
 		{
 			_Strings[str.Hash()] = str;
 		}
 
+		void AddFunction(FunctionEmitter *fe)
+		{
+			_Functions[fe->_Name] = fe;
+		}
+
 		void *Save(size_t *size);
+		Reference<Assembly> ToAssembly();
+
+	private:
+		std::unordered_map<std::uint32_t, String> _Strings;
+		std::unordered_map<String, FunctionEmitter *> _Functions;
 	};
 }
 

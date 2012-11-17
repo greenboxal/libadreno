@@ -152,10 +152,7 @@ void FunctionEmitter::EmitDOp2(unsigned char op, double p1, unsigned char prefix
 void FunctionEmitter::Finish()
 {
 	std::list<RelocationEntry>::iterator it;
-
-	BytecodeSize(Stream().Tell());
-	Bytecode((unsigned char *)Stream().Clone());
-	Stream().Close();
+	unsigned char *ptr = Stream().Data();
 
 	for (it = _Relocs.begin(); it != _Relocs.end(); it++)
 	{
@@ -163,7 +160,7 @@ void FunctionEmitter::Finish()
 		assert(it->label->_Owner == this);
 		assert(it->label->_IP != 0xFFFFFFFF);
 		
-		*((std::uint32_t *)(Bytecode() + it->IP)) = it->label->_IP;
+		*((std::uint32_t *)(ptr + it->IP)) = it->label->_IP;
 	}
 
 	_Relocs.clear();
@@ -173,4 +170,19 @@ void FunctionEmitter::Finish()
 void *AssemblyBuilder::Save(size_t *)
 {
 	return nullptr;
+}
+
+Reference<Assembly> AssemblyBuilder::ToAssembly()
+{
+	Reference<Assembly> assembly = new Assembly();
+	assembly->_Strings = _Strings;
+	
+	std::unordered_map<String, FunctionEmitter *>::iterator it;
+	for (it = _Functions.begin(); it != _Functions.end(); it++)
+	{
+		it->second->Finish();
+		assembly->SetField(it->first, (Object *)new Function(assembly, it->first, (unsigned char *)it->second->Stream().Clone(), it->second->Stream().Tell(), it->second->LocalCount(), it->second->StackSize()));
+	}
+
+	return assembly;
 }

@@ -12,15 +12,11 @@
 
    #define YY_EXTRA_TYPE ParserContext*
    #define YY_USER_ACTION yylloc->first_line = yylineno;
-   #define YY_INPUT( buf, result, max_size ) { \
-      char c;                                  \
-      yyextra->Input() >> c;                   \
-      if( yyextra->Input().eof() )             \
-         result = YY_NULL;                     \
-      else {                                   \
-         buf[ 0 ] = c;                         \
-         result = 1;                           \
-      }                                        \
+   #define YY_INPUT(buf, result, max_size) {                \
+	if ( yyextra->Input().eof() )							\
+	   result = YY_NULL;									\
+	else													\
+	   result = yyextra->Input().readsome( buf, max_size );	\
    }
 
    #define TOKEN( x ) return ( yylval->ival = ( x ) )

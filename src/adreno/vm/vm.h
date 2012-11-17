@@ -73,7 +73,6 @@ namespace Adreno
 			Ldstr,
 			Ldhash,
 			Ldglob,
-			Ldcls,
 			Ldtrue,
 			Ldfalse,
 
@@ -163,47 +162,6 @@ namespace Adreno
 		};
 	}
 
-	class ExecutionContext;
-	class VMContext
-	{
-	public:
-		static VMContext *CurrentVM()
-		{
-			return _CurrentVM;
-		}
-
-		VMContext();
-		~VMContext();
-
-		void MakeCurrent();
-
-		ExecutionContext *CreateExecutionContext(Assembly *assembly);
-		
-		const Object::FieldMap GetGlobals() const
-		{
-			return _Globals;
-		}
-
-		Class *GetClass(const String &name) const;
-		void SetClass(const String &name, Class *function);
-
-		const Assembly::ClassMap GetClasses() const
-		{
-			return _Classes;
-		}
-
-		Value GetGlobal(const String &name);
-		void SetGlobal(const String &name, const Value &value);
-
-		DEFPROP_RO_P(public, GarbageCollector, GC);
-
-	private:
-		Object::FieldMap _Globals;
-		Assembly::ClassMap _Classes;
-
-		static THREAD_LOCAL VMContext *_CurrentVM;
-	};
-
 	namespace ExecutionState
 	{
 		enum
@@ -214,23 +172,66 @@ namespace Adreno
 		};
 	}
 
-	class ExecutionContext
+	class Context
 	{
 	public:
-		ExecutionContext(VMContext *owner, Assembly *unit);
-		~ExecutionContext();
+		static Context *Current()
+		{
+			return _Current;
+		}
 
-		bool Run(const String &name, const Arguments &args, Value &retValue);
+		Context();
+		~Context();
 
-		DEFPROP_RO_P(public, VMContext, Owner);
-		DEFPROP_RO_P(public, Assembly, Unit);
+		void MakeCurrent()
+		{
+			_Current = this;
+		}
+
+		bool Run(const Reference<Function> &function, const Arguments &args, Value &retValue);
+
+		Value GetGlobal(const String &name)
+		{
+			Object::FieldMap::iterator it = _Globals.find(name);
+
+			if (it == _Globals.end())
+				return Value();
+
+			return it->second;
+		}
+
+		void SetGlobal(const String &name, const Value &value)
+		{
+			_Globals[name] = value;
+		}
+		
 		DEFPROP_RO_C(public, int, State);
 		DEFPROP_RO_C(public, int, Error);
+		DEFPROP_RO_P(public, GarbageCollector, GC);
 
 	private:
-		size_t _IP;
-		Stack *_Stack;
-		std::vector<Value> _Locals;
+		Object::FieldMap _Globals;
+
+		struct CallFrame
+		{
+		public:
+			CallFrame(const Reference<Function> &function, const Arguments &args)
+				: F(function), A(args), IP(0), S(function->StackSize()), L(function->LocalCount())
+			{
+			}
+		
+			Reference<Function> F;
+			Arguments A;
+			size_t IP;
+
+			Stack S;
+			std::vector<Value> L;
+		};
+
+		CallFrame *_CurrentFrame;
+		std::stack<CallFrame *> _CallStack;
+
+		static THREAD_LOCAL Context *_Current;
 	};
 }
 

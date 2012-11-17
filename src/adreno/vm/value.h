@@ -43,8 +43,8 @@ namespace Adreno
 	class Value
 	{
 	public:
-
 		Value();
+		Value(const Value &value);
 		explicit Value(intptr_t value);
 		Value(bool value);
 		Value(double value);
@@ -59,6 +59,8 @@ namespace Adreno
 		void SetValue(bool value);
 		void SetValue(const String &value);
 		void SetValue(Object *object);
+
+		Value &operator =(const Value &other);
 
 		intptr_t AsNumber() const;
 		double AsFloatingNumber() const;

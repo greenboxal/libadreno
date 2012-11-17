@@ -14,8 +14,8 @@
     along with libadreno.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AILP_CONTEXT_H
-#define AILP_CONTEXT_H
+#ifndef AIL_H
+#define AIL_H
 
 #include <iostream>
 #include <unordered_map>
@@ -40,7 +40,7 @@ namespace Adreno
 			_DebugInfo = debugInfo;
 		}
 
-		AssemblyBuilder *GetAssembly()
+		AssemblyBuilder &GetAssemblyBuilder()
 		{
 			return _Assembly;
 		}
@@ -51,7 +51,7 @@ namespace Adreno
 		std::istream &_Input;
 		bool _DebugInfo;
 
-		AssemblyBuilder *_Assembly;
+		AssemblyBuilder _Assembly;
 		FunctionEmitter *_CurrentFunction;
 
 		std::unordered_map<String, Label *> _Labels;

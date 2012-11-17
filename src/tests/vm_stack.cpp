@@ -23,8 +23,8 @@ using namespace Adreno;
 
 TEST(Stack)
 {
-	VMContext context;
-	context.MakeCurrent();
+	Context ctx;
+	ctx.MakeCurrent();
 
 	Stack stack;
 	Value *test = nullptr;

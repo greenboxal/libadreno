@@ -16,7 +16,7 @@
 
 #include <UnitTest++.h>
 #include <adreno/config.h>
-#include <adreno/ail/ail.h>
+/*#include <adreno/ail/ail.h>
 
 using namespace Adreno;
 
@@ -29,17 +29,27 @@ TEST(AIL)
 
 	std::stringstream ss;
 #define x(s) ss.write(s"\n", strlen(s"\n"))
+	x("// Test program 1");
 	x("def main");
-	x("{");
-	x("\tldarg.0");
-	x("\tldnum 2");
-	x("\tmul");
-	x("\tret");
-	x("}");
+	x("ldarg0");
+	x("ldnum 2");
+	x("mul");
+	x("ret");
+	x("end");
 #undef x
 
 	AilParserContext apc(ss);
 
-	AILC_debug = 1;
-	int result = AILC_parse(&apc);
-}
+	//AILC_debug = 1;
+	CHECK(AILC_parse(&apc) == 0);
+
+	AssemblyBuilder *ab = apc.GetAssembly();
+	ExecutionContext *ec = context.CreateExecutionContext(ab);
+	
+	Value ret;
+	CHECK(ec->Run("main", Arguments(Value((intptr_t)1337)), ret));
+	CHECK_EQUAL(1337 * 2, ret.AsNumber());
+
+	delete ec;
+	delete ab;
+}*/

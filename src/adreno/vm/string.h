@@ -93,8 +93,14 @@ namespace Adreno
 		
 		String(const String &str)
 		{
-			_Impl = str._Impl;
+			*this = str;
+		}
+
+		String &operator =(const String &other)
+		{
+			_Impl = other._Impl;
 			_Impl->IncRef();
+			return *this;
 		}
 
 		~String()
@@ -130,6 +136,26 @@ namespace Adreno
 		bool Compare(const String &other, int flags = StringCompare::CaseSensitive) const
 		{
 			return _Impl->Compare(other._Impl, flags);
+		}
+
+		bool operator ==(const String &other)
+		{
+			return Compare(other, StringCompare::CaseSensitive);
+		}
+
+		bool operator !=(const String &other)
+		{
+			return !Compare(other, StringCompare::CaseSensitive);
+		}
+
+		String operator +(const String &other)
+		{
+			return Append(other);
+		}
+
+		String operator +=(const String &other)
+		{
+			return Append(other);
 		}
 
 		static String Static(const char *str);

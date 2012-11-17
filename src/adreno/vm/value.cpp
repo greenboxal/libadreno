@@ -60,6 +60,24 @@ Value::Value(Object *object)
 		_Values.object->GCState()->Reference(ReferenceType::Strong);
 }
 
+Value::Value(const Value &other)
+{
+	*this = other;
+}
+
+Value &Value::operator =(const Value &other)
+{
+	Type(other.Type());
+	_Values = other._Values;
+
+	if (Type() == ValueType::String)
+		_Values.stringImpl->IncRef();
+	else if (Type() == ValueType::Object)
+		_Values.object->GCState()->Reference(ReferenceType::Strong);
+
+	return *this;
+}
+
 Value::~Value()
 {
 	DereferenceMe();

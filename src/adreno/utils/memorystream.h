@@ -41,6 +41,11 @@ namespace Adreno
 		void *Clone();
 		void SetExpansionFactor(size_t size);
 
+		unsigned char *Data()
+		{
+			return _Buffer;
+		}
+
 	private:
 		unsigned char *_Buffer;
 		size_t _BufferPosition, _BufferSize, _BufferMaxSize;

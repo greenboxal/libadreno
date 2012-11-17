@@ -17,37 +17,40 @@
 #include <adreno/vm/vm.h>
 #include <adreno/vm/assembly.h>
 
-#include <assert.h>
-
 using namespace Adreno;
+
+Function::~Function()
+{
+	if (Bytecode())
+		delete Bytecode();
+}
+
+Function::Function(const Reference<Assembly> &owner, const String &name, unsigned char *bytecode, size_t bytecodeSize, size_t localcount, size_t stacksize)
+	: _Name(name)
+{
+	BytecodeSize(bytecodeSize);
+	Bytecode(new unsigned char[BytecodeSize()]);
+	LocalCount(localcount);
+	StackSize(stacksize);
+	Owner(owner);
+
+	memmove(Bytecode(), bytecode, BytecodeSize());
+}
+
+Value Function::Call(const Arguments &args)
+{
+	Value ret;
+
+	Context *ctx = Context::Current();
+	if (ctx == nullptr)
+		return Value();
+
+	ctx->Run(this, args, ret);
+
+	return ret;
+}
 
 bool Assembly::Load(void *, size_t)
 {
 	return false;
-}
-
-void Class::ResolveParents()
-{
-	std::list<String>::iterator it;
-
-	if (_ParentsResolved)
-		return;
-
-	for (it = _Parents.begin(); it != _Parents.end(); it++)
-	{
-		Class *parent = VMContext::CurrentVM()->GetClass(*it);
-
-		assert(parent);
-		parent->ResolveParents();
-
-		FunctionMap &fmap = parent->_Functions;
-		FunctionMap::iterator it2;
-		for (it2 = fmap.begin(); it2 != fmap.end(); it2++)
-		{
-			if (GetFunction(it2->first) == nullptr)
-				SetFunction(it2->second);
-		}
-	}
-
-	_ParentsResolved = true;
 }

@@ -52,6 +52,11 @@ bool Object::Destruct()
 	return true;
 }
 
+bool Object::HasField(const String &name)
+{
+	return Fields().find(name) != Fields().end();
+}
+
 Value Object::GetField(const String &name)
 {
 	FieldMap::iterator it = Fields().find(name);

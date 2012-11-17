@@ -25,8 +25,8 @@ SUITE(GC)
 {
 	TEST(Reference)
 	{
-		VMContext Context;
-		Context.MakeCurrent();
+		Context ctx;
+		ctx.MakeCurrent();
 
 		Object *obj = new Object();
 		GCObject *gcobj = obj->GCState();
@@ -68,7 +68,7 @@ SUITE(GC)
 			CHECK(gcobj->State() == GCObjectState::Dead);
 			CHECK_EQUAL(false, weak1.IsGone());
 
-			Context.GC()->Collect();
+			ctx.GC()->Collect();
 	
 			CHECK_EQUAL(true, weak1.IsGone());
 			CHECK(gcobj->State() == GCObjectState::Collected);
@@ -105,8 +105,8 @@ SUITE(GC)
 
 	TEST(Persistency)
 	{
-		VMContext Context;
-		Context.MakeCurrent();
+		Context ctx;
+		ctx.MakeCurrent();
 
 		Object *obj = new PersistentObject();
 		GCObject *gcobj = obj->GCState();
@@ -150,7 +150,7 @@ SUITE(GC)
 
 			for (int i = 0; i < 4; i++)
 			{
-				Context.GC()->Collect();
+				ctx.GC()->Collect();
 
 				CHECK_EQUAL(0U, gcobj->Strong());
 				CHECK(gcobj->State() == GCObjectState::Dead);
@@ -167,7 +167,7 @@ SUITE(GC)
 				CHECK_EQUAL(false, weak1.IsGone());
 			}
 			
-			Context.GC()->Collect();
+			ctx.GC()->Collect();
 	
 			CHECK_EQUAL(true, weak1.IsGone());
 			CHECK(gcobj->State() == GCObjectState::Collected);

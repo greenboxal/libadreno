@@ -82,7 +82,7 @@ void GCObject::Reference(int type)
 	{
 		if (_Strong == 0 && State() == GCObjectState::Dead)
 		{
-			VMContext::CurrentVM()->GC()->SurpressFinalize(this);
+			Context::Current()->GC()->SurpressFinalize(this);
 			State(GCObjectState::Alive);
 			FinalizerEntry(nullptr);
 		}
@@ -114,7 +114,7 @@ void GCObject::TryFinalize()
 	if (_Strong == 0 && FinalizerEntry() == nullptr && State() == GCObjectState::Alive)
 	{
 		State(GCObjectState::Dead);
-		VMContext::CurrentVM()->GC()->AddToFinalizerQueue(this);
+		Context::Current()->GC()->AddToFinalizerQueue(this);
 	}
 
 	if (_Strong == 0 && _Weak == 0)

@@ -11,7 +11,7 @@ SUITE( AdrenoEATests )
 
 TEST( CompileSimpleFunctionCall )
 {
-/*	istringstream input( "close;" );
+	/*istringstream input( "close;" );
 	ostringstream output;
 
 	AdrenoEACompiler compiler;
