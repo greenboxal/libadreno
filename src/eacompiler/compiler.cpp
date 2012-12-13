@@ -7,11 +7,11 @@ bool
 AdrenoEACompiler::Compile( istream& in, ostream& out )
 {
 	ParserContext ctx( in );
-	if( !EAParser_parse( &ctx ) ) {
+	if( 0 != EAParser_parse( &ctx ) ) {
 		return false;
 	}
 
-	out << "HOORAY";
+	ctx.GetRoot()->CodeGen( out );
 
 	return true;
 }

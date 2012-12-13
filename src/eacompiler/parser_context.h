@@ -5,6 +5,7 @@
 #include <vector>
 
 class EANode;
+class EABlock;
 class EAExpression;
 class EAString;
 class EAIdentifier;
@@ -24,12 +25,16 @@ public:
 	ParserContext( ParserInputStream& in );
 	~ParserContext();
 
-	ParserInputStream& Input() { return in; }
-	void* Scanner()            { return scanner; }
+	ParserInputStream& Input()     { return in; }
+	void* Scanner()                { return scanner; }
+
+	EABlock* GetRoot()             { return root; }
+	void SetRoot( EABlock* block );
 
 private:
 	ParserInputStream& in;
 	void* scanner;
+	EABlock* root;
 };
 
 int EAParser_parse( ParserContext* ctx );

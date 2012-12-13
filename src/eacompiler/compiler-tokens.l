@@ -9,6 +9,7 @@
 %{
    #include "eacompiler/parser_context.h"
    #include "compiler-parser.tab.hpp"
+   #include <assert.h>
 
    #define YY_EXTRA_TYPE ParserContext*
    #define YY_USER_ACTION yylloc->first_line = yylineno;
@@ -83,7 +84,8 @@ H [A-Fa-f0-9]
 %%
 
 ParserContext::ParserContext( std::istream& in_ )
-	: in( in_ )
+	: in( in_ ),
+	  root( 0 )
 {
 	yylex_init( &scanner );
 	yyset_extra( this, scanner );
@@ -92,5 +94,12 @@ ParserContext::ParserContext( std::istream& in_ )
 ParserContext::~ParserContext()
 {
 	yylex_destroy( scanner );
+}
+
+void
+ParserContext::SetRoot( EABlock* block )
+{
+	assert( !root );
+	root = block;
 }
 

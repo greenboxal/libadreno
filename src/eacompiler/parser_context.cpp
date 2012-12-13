@@ -4,7 +4,7 @@
 using namespace std;
 
 #define CG( x ) void EA ## x :: CodeGen( ParserOutputStream& out )
-#define TODO( x ) CG( x ) { cout << "TODO: " << #x << endl; }
+#define TODO( x ) CG( x ) { out << "TODO: " << #x << endl; }
 
 CG( ExpressionStatement )
 {
@@ -32,12 +32,12 @@ CG( Block )
 
 CG( Identifier )
 {
-	cout << "ident: \"" << name << "\"" << endl;
+	out << "ident: \"" << name << "\"" << endl;
 }
 
 CG( Integer )
 {
-	cout << "int: " << val << endl;
+	out << "int: " << val << endl;
 }
 
 TODO( ExprGT )

@@ -66,7 +66,7 @@
 
 %%
 
-eascript : code_block { $$ = $1; }
+eascript : code_block { context->SetRoot($1); }
          ;
 
 code_block : '{' code_fragment '}' { $$ = $2; }
