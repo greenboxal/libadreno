@@ -1,5 +1,5 @@
-#include "eaparser/compiler.h"
-#include "eaparser/parser_context.h"
+#include "eacompiler/compiler.h"
+#include "eacompiler/parser_context.h"
 
 using namespace std;
 

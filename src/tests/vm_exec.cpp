@@ -55,21 +55,21 @@ SUITE(VMExecution)
 
 		ctx.SetGlobal(check, FunctionObject::New([&](const Arguments &args) -> Value
 		{
-			CHECK_EQUAL(1, args.Count());
+			CHECK_EQUAL(1U, args.Count());
 			CHECK(args[0].AsBoolean());
 			return Value();
 		}).Value());
 
 		ctx.SetGlobal(check_equal, FunctionObject::New([&](const Arguments &args) -> Value
 		{
-			CHECK_EQUAL(2, args.Count());
+			CHECK_EQUAL(2U, args.Count());
 			CHECK(args[0].AsObject()->EqualOp(args[1]).AsBoolean());
 			return Value();
 		}).Value());
 		
 		ctx.SetGlobal(add_five, FunctionObject::New([&](const Arguments &args) -> Value
 		{
-			CHECK_EQUAL(1, args.Count());
+			CHECK_EQUAL(1U, args.Count());
 			return Value(args[0].AsNumber() + 5);
 		}).Value());
 	
@@ -130,7 +130,7 @@ SUITE(VMExecution)
 
 		ctx.SetGlobal(check_equal, FunctionObject::New([&](const Arguments &args) -> Value
 		{
-			CHECK_EQUAL(2, args.Count());
+			CHECK_EQUAL(2U, args.Count());
 			CHECK(args[0].AsObject()->EqualOp(args[1]).AsBoolean());
 			return Value();
 		}).Value());

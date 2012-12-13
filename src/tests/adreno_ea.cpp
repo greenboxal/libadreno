@@ -2,7 +2,7 @@
 #include <fstream>
 
 
-#include "eaparser/compiler.h"
+#include "eacompiler/compiler.h"
 
 using namespace std;
 

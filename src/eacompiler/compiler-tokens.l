@@ -7,7 +7,7 @@
 %option never-interactive
 
 %{
-   #include "eaparser/parser_context.h"
+   #include "eacompiler/parser_context.h"
    #include "compiler-parser.tab.hpp"
 
    #define YY_EXTRA_TYPE ParserContext*

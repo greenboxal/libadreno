@@ -11,7 +11,7 @@
    #include <stdlib.h>
    #include <iostream>
    #include <vector>
-   #include "eaparser/parser_context.h"
+   #include "eacompiler/parser_context.h"
    using namespace std;
 %}
 
