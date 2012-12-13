@@ -32,6 +32,12 @@ Value::Value(intptr_t value)
 	_Values.number = value;
 }
 
+Value::Value(int value)
+{
+	Type(ValueType::Number);
+	_Values.number = value;
+}
+
 Value::Value(double value)
 {
 	Type(ValueType::FloatingNumber);
